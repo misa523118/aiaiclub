@@ -1,0 +1,542 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>お問い合わせ｜愛アイクラブ 里親募集</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      .type-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        margin-bottom: 28px;
+      }
+      .type-card {
+        border: 2px solid var(--border-md);
+        border-radius: var(--radius-md);
+        padding: 14px 16px;
+        cursor: pointer;
+        background: var(--white);
+        transition: all var(--transition);
+      }
+      .type-card:hover {
+        border-color: var(--primary);
+        background: var(--accent);
+      }
+      .type-card.selected {
+        border-color: var(--primary);
+        background: var(--accent);
+      }
+      .type-icon {
+        font-size: 22px;
+        margin-bottom: 6px;
+      }
+      .type-title {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--primary-dark);
+        margin-bottom: 2px;
+      }
+      .type-desc {
+        font-size: 11px;
+        color: var(--text-muted);
+      }
+      .optional-field {
+        background: var(--gray-50);
+        border-radius: var(--radius-md);
+        padding: 14px 16px;
+        margin-bottom: 18px;
+        border: 1px solid var(--border);
+      }
+      .optional-field-label {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--primary);
+        margin-bottom: 10px;
+      }
+      .privacy-box {
+        background: var(--gray-50);
+        border-radius: var(--radius-md);
+        padding: 14px 16px;
+        font-size: 13px;
+        color: var(--text-muted);
+        line-height: 1.7;
+        margin-bottom: 16px;
+        border: 1px solid var(--border);
+      }
+      .agree-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 20px;
+        font-size: 14px;
+        cursor: pointer;
+      }
+      .agree-row input {
+        accent-color: var(--primary);
+        width: 16px;
+        height: 16px;
+        flex-shrink: 0;
+      }
+      .success-view {
+        text-align: center;
+        padding: 48px 0;
+      }
+      .success-icon {
+        font-size: 48px;
+        margin-bottom: 16px;
+      }
+      .success-title {
+        font-size: 22px;
+        font-weight: 800;
+        color: var(--primary-dark);
+        margin-bottom: 8px;
+      }
+      .success-desc {
+        font-size: 14px;
+        color: var(--text-muted);
+        line-height: 1.7;
+        margin-bottom: 24px;
+      }
+      .loading-btn {
+        opacity: 0.7;
+        cursor: not-allowed;
+        pointer-events: none;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="nav">
+      <div class="nav-inner">
+        <a href="index.html" class="nav-logo"
+          >愛アイ<span>クラブ</span> 里親募集</a
+        >
+        <ul class="nav-links">
+          <li><a href="cats.html">猫を探す</a></li>
+          <li><a href="flow.html">お迎えの流れ</a></li>
+          <li><a href="conditions.html">飼い主の条件</a></li>
+          <li><a href="column.html">コラム</a></li>
+          <li><a href="contact.html">お問い合わせ</a></li>
+        </ul>
+        <button class="nav-login-btn" onclick="location.href = 'login.html'">
+          団体ログイン
+        </button>
+        <button class="nav-hamburger" onclick="toggleMenu()">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+      <div class="nav-mobile-menu" id="mobileMenu">
+        <a href="cats.html">猫を探す</a>
+        <a href="flow.html">お迎えの流れ</a>
+        <a href="conditions.html">飼い主の条件</a>
+        <a href="column.html">コラム</a>
+        <a href="contact.html">お問い合わせ</a>
+        <a href="login.html">団体ログイン</a>
+      </div>
+    </nav>
+
+    <div class="breadcrumb">
+      <div class="breadcrumb-inner">
+        <a href="index.html">トップ</a><span class="sep">›</span>お問い合わせ
+      </div>
+    </div>
+
+    <section class="hero hero-sm">
+      <span class="section-label">お問い合わせ</span>
+      <h1>お問い合わせ</h1>
+      <p>
+        ご質問・ご相談はこちらからお気軽にどうぞ。<br />3営業日以内にご返信いたします。
+      </p>
+    </section>
+
+    <section class="section">
+      <div class="container-sm">
+        <!-- ===== フォームビュー ===== -->
+        <div id="formView">
+          <!-- お問い合わせ種別 -->
+          <span class="section-label">種別を選択</span>
+          <h2 class="section-title" style="margin-bottom: 16px">
+            お問い合わせの内容を選んでください
+          </h2>
+          <div class="type-grid">
+            <div class="type-card selected" onclick="selectType(this, 'cat')">
+              <div class="type-icon">🐱</div>
+              <div class="type-title">猫の里親について</div>
+              <div class="type-desc">特定の猫へのご質問</div>
+            </div>
+            <div class="type-card" onclick="selectType(this, 'general')">
+              <div class="type-icon">❓</div>
+              <div class="type-title">一般的なご質問</div>
+              <div class="type-desc">流れ・条件などの疑問</div>
+            </div>
+            <div class="type-card" onclick="selectType(this, 'event')">
+              <div class="type-icon">📅</div>
+              <div class="type-title">譲渡会について</div>
+              <div class="type-desc">イベント参加のご質問</div>
+            </div>
+            <div class="type-card" onclick="selectType(this, 'other')">
+              <div class="type-icon">✉️</div>
+              <div class="type-title">その他</div>
+              <div class="type-desc">上記以外のご連絡</div>
+            </div>
+          </div>
+
+          <hr class="divider" />
+
+          <!-- フォーム本体 -->
+          <h2 class="section-title" style="margin-bottom: 20px">
+            お客様情報を入力してください
+          </h2>
+
+          <!-- エラーメッセージ -->
+          <div
+            id="formError"
+            class="alert alert-error"
+            style="display: none; margin-bottom: 16px"
+          ></div>
+
+          <div class="form-2col">
+            <div class="form-group">
+              <label class="form-label"
+                >お名前<span class="required">必須</span></label
+              >
+              <input
+                type="text"
+                class="form-input"
+                id="contactName"
+                placeholder="山田 花子"
+                autocomplete="name"
+              />
+            </div>
+            <div class="form-group">
+              <label class="form-label"
+                >ふりがな<span class="required">必須</span></label
+              >
+              <input
+                type="text"
+                class="form-input"
+                id="contactKana"
+                placeholder="やまだ はなこ"
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label"
+              >メールアドレス<span class="required">必須</span></label
+            >
+            <input
+              type="email"
+              class="form-input"
+              id="contactEmail"
+              placeholder="hanako@example.com"
+              autocomplete="email"
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">電話番号</label>
+            <input
+              type="tel"
+              class="form-input"
+              id="contactTel"
+              placeholder="090-1234-5678"
+              autocomplete="tel"
+            />
+            <p class="form-hint">
+              ご連絡をスムーズにするためにご入力をお勧めします。
+            </p>
+          </div>
+
+          <!-- 猫の里親について選択時のみ表示 -->
+          <div class="optional-field" id="catField">
+            <div class="optional-field-label">
+              「猫の里親について」を選択した場合
+            </div>
+            <div class="form-group" style="margin-bottom: 0">
+              <label class="form-label">気になっている猫の名前</label>
+              <input
+                type="text"
+                class="form-input"
+                id="contactCatName"
+                placeholder="例：みかん（任意）"
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label"
+              >居住地（都道府県）<span class="required">必須</span></label
+            >
+            <select class="form-select" id="contactPref">
+              <option value="">選択してください</option>
+              <option>三重県</option>
+              <option>愛知県</option>
+              <option>岐阜県</option>
+              <option>大阪府</option>
+              <option>兵庫県</option>
+              <option>京都府</option>
+              <option>奈良県</option>
+              <option>滋賀県</option>
+              <option>静岡県</option>
+              <option>その他</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label"
+              >住居タイプ<span class="required">必須</span></label
+            >
+            <select class="form-select" id="contactHouse">
+              <option value="">選択してください</option>
+              <option>持ち家（一戸建て）</option>
+              <option>持ち家（マンション・集合住宅）</option>
+              <option>賃貸（ペット可）</option>
+              <option>その他</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label"
+              >お問い合わせ内容<span class="required">必須</span></label
+            >
+            <textarea
+              class="form-textarea"
+              id="contactMessage"
+              style="min-height: 140px"
+              placeholder="ご質問・ご相談内容をご記入ください。猫の里親についてのお問い合わせの場合は、ご家族構成や飼育環境なども教えていただけると、よりスムーズにご案内できます。"
+            ></textarea>
+          </div>
+
+          <!-- プライバシーポリシー同意 -->
+          <div class="privacy-box">
+            送信いただいた個人情報は、お問い合わせへの返答目的のみに使用します。
+            第三者への提供は行いません。詳しくはプライバシーポリシーをご覧ください。
+          </div>
+          <label class="agree-row">
+            <input type="checkbox" id="agreeCheck" />
+            プライバシーポリシーに同意する
+          </label>
+
+          <button
+            class="btn btn-primary btn-full btn-lg"
+            id="submitBtn"
+            onclick="submitForm()"
+          >
+            送信する
+          </button>
+          <p
+            style="
+              font-size: 12px;
+              color: var(--text-muted);
+              text-align: center;
+              margin-top: 12px;
+            "
+          >
+            送信後、自動返信メールが届きます。届かない場合は迷惑メールフォルダをご確認ください。
+          </p>
+        </div>
+
+        <!-- ===== 送信完了ビュー ===== -->
+        <div class="success-view" id="successView" style="display: none">
+          <div class="success-icon">✅</div>
+          <div class="success-title">お問い合わせを受け付けました</div>
+          <div class="success-desc">
+            ご入力のメールアドレスに確認メールをお送りしました。<br />
+            3営業日以内に担当者よりご連絡いたします。
+          </div>
+          <div
+            class="alert alert-info"
+            style="text-align: left; margin-bottom: 24px"
+          >
+            ※ メールが届かない場合は迷惑メールフォルダをご確認ください。
+            それでも届かない場合はお手数ですが再度お問い合わせください。
+          </div>
+          <a href="index.html" class="btn btn-secondary btn-lg"
+            >トップページに戻る</a
+          >
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        <div class="footer-grid">
+          <div>
+            <div class="footer-logo">愛アイクラブ 里親募集</div>
+            <p class="footer-desc">
+              保護猫たちに温かい家族を。愛アイクラブは三重県を拠点に活動する保護団体です。
+            </p>
+          </div>
+          <div class="footer-col">
+            <h4>猫を探す</h4>
+            <ul>
+              <li><a href="cats.html">猫一覧</a></li>
+              <li><a href="flow.html">お迎えの流れ</a></li>
+              <li><a href="conditions.html">飼い主の条件</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h4>情報</h4>
+            <ul>
+              <li><a href="column.html">コラム</a></li>
+              <li><a href="contact.html">お問い合わせ</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h4>団体向け</h4>
+            <ul>
+              <li><a href="login.html">ログイン</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <span class="footer-copy"
+            >© 2026 愛アイクラブ 里親募集サイト（仮）</span
+          >
+        </div>
+      </div>
+    </footer>
+
+    <!-- 通常スクリプト -->
+    <script>
+      function toggleMenu() {
+        document.getElementById("mobileMenu").classList.toggle("open");
+      }
+
+      // 選択中の種別を保持
+      let currentType = "cat";
+      const typeLabels = {
+        cat: "猫の里親について",
+        general: "一般的なご質問",
+        event: "譲渡会について",
+        other: "その他",
+      };
+
+      function selectType(el, type) {
+        document
+          .querySelectorAll(".type-card")
+          .forEach((c) => c.classList.remove("selected"));
+        el.classList.add("selected");
+        currentType = type;
+        // 猫名欄は「猫の里親について」選択時のみ表示
+        document.getElementById("catField").style.display =
+          type === "cat" ? "block" : "none";
+      }
+
+      // 入力時にエラーをリセット
+      [
+        "contactName",
+        "contactKana",
+        "contactEmail",
+        "contactPref",
+        "contactHouse",
+        "contactMessage",
+      ].forEach((id) => {
+        document.getElementById(id).addEventListener("input", () => {
+          document.getElementById("formError").style.display = "none";
+          document.getElementById(id).classList.remove("has-error");
+        });
+      });
+    </script>
+
+    <!-- Firebase処理（type="module"） -->
+    <script type="module">
+      import { db } from "./firebase.js";
+      import {
+        collection,
+        addDoc,
+        serverTimestamp,
+      } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+      window.submitForm = async function () {
+        const name = document.getElementById("contactName").value.trim();
+        const kana = document.getElementById("contactKana").value.trim();
+        const email = document.getElementById("contactEmail").value.trim();
+        const tel = document.getElementById("contactTel").value.trim();
+        const catName = document.getElementById("contactCatName").value.trim();
+        const pref = document.getElementById("contactPref").value;
+        const house = document.getElementById("contactHouse").value;
+        const message = document.getElementById("contactMessage").value.trim();
+        const agree = document.getElementById("agreeCheck").checked;
+        const errEl = document.getElementById("formError");
+        const btn = document.getElementById("submitBtn");
+
+        // ── バリデーション ──
+        const errors = [];
+        if (!name) errors.push("contactName");
+        if (!kana) errors.push("contactKana");
+        if (!email) errors.push("contactEmail");
+        if (!pref) errors.push("contactPref");
+        if (!house) errors.push("contactHouse");
+        if (!message) errors.push("contactMessage");
+
+        if (errors.length > 0) {
+          errEl.style.display = "block";
+          errEl.textContent = "必須項目をすべて入力してください。";
+          errors.forEach((id) =>
+            document.getElementById(id).classList.add("has-error"),
+          );
+          window.scrollTo(0, 0);
+          return;
+        }
+
+        // メール形式チェック
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          errEl.style.display = "block";
+          errEl.textContent = "メールアドレスの形式が正しくありません。";
+          document.getElementById("contactEmail").classList.add("has-error");
+          return;
+        }
+
+        if (!agree) {
+          errEl.style.display = "block";
+          errEl.textContent = "プライバシーポリシーへの同意が必要です。";
+          return;
+        }
+
+        // ── ボタンをローディング状態に ──
+        btn.textContent = "送信中...";
+        btn.classList.add("loading-btn");
+        errEl.style.display = "none";
+
+        try {
+          // ── Firestoreに保存 ──
+          await addDoc(collection(db, "contacts"), {
+            type: currentType, // 種別（cat / general / event / other）
+            typeLabel: typeLabels[currentType], // 種別ラベル（日本語）
+            name,
+            kana,
+            email,
+            tel,
+            catName, // 気になっている猫の名前（任意）
+            pref,
+            house,
+            message,
+            status: "未対応", // 対応状況（管理側で更新する）
+            createdAt: serverTimestamp(),
+          });
+
+          // ── 送信完了ビューに切り替え ──
+          document.getElementById("formView").style.display = "none";
+          document.getElementById("successView").style.display = "block";
+          window.scrollTo(0, 0);
+        } catch (e) {
+          // ── エラー処理 ──
+          errEl.style.display = "block";
+          errEl.textContent =
+            "送信に失敗しました。通信状況を確認してもう一度お試しください。";
+          btn.textContent = "送信する";
+          btn.classList.remove("loading-btn");
+          console.error("Firestore書き込みエラー:", e);
+        }
+      };
+    </script>
+  </body>
+</html>
