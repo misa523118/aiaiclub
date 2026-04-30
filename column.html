@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>コラム｜愛アイクラブ 里親募集</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* 一覧 */
+    .cat-filter { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px; }
+    .cat-filter-btn { font-size: 13px; padding: 6px 16px; border-radius: 99px; border: 1.5px solid var(--border-md); background: var(--white); color: var(--text-muted); cursor: pointer; transition: all var(--transition); font-family: var(--font-sans); }
+    .cat-filter-btn:hover, .cat-filter-btn.active { background: var(--primary); color: var(--white); border-color: var(--primary); }
+    .col-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; }
+    .col-card { display: flex; flex-direction: column; border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; background: var(--white); text-decoration: none; color: inherit; transition: all var(--transition); cursor: pointer; }
+    .col-card:hover { box-shadow: var(--shadow-md); transform: translateY(-3px); opacity: 1; }
+    .col-thumb { height: 160px; background: var(--gray-200); display: flex; align-items: center; justify-content: center; font-size: 48px; }
+    .col-body { padding: 16px 18px; flex: 1; display: flex; flex-direction: column; }
+    .col-cat-tag { font-size: 11px; padding: 3px 10px; border-radius: 4px; background: var(--primary-light); color: var(--primary-dark); font-weight: 700; display: inline-block; margin-bottom: 8px; align-self: flex-start; }
+    .col-title { font-size: 15px; font-weight: 700; line-height: 1.5; color: var(--text); margin-bottom: 8px; flex: 1; }
+    .col-meta { font-size: 12px; color: var(--text-light); }
+    .pagination { display: flex; justify-content: center; gap: 8px; margin-top: 40px; }
+    .page-btn { width: 36px; height: 36px; border-radius: var(--radius-sm); border: 1px solid var(--border-md); display: flex; align-items: center; justify-content: center; font-size: 13px; cursor: pointer; background: var(--white); color: var(--text-muted); transition: all var(--transition); }
+    .page-btn:hover, .page-btn.active { background: var(--primary); color: var(--white); border-color: var(--primary); }
+    /* 詳細 */
+    .article-hero { height: 280px; background: var(--gray-200); display: flex; align-items: center; justify-content: center; font-size: 72px; }
+    .article-body { max-width: 720px; margin: 0 auto; padding: 40px 24px; }
+    .article-cat-tag { font-size: 12px; padding: 4px 12px; border-radius: 4px; background: var(--primary-light); color: var(--primary-dark); font-weight: 700; display: inline-block; margin-bottom: 16px; }
+    .article-title { font-size: clamp(22px, 4vw, 32px); font-weight: 800; color: var(--primary-dark); letter-spacing: -0.02em; margin-bottom: 10px; line-height: 1.3; }
+    .article-meta { font-size: 13px; color: var(--text-light); margin-bottom: 28px; }
+    .article-text { font-size: 15px; color: var(--text-muted); line-height: 1.9; margin-bottom: 16px; }
+    .article-h2 { font-size: 19px; font-weight: 800; color: var(--primary-dark); margin: 32px 0 12px; padding-left: 14px; border-left: 4px solid var(--primary); letter-spacing: -0.01em; }
+    .related-col-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
+  </style>
+</head>
+<body>
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">愛アイ<span>クラブ</span> 里親募集</a>
+    <ul class="nav-links">
+      <li><a href="cats.html">猫を探す</a></li>
+      <li><a href="flow.html">お迎えの流れ</a></li>
+      <li><a href="conditions.html">飼い主の条件</a></li>
+      <li><a href="column.html">コラム</a></li>
+      <li><a href="contact.html">お問い合わせ</a></li>
+    </ul>
+    <button class="nav-login-btn" onclick="location.href='login.html'">団体ログイン</button>
+    <button class="nav-hamburger" onclick="toggleMenu()"><span></span><span></span><span></span></button>
+  </div>
+  <div class="nav-mobile-menu" id="mobileMenu">
+    <a href="cats.html">猫を探す</a><a href="flow.html">お迎えの流れ</a><a href="conditions.html">飼い主の条件</a><a href="column.html">コラム</a><a href="contact.html">お問い合わせ</a><a href="login.html">団体ログイン</a>
+  </div>
+</nav>
+
+<!-- コラム一覧 -->
+<div id="listView">
+  <div class="breadcrumb"><div class="breadcrumb-inner"><a href="index.html">トップ</a><span class="sep">›</span>コラム</div></div>
+  <section class="hero hero-sm">
+    <span class="section-label">コラム</span>
+    <h1>コラム</h1>
+    <p>保護猫との暮らしに役立つ情報をお届けします。</p>
+  </section>
+  <section class="section">
+    <div class="container">
+      <div class="cat-filter">
+        <button class="cat-filter-btn active" onclick="filterCol(this,'')">すべて</button>
+        <button class="cat-filter-btn" onclick="filterCol(this,'はじめての猫')">はじめての猫</button>
+        <button class="cat-filter-btn" onclick="filterCol(this,'健康・医療')">健康・医療</button>
+        <button class="cat-filter-btn" onclick="filterCol(this,'飼育マメ知識')">飼育マメ知識</button>
+        <button class="cat-filter-btn" onclick="filterCol(this,'保護猫の話')">保護猫の話</button>
+      </div>
+      <div class="col-grid" id="colGrid">
+        <div class="col-card" onclick="showDetail()" data-cat="はじめての猫">
+          <div class="col-thumb">🐾</div>
+          <div class="col-body"><span class="col-cat-tag">はじめての猫</span><div class="col-title">はじめての保護猫との暮らし方</div><div class="col-meta">2026年4月1日</div></div>
+        </div>
+        <div class="col-card" onclick="showDetail()" data-cat="はじめての猫">
+          <div class="col-thumb">🐱</div>
+          <div class="col-body"><span class="col-cat-tag">はじめての猫</span><div class="col-title">子猫と成猫、どちらを選ぶべき？それぞれの魅力と注意点</div><div class="col-meta">2026年3月20日</div></div>
+        </div>
+        <div class="col-card" onclick="showDetail()" data-cat="健康・医療">
+          <div class="col-thumb">💊</div>
+          <div class="col-body"><span class="col-cat-tag">健康・医療</span><div class="col-title">保護猫を迎えたら最初にすること</div><div class="col-meta">2026年3月10日</div></div>
+        </div>
+        <div class="col-card" onclick="showDetail()" data-cat="飼育マメ知識">
+          <div class="col-thumb">🏠</div>
+          <div class="col-body"><span class="col-cat-tag">飼育マメ知識</span><div class="col-title">猫のトイレ選びと置き場所のコツ</div><div class="col-meta">2026年2月28日</div></div>
+        </div>
+        <div class="col-card" onclick="showDetail()" data-cat="保護猫の話">
+          <div class="col-thumb">❤️</div>
+          <div class="col-body"><span class="col-cat-tag">保護猫の話</span><div class="col-title">保護猫を迎えて変わった私の生活</div><div class="col-meta">2026年2月15日</div></div>
+        </div>
+        <div class="col-card" onclick="showDetail()" data-cat="健康・医療">
+          <div class="col-thumb">🩺</div>
+          <div class="col-body"><span class="col-cat-tag">健康・医療</span><div class="col-title">猫のワクチン接種、何をいつ打てばいい？</div><div class="col-meta">2026年2月1日</div></div>
+        </div>
+      </div>
+      <div class="pagination">
+        <div class="page-btn">‹</div>
+        <div class="page-btn active">1</div>
+        <div class="page-btn">2</div>
+        <div class="page-btn">3</div>
+        <div class="page-btn">›</div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- コラム詳細 -->
+<div id="detailView" style="display:none;">
+  <div class="breadcrumb"><div class="breadcrumb-inner"><a href="index.html">トップ</a><span class="sep">›</span><a href="#" onclick="showList();return false;">コラム</a><span class="sep">›</span>はじめての保護猫との暮らし方</div></div>
+  <div class="article-hero">🐾</div>
+  <div class="article-body">
+    <span class="article-cat-tag">はじめての猫</span>
+    <h1 class="article-title">はじめての保護猫との暮らし方</h1>
+    <div class="article-meta">2026年4月1日 ｜ 愛アイクラブ スタッフ</div>
+
+    <p class="article-text">保護猫を迎えることは、その猫に新しい人生を与えることです。最初の数日は猫も緊張しているため、そっと見守ることが大切です。焦らず、猫のペースに合わせてあげましょう。</p>
+
+    <h2 class="article-h2">まずは安心できる場所を作ろう</h2>
+    <p class="article-text">ケージや段ボール箱など、猫が隠れられる小さなスペースを用意しましょう。無理に触ろうとせず、猫のペースに合わせることが信頼関係の第一歩です。最初の1〜2週間は特に静かな環境を心がけてください。</p>
+    <p class="article-text">猫は縄張り意識が強い動物です。新しい環境に慣れるまで時間がかかることもありますが、それは猫にとって自然なこと。焦らずじっくり待ちましょう。</p>
+
+    <h2 class="article-h2">食事・トイレは最初が肝心</h2>
+    <p class="article-text">保護施設で食べていたフードと同じものを用意するとスムーズです。急にフードを変えると下痢の原因になることも。1〜2週間かけて少しずつ新しいフードに切り替えましょう。</p>
+    <p class="article-text">トイレは静かな場所に置き、最初は猫を連れて場所を確認させましょう。猫はきれい好きなので、清潔に保つことが大切です。1日1回以上の掃除を心がけましょう。</p>
+
+    <h2 class="article-h2">病院でのチェックを忘れずに</h2>
+    <p class="article-text">お迎え後、できるだけ早く動物病院で健康チェックを受けましょう。保護猫は適切なケアを受けていない場合もあるため、隠れた病気がないか確認することが大切です。かかりつけ医を見つけておくと安心です。</p>
+
+    <hr class="divider">
+
+    <div class="cta-box">
+      <h3>記事を読んで気になったら猫を探してみましょう！</h3>
+      <p>実際に猫と出会ってみることが一番の近道です。</p>
+      <a href="cats.html" class="btn btn-primary btn-lg">猫を探す →</a>
+    </div>
+
+    <hr class="divider">
+
+    <h2 style="font-size:18px;font-weight:800;color:var(--primary-dark);margin-bottom:20px;">関連記事</h2>
+    <div class="related-col-grid">
+      <div class="col-card" onclick="window.scrollTo(0,0)" style="cursor:pointer">
+        <div class="col-thumb" style="height:100px;">🐱</div>
+        <div class="col-body"><span class="col-cat-tag">はじめての猫</span><div class="col-title" style="font-size:13px;">子猫と成猫、どちらを選ぶべき？</div><div class="col-meta">2026/03/20</div></div>
+      </div>
+      <div class="col-card" onclick="window.scrollTo(0,0)" style="cursor:pointer">
+        <div class="col-thumb" style="height:100px;">💊</div>
+        <div class="col-body"><span class="col-cat-tag">健康・医療</span><div class="col-title" style="font-size:13px;">保護猫を迎えたら最初にすること</div><div class="col-meta">2026/03/10</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div><div class="footer-logo">愛アイクラブ 里親募集</div><p class="footer-desc">保護猫たちに温かい家族を。愛アイクラブは三重県を拠点に活動する保護団体です。</p></div>
+      <div class="footer-col"><h4>猫を探す</h4><ul><li><a href="cats.html">猫一覧</a></li><li><a href="flow.html">お迎えの流れ</a></li><li><a href="conditions.html">飼い主の条件</a></li></ul></div>
+      <div class="footer-col"><h4>情報</h4><ul><li><a href="column.html">コラム</a></li><li><a href="contact.html">お問い合わせ</a></li></ul></div>
+      <div class="footer-col"><h4>団体向け</h4><ul><li><a href="login.html">ログイン</a></li></ul></div>
+    </div>
+    <div class="footer-bottom"><span class="footer-copy">© 2026 愛アイクラブ 里親募集サイト（仮）</span></div>
+  </div>
+</footer>
+
+<script>
+function toggleMenu(){document.getElementById('mobileMenu').classList.toggle('open');}
+function showDetail(){document.getElementById('listView').style.display='none';document.getElementById('detailView').style.display='block';window.scrollTo(0,0);}
+function showList(){document.getElementById('detailView').style.display='none';document.getElementById('listView').style.display='block';window.scrollTo(0,0);}
+function filterCol(btn, cat) {
+  document.querySelectorAll('.cat-filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.col-card').forEach(card=>{
+    card.style.display = (!cat || card.dataset.cat===cat) ? '' : 'none';
+  });
+}
+</script>
+</body>
+</html>

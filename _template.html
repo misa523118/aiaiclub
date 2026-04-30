@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>愛アイクラブ 里親募集サイト</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ナビゲーション -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">愛アイ<span>クラブ</span> 里親募集</a>
+    <ul class="nav-links">
+      <li><a href="cats.html">猫を探す</a></li>
+      <li><a href="flow.html">お迎えの流れ</a></li>
+      <li><a href="conditions.html">飼い主の条件</a></li>
+      <li><a href="column.html">コラム</a></li>
+      <li><a href="contact.html">お問い合わせ</a></li>
+    </ul>
+    <button class="nav-login-btn" onclick="location.href='login.html'">団体ログイン</button>
+    <button class="nav-hamburger" onclick="toggleMenu()" aria-label="メニュー">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <div class="nav-mobile-menu" id="mobileMenu">
+    <a href="cats.html">猫を探す</a>
+    <a href="flow.html">お迎えの流れ</a>
+    <a href="conditions.html">飼い主の条件</a>
+    <a href="column.html">コラム</a>
+    <a href="contact.html">お問い合わせ</a>
+    <a href="login.html">団体ログイン</a>
+  </div>
+</nav>
+
+<!-- フッター -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-logo">愛アイクラブ 里親募集</div>
+        <p class="footer-desc">保護猫たちに温かい家族を。<br>愛アイクラブは三重県を拠点に活動する保護団体です。</p>
+      </div>
+      <div class="footer-col">
+        <h4>猫を探す</h4>
+        <ul>
+          <li><a href="cats.html">猫一覧</a></li>
+          <li><a href="flow.html">お迎えの流れ</a></li>
+          <li><a href="conditions.html">飼い主の条件</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>情報</h4>
+        <ul>
+          <li><a href="column.html">コラム</a></li>
+          <li><a href="contact.html">お問い合わせ</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>団体向け</h4>
+        <ul>
+          <li><a href="login.html">ログイン</a></li>
+          <li><a href="register.html">猫を登録する</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span class="footer-copy">© 2026 愛アイクラブ 里親募集サイト（仮）</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+function toggleMenu() {
+  document.getElementById('mobileMenu').classList.toggle('open');
+}
+document.querySelectorAll('.faq-q').forEach(q => {
+  q.addEventListener('click', () => {
+    q.closest('.faq-item').classList.toggle('open');
+  });
+});
+</script>
+</body>
+</html>

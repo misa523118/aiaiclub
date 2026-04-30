@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>団体ログイン｜愛アイクラブ 里親募集</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      .login-body {
+        min-height: calc(100vh - 60px);
+        background: linear-gradient(
+          135deg,
+          var(--primary-light) 0%,
+          var(--accent) 100%
+        );
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 20px;
+      }
+      .login-card {
+        background: var(--white);
+        border-radius: var(--radius-xl);
+        border: 1px solid var(--border);
+        padding: 40px 36px;
+        width: 100%;
+        max-width: 420px;
+        box-shadow: var(--shadow-lg);
+        opacity: 0;
+        transition: opacity 0.2s ease;
+      }
+      .login-card.ready {
+        opacity: 1;
+      }
+      .login-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: var(--primary-light);
+        margin: 0 auto 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+      }
+      .login-title {
+        font-size: 22px;
+        font-weight: 800;
+        color: var(--primary-dark);
+        text-align: center;
+        margin-bottom: 6px;
+        letter-spacing: -0.02em;
+      }
+      .login-sub {
+        font-size: 13px;
+        color: var(--text-muted);
+        text-align: center;
+        margin-bottom: 28px;
+        line-height: 1.6;
+      }
+      .form-options {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+      .remember-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        color: var(--text-muted);
+        cursor: pointer;
+      }
+      .remember-label input {
+        accent-color: var(--primary);
+      }
+      .forgot-link {
+        font-size: 13px;
+        color: var(--primary);
+        cursor: pointer;
+      }
+      .forgot-link:hover {
+        opacity: 0.75;
+      }
+      .login-notice {
+        background: var(--accent);
+        border-radius: var(--radius-md);
+        padding: 12px 16px;
+        font-size: 12px;
+        color: var(--primary-dark);
+        margin-top: 20px;
+        line-height: 1.6;
+        border: 1px solid var(--border);
+      }
+      .view {
+        display: none;
+      }
+      .view.active {
+        display: block;
+      }
+      .back-link {
+        display: block;
+        text-align: center;
+        margin-top: 16px;
+        font-size: 13px;
+        color: var(--primary);
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="nav">
+      <div class="nav-inner">
+        <a href="index.html" class="nav-logo"
+          >愛アイ<span>クラブ</span> 里親募集</a
+        >
+        <ul class="nav-links">
+          <li><a href="cats.html">猫を探す</a></li>
+          <li><a href="flow.html">お迎えの流れ</a></li>
+          <li><a href="conditions.html">飼い主の条件</a></li>
+          <li><a href="column.html">コラム</a></li>
+          <li><a href="contact.html">お問い合わせ</a></li>
+        </ul>
+        <button class="nav-hamburger" onclick="toggleMenu()">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+      <div class="nav-mobile-menu" id="mobileMenu">
+        <a href="cats.html">猫を探す</a>
+        <a href="flow.html">お迎えの流れ</a>
+        <a href="contact.html">お問い合わせ</a>
+      </div>
+    </nav>
+
+    <div class="login-body">
+      <div class="login-card" id="loginCard">
+        <!-- ① ログインフォーム -->
+        <div class="view active" id="viewLogin">
+          <div class="login-icon">🔐</div>
+          <div class="login-title">保護団体ログイン</div>
+          <div class="login-sub">
+            登録済みのメールアドレスと<br />パスワードでログインしてください
+          </div>
+
+          <div
+            id="loginError"
+            class="alert alert-error"
+            style="display: none"
+          ></div>
+
+          <div class="form-group">
+            <label class="form-label"
+              >メールアドレス<span class="required">必須</span></label
+            >
+            <input
+              type="email"
+              class="form-input"
+              id="email"
+              placeholder="例：info@aiaiclub.org"
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label"
+              >パスワード<span class="required">必須</span></label
+            >
+            <input
+              type="password"
+              class="form-input"
+              id="password"
+              placeholder="パスワードを入力"
+            />
+          </div>
+          <div class="form-options">
+            <label class="remember-label">
+              <input type="checkbox" id="remember" /> ログイン状態を保持する
+            </label>
+            <span class="forgot-link" onclick="showView('viewReset')"
+              >パスワードを忘れた方</span
+            >
+          </div>
+          <button
+            class="btn btn-primary btn-full btn-lg"
+            id="loginBtn"
+            onclick="handleLogin()"
+          >
+            ログイン
+          </button>
+          <div class="login-notice">
+            ※
+            このページは保護団体スタッフ専用です。一般の方のアカウント登録は行っておりません。ご不明な点は<a
+              href="contact.html"
+              >お問い合わせ</a
+            >ください。
+          </div>
+        </div>
+
+        <!-- ② パスワードリセット -->
+        <div class="view" id="viewReset">
+          <div class="login-icon">📧</div>
+          <div class="login-title">パスワードをリセット</div>
+          <div class="login-sub">
+            登録済みのメールアドレスを入力してください。<br />再設定用のリンクをお送りします。
+          </div>
+
+          <div
+            id="resetError"
+            class="alert alert-error"
+            style="display: none"
+          ></div>
+
+          <div class="form-group">
+            <label class="form-label"
+              >メールアドレス<span class="required">必須</span></label
+            >
+            <input
+              type="email"
+              class="form-input"
+              id="resetEmail"
+              placeholder="例：info@aiaiclub.org"
+            />
+          </div>
+          <button
+            class="btn btn-primary btn-full btn-lg"
+            id="resetBtn"
+            onclick="handleReset()"
+          >
+            リセットメールを送信
+          </button>
+          <span class="back-link" onclick="showView('viewLogin')"
+            >← ログイン画面に戻る</span
+          >
+        </div>
+
+        <!-- ③ リセットメール送信完了 -->
+        <div class="view" id="viewDone">
+          <div class="login-icon">✅</div>
+          <div class="login-title">メールを送信しました</div>
+          <div
+            class="alert alert-success"
+            id="resetSuccessMsg"
+            style="margin-top: 16px; text-align: center; line-height: 1.7"
+          ></div>
+          <button
+            class="btn btn-outline btn-full"
+            style="margin-top: 16px"
+            onclick="showView('viewLogin')"
+          >
+            ログイン画面に戻る
+          </button>
+          <div class="login-notice">
+            ※
+            メールが届かない場合は迷惑メールフォルダをご確認ください。それでも届かない場合は<a
+              href="contact.html"
+              >事務局にお問い合わせ</a
+            >ください。
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ✅ 画面切り替えなど通常のscriptは </body> 直前 -->
+    <script>
+      function toggleMenu() {
+        document.getElementById("mobileMenu").classList.toggle("open");
+      }
+
+      function showView(id) {
+        document
+          .querySelectorAll(".view")
+          .forEach((v) => v.classList.remove("active"));
+        document.getElementById(id).classList.add("active");
+        document.getElementById("loginError").style.display = "none";
+        document.getElementById("resetError").style.display = "none";
+      }
+
+      // 入力時にエラー表示・赤枠をリセット
+      document.getElementById("email").addEventListener("input", () => {
+        document.getElementById("loginError").style.display = "none";
+        document.getElementById("email").classList.remove("has-error");
+        document.getElementById("password").classList.remove("has-error");
+      });
+      document.getElementById("password").addEventListener("input", () => {
+        document.getElementById("loginError").style.display = "none";
+        document.getElementById("password").classList.remove("has-error");
+      });
+
+      // Enterキーでログイン実行
+      document.getElementById("password").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") window.handleLogin();
+      });
+    </script>
+
+    <!-- ✅ Firebase処理は type="module" で別ブロック・必ず </body> 直前 -->
+    <script type="module">
+      import { auth } from "./firebase.js";
+      import {
+        signInWithEmailAndPassword,
+        sendPasswordResetEmail,
+        onAuthStateChanged,
+        setPersistence,
+        browserLocalPersistence,
+        browserSessionPersistence,
+      } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+      // ── すでにログイン済みなら register.html へ飛ばす ──
+      // カードは確認後に表示してちらつきを防ぐ
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          location.href = "register.html";
+        } else {
+          document.getElementById("loginCard").classList.add("ready");
+        }
+      });
+
+      // ── Firebaseのエラーコードを日本語メッセージに変換 ──
+      function getErrorMessage(code) {
+        switch (code) {
+          case "auth/invalid-email":
+            return "メールアドレスの形式が正しくありません。";
+          case "auth/user-not-found":
+          case "auth/wrong-password":
+          case "auth/invalid-credential":
+            // セキュリティのためどちらが間違いかは教えない
+            return "メールアドレスまたはパスワードが正しくありません。";
+          case "auth/too-many-requests":
+            return "ログイン試行が多すぎます。しばらく時間をおいてからお試しください。";
+          case "auth/network-request-failed":
+            return "ネットワークエラーが発生しました。インターネット接続を確認してください。";
+          default:
+            return "ログインに失敗しました。もう一度お試しください。";
+        }
+      }
+
+      // ── ログイン処理 ──
+      window.handleLogin = async function () {
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value;
+        const remember = document.getElementById("remember").checked;
+        const errEl = document.getElementById("loginError");
+        const btn = document.getElementById("loginBtn");
+
+        // 空欄チェック
+        if (!email || !password) {
+          errEl.style.display = "block";
+          errEl.textContent = "メールアドレスとパスワードを入力してください。";
+          return;
+        }
+
+        // ボタンをローディング状態にして二重送信を防ぐ
+        btn.disabled = true;
+        btn.textContent = "ログイン中...";
+
+        try {
+          // 「ログイン状態を保持する」に応じてセッションの保持方法を切り替える
+          // チェックあり → ブラウザを閉じても維持（localStorage）
+          // チェックなし → タブを閉じたらログアウト（sessionStorage）
+          const persistence = remember
+            ? browserLocalPersistence
+            : browserSessionPersistence;
+          await setPersistence(auth, persistence);
+
+          // Firebase でログイン実行
+          await signInWithEmailAndPassword(auth, email, password);
+
+          // 成功 → register.html へ遷移
+          location.href = "register.html";
+        } catch (e) {
+          // 失敗 → エラーメッセージ表示・入力欄を赤枠に
+          errEl.style.display = "block";
+          errEl.textContent = getErrorMessage(e.code);
+          document.getElementById("email").classList.add("has-error");
+          document.getElementById("password").classList.add("has-error");
+
+          // ボタンを元に戻す
+          btn.disabled = false;
+          btn.textContent = "ログイン";
+        }
+      };
+
+      // ── パスワードリセット処理 ──
+      window.handleReset = async function () {
+        const email = document.getElementById("resetEmail").value.trim();
+        const errEl = document.getElementById("resetError");
+        const btn = document.getElementById("resetBtn");
+
+        if (!email) {
+          errEl.style.display = "block";
+          errEl.textContent = "メールアドレスを入力してください。";
+          return;
+        }
+
+        btn.disabled = true;
+        btn.textContent = "送信中...";
+
+        try {
+          // Firebase でパスワードリセットメールを送信
+          await sendPasswordResetEmail(auth, email);
+
+          document.getElementById("resetSuccessMsg").textContent =
+            email +
+            " 宛にパスワード再設定のリンクをお送りしました。メールをご確認ください。";
+          showView("viewDone");
+        } catch (e) {
+          errEl.style.display = "block";
+          errEl.textContent = getErrorMessage(e.code);
+          btn.disabled = false;
+          btn.textContent = "リセットメールを送信";
+        }
+      };
+    </script>
+  </body>
+</html>
