@@ -1,755 +1,611 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ja">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>猫を探す｜愛アイクラブ 里親募集</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="style.css" />
-    <style>
-      .cats-page {
-        padding: 40px 24px;
-      }
-      .cats-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-end;
-        margin-bottom: 24px;
-        flex-wrap: wrap;
-        gap: 12px;
-      }
-      .cats-count {
-        font-size: 13px;
-        color: var(--text-muted);
-      }
-      /* 詳細ページ */
-      .detail-layout {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 48px;
-        align-items: start;
-      }
-      .detail-gallery {
-        position: relative;
-      }
-      .detail-main-img {
-        width: 100%;
-        height: 360px;
-        background: var(--gray-200);
-        border-radius: var(--radius-xl);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 80px;
-        margin-bottom: 12px;
-        overflow: hidden;
-        position: relative;
-      }
-      .detail-badge {
-        position: absolute;
-        top: 16px;
-        left: 16px;
-        font-size: 13px;
-        font-weight: 700;
-        padding: 6px 14px;
-        border-radius: 99px;
-      }
-      .detail-thumbs {
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
-      }
-      .detail-thumb {
-        width: 72px;
-        height: 72px;
-        border-radius: var(--radius-md);
-        background: var(--gray-200);
-        border: 2px solid transparent;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 28px;
-        transition: border-color var(--transition);
-      }
-      .detail-thumb.active {
-        border-color: var(--primary);
-      }
-      .detail-thumb-video {
-        background: var(--gray-400);
-        color: var(--white);
-        font-size: 14px;
-      }
-      .detail-info {
-      }
-      .detail-name {
-        font-size: 32px;
-        font-weight: 800;
-        color: var(--primary-dark);
-        letter-spacing: -0.03em;
-        line-height: 1.2;
-        margin-bottom: 4px;
-      }
-      .detail-kana {
-        font-size: 14px;
-        color: var(--text-muted);
-        margin-bottom: 16px;
-      }
-      .detail-contact-btn {
-        margin-bottom: 20px;
-      }
-      .detail-section {
-        margin-bottom: 24px;
-      }
-      .detail-section-title {
-        font-size: 13px;
-        font-weight: 700;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-        color: var(--primary);
-        border-bottom: 2px solid var(--primary-light);
-        padding-bottom: 6px;
-        margin-bottom: 14px;
-      }
-      .detail-desc {
-        font-size: 14px;
-        color: var(--text-muted);
-        line-height: 1.8;
-      }
-      .media-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 10px;
-      }
-      .media-item {
-        border-radius: var(--radius-md);
-        overflow: hidden;
-        border: 1px solid var(--border);
-      }
-      .media-img {
-        height: 90px;
-        background: var(--gray-200);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 28px;
-      }
-      .media-label {
-        padding: 6px 10px;
-        font-size: 11px;
-        color: var(--text-muted);
-      }
-      .related-section {
-        padding: 48px 24px;
-        background: var(--white);
-        border-top: 1px solid var(--border);
-      }
-      @media (max-width: 768px) {
-        .detail-layout {
-          grid-template-columns: 1fr;
-          gap: 28px;
-        }
-        .detail-main-img {
-          height: 260px;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <nav class="nav">
-      <div class="nav-inner">
-        <a href="index.html" class="nav-logo"
-          >愛アイ<span>クラブ</span> 里親募集</a
-        >
-        <ul class="nav-links">
-          <li><a href="cats.html">猫を探す</a></li>
-          <li><a href="flow.html">お迎えの流れ</a></li>
-          <li><a href="conditions.html">飼い主の条件</a></li>
-          <li><a href="column.html">コラム</a></li>
-          <li><a href="contact.html">お問い合わせ</a></li>
-        </ul>
-        <button class="nav-login-btn" onclick="location.href = 'login.html'">
-          団体ログイン
-        </button>
-        <button class="nav-hamburger" onclick="toggleMenu()">
-          <span></span><span></span><span></span>
-        </button>
-      </div>
-      <div class="nav-mobile-menu" id="mobileMenu">
-        <a href="cats.html">猫を探す</a><a href="flow.html">お迎えの流れ</a
-        ><a href="conditions.html">飼い主の条件</a
-        ><a href="column.html">コラム</a><a href="contact.html">お問い合わせ</a
-        ><a href="login.html">団体ログイン</a>
-      </div>
-    </nav>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>猫を探す｜愛アイクラブ 里親募集</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* 一覧ページ */
+    .cats-page { padding: 40px 24px; }
+    .cats-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
+    .cats-count { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
 
-    <!-- 猫一覧 -->
-    <div id="listView">
-      <div class="breadcrumb">
-        <div class="breadcrumb-inner">
-          <a href="index.html">トップ</a><span class="sep">›</span>猫を探す
-        </div>
-      </div>
+    /* スケルトンローディング */
+    .skeleton { background: var(--gray-200); border-radius: var(--radius-md); animation: skeleton-pulse 1.4s ease-in-out infinite; }
+    @keyframes skeleton-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+    .skeleton-card { background: var(--white); border-radius: var(--radius-lg); border: 1px solid var(--border); overflow: hidden; }
+    .skeleton-img { height: 180px; }
+    .skeleton-body { padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; }
+    .skeleton-line-lg { height: 16px; width: 60%; }
+    .skeleton-line-sm { height: 12px; width: 80%; }
 
-      <section class="hero hero-sm">
-        <span class="section-label">猫を探す</span>
-        <h1>募集中の猫たち</h1>
-        <p>条件を絞り込んで、あなたにぴったりの猫を見つけましょう。</p>
-      </section>
+    /* 詳細ページ */
+    .detail-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
+    .detail-thumb {
+      width: 72px;
+      height: 72px;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      border: 2px solid transparent;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: border-color var(--transition);
+      background: var(--gray-200);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .detail-thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .detail-thumb.active { border-color: var(--primary); }
+    .detail-thumb:hover { border-color: var(--primary-light); }
+    .detail-thumb-video {
+      background: var(--gray-400);
+      color: var(--white);
+      font-size: 20px;
+    }
+    .detail-main-img img { width: 100%; height: 100%; object-fit: cover; }
+    .detail-badge { position: absolute; top: 16px; left: 16px; font-size: 13px; font-weight: 700; padding: 6px 14px; border-radius: 99px; }
+    .detail-name { font-size: 32px; font-weight: 800; color: var(--primary-dark); letter-spacing: -0.03em; line-height: 1.2; margin-bottom: 4px; }
+    .detail-kana { font-size: 14px; color: var(--text-muted); margin-bottom: 16px; }
+    .detail-section-title { font-size: 13px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--primary); border-bottom: 2px solid var(--primary-light); padding-bottom: 6px; margin-bottom: 14px; margin-top: 24px; }
+    .detail-desc { font-size: 14px; color: var(--text-muted); line-height: 1.8; }
+    .video-wrap { position: relative; width: 100%; padding-top: 56.25%; border-radius: var(--radius-lg); overflow: hidden; background: var(--gray-200); margin-top: 12px; }
+    .video-wrap iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+    .related-section { padding: 48px 24px; background: var(--white); border-top: 1px solid var(--border); }
 
-      <section class="cats-page">
-        <div class="container">
-          <div class="filter-bar">
-            <div class="filter-search">
-              <input
-                type="text"
-                class="form-input"
-                placeholder="名前で検索..."
-                id="nameSearch"
-              />
-              <button class="btn btn-primary" onclick="filterCats()">
-                検索
-              </button>
-            </div>
-            <div class="filter-dropdowns">
-              <select class="filter-select" id="ageFilter">
-                <option value="">年齢（すべて）</option>
-                <option>子猫</option>
-                <option>成猫</option>
-                <option>老猫</option>
-              </select>
-              <select class="filter-select" id="sexFilter">
-                <option value="">性別（すべて）</option>
-                <option>オス</option>
-                <option>メス</option>
-              </select>
-              <select class="filter-select" id="colorFilter">
-                <option value="">毛の柄（すべて）</option>
-                <option>キジトラ</option>
-                <option>白猫</option>
-                <option>黒猫</option>
-                <option>三毛</option>
-                <option>茶トラ</option>
-              </select>
-              <select class="filter-select" id="breedFilter">
-                <option value="">猫種（すべて）</option>
-                <option>雑種</option>
-                <option>スコティッシュ</option>
-                <option>マンチカン</option>
-              </select>
-              <select class="filter-select" id="statusFilter">
-                <option value="">状態（すべて）</option>
-                <option>募集中</option>
-                <option>トライアル中</option>
-                <option>譲渡決定</option>
-              </select>
-            </div>
-          </div>
-          <div class="cats-header">
-            <div>
-              <span class="section-label">検索結果</span>
-              <p class="cats-count" id="catsCount">6匹の猫が見つかりました</p>
-            </div>
-          </div>
-          <div class="cat-grid" id="catGrid">
-            <div
-              class="cat-card"
-              onclick="showDetail()"
-              style="cursor: pointer"
-              data-age="子猫"
-              data-sex="オス"
-              data-color="キジトラ"
-              data-status="募集中"
-            >
-              <div class="cat-card-img">
-                🐱<span class="cat-badge badge-open">募集中</span>
-              </div>
-              <div class="cat-card-body">
-                <div class="cat-card-name">みかん</div>
-                <div class="cat-card-meta">子猫・オス・キジトラ・雑種</div>
-              </div>
-            </div>
-            <div
-              class="cat-card"
-              onclick="showDetail()"
-              style="cursor: pointer"
-              data-age="成猫"
-              data-sex="メス"
-              data-color="白猫"
-              data-status="募集中"
-            >
-              <div class="cat-card-img">
-                🐱<span class="cat-badge badge-open">募集中</span>
-              </div>
-              <div class="cat-card-body">
-                <div class="cat-card-name">ゆき</div>
-                <div class="cat-card-meta">成猫・メス・白猫・雑種</div>
-              </div>
-            </div>
-            <div
-              class="cat-card"
-              onclick="showDetail()"
-              style="cursor: pointer"
-              data-age="成猫"
-              data-sex="オス"
-              data-color="黒猫"
-              data-status="トライアル中"
-            >
-              <div class="cat-card-img">
-                🐱<span class="cat-badge badge-trial">トライアル</span>
-              </div>
-              <div class="cat-card-body">
-                <div class="cat-card-name">くろ</div>
-                <div class="cat-card-meta">成猫・オス・黒猫・雑種</div>
-              </div>
-            </div>
-            <div
-              class="cat-card"
-              onclick="showDetail()"
-              style="cursor: pointer"
-              data-age="子猫"
-              data-sex="メス"
-              data-color="三毛"
-              data-status="募集中"
-            >
-              <div class="cat-card-img">
-                🐱<span class="cat-badge badge-open">募集中</span>
-              </div>
-              <div class="cat-card-body">
-                <div class="cat-card-name">もも</div>
-                <div class="cat-card-meta">子猫・メス・三毛・雑種</div>
-              </div>
-            </div>
-            <div
-              class="cat-card"
-              onclick="showDetail()"
-              style="cursor: pointer"
-              data-age="成猫"
-              data-sex="メス"
-              data-color="茶トラ"
-              data-status="譲渡決定"
-            >
-              <div class="cat-card-img">
-                🐱<span class="cat-badge badge-done">譲渡決定</span>
-              </div>
-              <div class="cat-card-body">
-                <div class="cat-card-name">はな</div>
-                <div class="cat-card-meta">成猫・メス・茶トラ・雑種</div>
-              </div>
-            </div>
-            <div
-              class="cat-card"
-              onclick="showDetail()"
-              style="cursor: pointer"
-              data-age="老猫"
-              data-sex="オス"
-              data-color="キジトラ"
-              data-status="募集中"
-            >
-              <div class="cat-card-img">
-                🐱<span class="cat-badge badge-open">募集中</span>
-              </div>
-              <div class="cat-card-body">
-                <div class="cat-card-name">そら</div>
-                <div class="cat-card-meta">老猫・オス・サバトラ・雑種</div>
-              </div>
-            </div>
-          </div>
-          <p
-            id="noResults"
-            style="
-              display: none;
-              text-align: center;
-              padding: 48px;
-              color: var(--text-muted);
-            "
-          >
-            条件に合う猫が見つかりませんでした。絞り込み条件を変えてみてください。
-          </p>
-        </div>
-      </section>
+    /* 空・エラー状態 */
+    .empty-state { text-align: center; padding: 72px 24px; color: var(--text-muted); }
+    .empty-icon { font-size: 48px; margin-bottom: 16px; }
+    .empty-title { font-size: 18px; font-weight: 700; color: var(--primary-dark); margin-bottom: 8px; }
+    .empty-desc { font-size: 14px; line-height: 1.7; }
+
+    @media (max-width: 768px) {
+      .detail-layout { grid-template-columns: 1fr; gap: 28px; }
+      .detail-main-img { height: 260px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">愛アイ<span>クラブ</span> 里親募集</a>
+    <ul class="nav-links">
+      <li><a href="cats.html">猫を探す</a></li>
+      <li><a href="flow.html">お迎えの流れ</a></li>
+      <li><a href="conditions.html">飼い主の条件</a></li>
+      <li><a href="column.html">コラム</a></li>
+      <li><a href="contact.html">お問い合わせ</a></li>
+    </ul>
+    <button class="nav-login-btn" onclick="location.href='login.html'">団体ログイン</button>
+    <button class="nav-hamburger" onclick="toggleMenu()"><span></span><span></span><span></span></button>
+  </div>
+  <div class="nav-mobile-menu" id="mobileMenu">
+    <a href="cats.html">猫を探す</a>
+    <a href="flow.html">お迎えの流れ</a>
+    <a href="conditions.html">飼い主の条件</a>
+    <a href="column.html">コラム</a>
+    <a href="contact.html">お問い合わせ</a>
+    <a href="login.html">団体ログイン</a>
+  </div>
+</nav>
+
+<!-- ========== 猫一覧ビュー ========== -->
+<div id="listView">
+  <div class="breadcrumb">
+    <div class="breadcrumb-inner">
+      <a href="index.html">トップ</a><span class="sep">›</span>猫を探す
     </div>
+  </div>
 
-    <!-- 猫詳細 -->
-    <div id="detailView" style="display: none">
-      <div class="breadcrumb">
-        <div class="breadcrumb-inner">
-          <a href="index.html">トップ</a><span class="sep">›</span
-          ><a
-            href="#"
-            onclick="
-              showList();
-              return false;
-            "
-            >猫を探す</a
-          ><span class="sep">›</span>みかんの詳細
+  <section class="hero hero-sm">
+    <span class="section-label">猫を探す</span>
+    <h1>募集中の猫たち</h1>
+    <p>条件を絞り込んで、あなたにぴったりの猫を見つけましょう。</p>
+  </section>
+
+  <section class="cats-page">
+    <div class="container">
+
+      <!-- 絞り込みフォーム -->
+      <div class="filter-bar">
+        <div class="filter-search">
+          <input type="text" class="form-input" id="nameSearch" placeholder="名前で検索...">
+          <button class="btn btn-primary" onclick="applyFilter()">検索</button>
+        </div>
+        <div class="filter-dropdowns">
+          <select class="filter-select" id="ageFilter"    onchange="applyFilter()">
+            <option value="">年齢（すべて）</option>
+            <option>子猫</option><option>成猫</option><option>老猫</option>
+          </select>
+          <select class="filter-select" id="sexFilter"    onchange="applyFilter()">
+            <option value="">性別（すべて）</option>
+            <option>オス</option><option>メス</option>
+          </select>
+          <select class="filter-select" id="colorFilter"  onchange="applyFilter()">
+            <option value="">毛の柄（すべて）</option>
+            <option>キジトラ</option><option>白猫</option><option>黒猫</option>
+            <option>白黒</option><option>三毛</option><option>茶トラ</option><option>サバトラ</option>
+          </select>
+          <select class="filter-select" id="breedFilter"  onchange="applyFilter()">
+            <option value="">猫種（すべて）</option>
+            <option>雑種</option><option>スコティッシュフォールド</option>
+            <option>マンチカン</option><option>アメリカンショートヘア</option><option>その他</option>
+          </select>
+          <select class="filter-select" id="statusFilter" onchange="applyFilter()">
+            <option value="">状態（すべて）</option>
+            <option>募集中</option><option>トライアル中</option><option>譲渡決定</option>
+          </select>
         </div>
       </div>
 
-      <section class="section">
-        <div class="container">
-          <div class="detail-layout">
-            <!-- 左：画像 -->
-            <div class="detail-gallery">
-              <div class="detail-main-img">
-                🐱<span class="detail-badge badge-open">募集中</span>
-              </div>
-              <div class="detail-thumbs">
-                <div class="detail-thumb active">🐱</div>
-                <div class="detail-thumb">🐾</div>
-                <div class="detail-thumb">😴</div>
-                <div class="detail-thumb detail-thumb-video">▶ 動画</div>
-              </div>
-            </div>
-            <!-- 右：情報 -->
-            <div class="detail-info">
-              <div class="detail-name">みかん</div>
-              <div class="detail-kana">Mikan</div>
-              <div class="tags" style="margin-bottom: 20px">
-                <span class="tag">子猫</span><span class="tag">オス</span
-                ><span class="tag">キジトラ</span><span class="tag">雑種</span
-                ><span class="tag">小さめ</span>
-              </div>
-              <div class="detail-contact-btn">
-                <a href="contact.html" class="btn btn-primary btn-full btn-lg"
-                  >みかんにお問い合わせする →</a
-                >
-              </div>
-
-              <div class="detail-section">
-                <div class="detail-section-title">プロフィール</div>
-                <table class="profile-table">
-                  <tr>
-                    <td>年齢</td>
-                    <td>推定 3ヶ月</td>
-                  </tr>
-                  <tr>
-                    <td>性別</td>
-                    <td>オス（去勢予定）</td>
-                  </tr>
-                  <tr>
-                    <td>猫種</td>
-                    <td>雑種</td>
-                  </tr>
-                  <tr>
-                    <td>毛の柄</td>
-                    <td>キジトラ</td>
-                  </tr>
-                  <tr>
-                    <td>体重</td>
-                    <td>約 0.8kg</td>
-                  </tr>
-                  <tr>
-                    <td>保護場所</td>
-                    <td>三重県〇〇市</td>
-                  </tr>
-                  <tr>
-                    <td>保護日</td>
-                    <td>2026年3月10日</td>
-                  </tr>
-                </table>
-              </div>
-
-              <div class="detail-section">
-                <div class="detail-section-title">性格・特徴</div>
-                <div class="detail-desc">
-                  人懐こく、抱っこが大好きな甘えん坊の男の子です。先住猫とも仲良く遊べます。元気いっぱいで、おもちゃに夢中になります。ゴロゴロと喉を鳴らすのが得意で、撫でられることが大好きです。
-                </div>
-              </div>
-
-              <div class="detail-section">
-                <div class="detail-section-title">健康状態</div>
-                <div class="checklist">
-                  <div class="check-item">
-                    <div class="check-icon check-ok">✓</div>
-                    ワクチン接種済み
-                  </div>
-                  <div class="check-item">
-                    <div class="check-icon check-ok">✓</div>
-                    ノミ・ダニ駆除済み
-                  </div>
-                  <div class="check-item">
-                    <div class="check-icon check-ok">✓</div>
-                    FIV・FeLV検査済み（陰性）
-                  </div>
-                  <div class="check-item">
-                    <div class="check-icon check-ng">✗</div>
-                    去勢手術（お迎え後に実施予定）
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- ギャラリー -->
-          <hr class="divider" />
-          <h3
-            style="
-              font-size: 16px;
-              font-weight: 700;
-              color: var(--primary-dark);
-              margin-bottom: 16px;
-            "
-          >
-            ギャラリー
-          </h3>
-          <div class="media-grid">
-            <div class="media-item">
-              <div class="media-img">🐱</div>
-              <div class="media-label">お昼寝中</div>
-            </div>
-            <div class="media-item">
-              <div class="media-img">🐾</div>
-              <div class="media-label">遊んでる様子</div>
-            </div>
-            <div class="media-item">
-              <div
-                class="media-img"
-                style="
-                  background: var(--gray-400);
-                  color: var(--white);
-                  font-size: 14px;
-                "
-              >
-                ▶ 動画
-              </div>
-              <div class="media-label">じゃらしで遊ぶ</div>
-            </div>
-          </div>
-
-          <!-- 飼い主の条件 -->
-          <hr class="divider" />
-          <h3
-            style="
-              font-size: 16px;
-              font-weight: 700;
-              color: var(--primary-dark);
-              margin-bottom: 16px;
-            "
-          >
-            みかんのお迎え条件
-          </h3>
-          <div class="card" style="padding: 0 20px">
-            <div class="cond-row">
-              <span class="cond-label">完全室内飼育</span
-              ><span class="pill pill-req">必須</span>
-            </div>
-            <div class="cond-row">
-              <span class="cond-label">単身者</span
-              ><span class="pill pill-ok">応募可</span>
-            </div>
-            <div class="cond-row">
-              <span class="cond-label">高齢者（70歳以上）</span
-              ><span class="pill pill-ng">要相談</span>
-            </div>
-            <div class="cond-row">
-              <span class="cond-label">小さなお子さんがいる家庭</span
-              ><span class="pill pill-ok">可</span>
-            </div>
-            <div class="cond-row">
-              <span class="cond-label">先住猫・先住犬</span
-              ><span class="pill pill-ok">可</span>
-            </div>
-            <div class="cond-row">
-              <span class="cond-label">賃貸（ペット可物件）</span
-              ><span class="pill pill-req">要証明書類</span>
-            </div>
-          </div>
-
-          <!-- CTA -->
-          <hr class="divider" />
-          <div class="cta-box">
-            <h3>みかんのことが気になったら</h3>
-            <p>
-              まずはお気軽にお問い合わせください。担当スタッフよりご連絡いたします。
-            </p>
-            <a href="contact.html" class="btn btn-primary btn-lg"
-              >お問い合わせする →</a
-            >
-          </div>
+      <div class="cats-header">
+        <div>
+          <span class="section-label">検索結果</span>
+          <p class="cats-count" id="catsCount">読み込み中...</p>
         </div>
-      </section>
+      </div>
 
-      <!-- 関連する猫 -->
-      <section class="related-section">
-        <div class="container">
-          <span class="section-label">関連コンテンツ</span>
-          <h2 class="section-title" style="margin-bottom: 24px">
-            他の猫も見てみる
-          </h2>
-          <div class="cat-grid">
-            <div
-              class="cat-card"
-              onclick="showDetail()"
-              style="cursor: pointer"
-            >
-              <div class="cat-card-img">
-                🐱<span class="cat-badge badge-open">募集中</span>
-              </div>
-              <div class="cat-card-body">
-                <div class="cat-card-name">ゆき</div>
-                <div class="cat-card-meta">成猫・メス・白猫</div>
-              </div>
-            </div>
-            <div
-              class="cat-card"
-              onclick="showDetail()"
-              style="cursor: pointer"
-            >
-              <div class="cat-card-img">
-                🐱<span class="cat-badge badge-open">募集中</span>
-              </div>
-              <div class="cat-card-body">
-                <div class="cat-card-name">もも</div>
-                <div class="cat-card-meta">子猫・メス・三毛</div>
-              </div>
-            </div>
-            <div
-              class="cat-card"
-              onclick="showDetail()"
-              style="cursor: pointer"
-            >
-              <div class="cat-card-img">
-                🐱<span class="cat-badge badge-open">募集中</span>
-              </div>
-              <div class="cat-card-body">
-                <div class="cat-card-name">そら</div>
-                <div class="cat-card-meta">老猫・オス・サバトラ</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <!-- スケルトンローディング（読み込み中に表示） -->
+      <div class="cat-grid" id="skeletonGrid">
+        <div class="skeleton-card"><div class="skeleton skeleton-img"></div><div class="skeleton-body"><div class="skeleton skeleton-line-lg"></div><div class="skeleton skeleton-line-sm"></div></div></div>
+        <div class="skeleton-card"><div class="skeleton skeleton-img"></div><div class="skeleton-body"><div class="skeleton skeleton-line-lg"></div><div class="skeleton skeleton-line-sm"></div></div></div>
+        <div class="skeleton-card"><div class="skeleton skeleton-img"></div><div class="skeleton-body"><div class="skeleton skeleton-line-lg"></div><div class="skeleton skeleton-line-sm"></div></div></div>
+        <div class="skeleton-card"><div class="skeleton skeleton-img"></div><div class="skeleton-body"><div class="skeleton skeleton-line-lg"></div><div class="skeleton skeleton-line-sm"></div></div></div>
+      </div>
+
+      <!-- 実データ表示エリア -->
+      <div class="cat-grid" id="catGrid" style="display:none;"></div>
+
+      <!-- 0件・エラー時 -->
+      <div id="emptyState" style="display:none;" class="empty-state">
+        <div class="empty-icon">🐱</div>
+        <div class="empty-title">猫が見つかりませんでした</div>
+        <div class="empty-desc">絞り込み条件を変えてみてください。</div>
+      </div>
+
     </div>
+  </section>
+</div>
 
-    <footer class="footer">
-      <div class="footer-inner">
-        <div class="footer-grid">
-          <div>
-            <div class="footer-logo">愛アイクラブ 里親募集</div>
-            <p class="footer-desc">
-              保護猫たちに温かい家族を。愛アイクラブは三重県を拠点に活動する保護団体です。
-            </p>
+<!-- ========== 猫詳細ビュー ========== -->
+<div id="detailView" style="display:none;">
+  <div class="breadcrumb">
+    <div class="breadcrumb-inner">
+      <a href="index.html">トップ</a><span class="sep">›</span>
+      <a href="#" onclick="showList();return false;">猫を探す</a><span class="sep">›</span>
+      <span id="detailBreadcrumb">詳細</span>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+      <div class="detail-layout">
+
+        <!-- 左：画像 -->
+        <div>
+          <!-- メイン画像 -->
+          <div class="detail-main-img" id="detailImg">🐱</div>
+
+          <!-- サムネイル一覧（2枚以上ある場合のみ表示） -->
+          <div id="detailThumbs" style="display:none;margin-top:12px;">
+            <div style="display:flex;gap:10px;flex-wrap:wrap;" id="detailThumbsRow"></div>
           </div>
-          <div class="footer-col">
-            <h4>猫を探す</h4>
-            <ul>
-              <li><a href="cats.html">猫一覧</a></li>
-              <li><a href="flow.html">お迎えの流れ</a></li>
-              <li><a href="conditions.html">飼い主の条件</a></li>
-            </ul>
-          </div>
-          <div class="footer-col">
-            <h4>情報</h4>
-            <ul>
-              <li><a href="column.html">コラム</a></li>
-              <li><a href="contact.html">お問い合わせ</a></li>
-            </ul>
-          </div>
-          <div class="footer-col">
-            <h4>団体向け</h4>
-            <ul>
-              <li><a href="login.html">ログイン</a></li>
-              <li><a href="register.html">猫を登録する</a></li>
-            </ul>
+
+          <!-- YouTube動画（URLがあれば表示） -->
+          <div id="detailVideoWrap" style="display:none;margin-top:12px;">
+            <div class="video-wrap">
+              <iframe id="detailVideo" allowfullscreen></iframe>
+            </div>
           </div>
         </div>
-        <div class="footer-bottom">
-          <span class="footer-copy"
-            >© 2026 愛アイクラブ 里親募集サイト（仮）</span
-          >
+
+        <!-- 右：情報 -->
+        <div>
+          <div id="detailBadge"></div>
+          <div class="detail-name" id="detailName">-</div>
+          <div class="detail-kana" id="detailKana"></div>
+
+          <div class="tags" id="detailTags" style="margin-bottom:20px;"></div>
+
+          <a id="detailContactBtn" href="contact.html" class="btn btn-primary btn-full btn-lg" style="margin-bottom:20px;">
+            この猫にお問い合わせする →
+          </a>
+
+          <!-- プロフィール表 -->
+          <div class="detail-section-title">プロフィール</div>
+          <table class="profile-table" id="detailProfile"></table>
+
+          <!-- 性格 -->
+          <div class="detail-section-title">性格・特徴</div>
+          <div class="detail-desc" id="detailDesc">-</div>
+
+          <!-- 健康状態 -->
+          <div class="detail-section-title">健康状態</div>
+          <div class="checklist" id="detailHealth"></div>
+
+          <!-- 飼い主条件 -->
+          <div class="detail-section-title">お迎え条件</div>
+          <div class="card" style="padding:0 20px;" id="detailConditions"></div>
         </div>
       </div>
-    </footer>
 
-    <script>
-      function toggleMenu() {
-        document.getElementById("mobileMenu").classList.toggle("open");
-      }
-      function showDetail() {
-        document.getElementById("listView").style.display = "none";
-        document.getElementById("detailView").style.display = "block";
-        window.scrollTo(0, 0);
-      }
-      function showList() {
-        document.getElementById("detailView").style.display = "none";
-        document.getElementById("listView").style.display = "block";
-        window.scrollTo(0, 0);
-      }
-      function filterCats() {
-        const name = document.getElementById("nameSearch").value.toLowerCase();
-        const age = document.getElementById("ageFilter").value;
-        const sex = document.getElementById("sexFilter").value;
-        const color = document.getElementById("colorFilter").value;
-        const status = document.getElementById("statusFilter").value;
-        const cards = document.querySelectorAll("#catGrid .cat-card");
-        let count = 0;
-        cards.forEach((card) => {
-          const n = card
-            .querySelector(".cat-card-name")
-            .textContent.toLowerCase();
-          const a = card.dataset.age || "";
-          const s = card.dataset.sex || "";
-          const c = card.dataset.color || "";
-          const st = card.dataset.status || "";
-          const show =
-            (!name || n.includes(name)) &&
-            (!age || a === age) &&
-            (!sex || s === sex) &&
-            (!color || c === color) &&
-            (!status || st === status);
-          card.style.display = show ? "" : "none";
-          if (show) count++;
-        });
-        document.getElementById("catsCount").textContent =
-          count + "匹の猫が見つかりました";
-        document.getElementById("noResults").style.display =
-          count === 0 ? "block" : "none";
-      }
-      document
-        .getElementById("nameSearch")
-        .addEventListener("input", filterCats);
-      document
-        .querySelectorAll(".filter-select")
-        .forEach((s) => s.addEventListener("change", filterCats));
-    </script>
-    //ダミーデータをfirebase読み込みに変更
-    <script type="module">
-      import { db } from "./firebase.js";
-      import {
-        collection,
-        getDocs,
-        orderBy,
-        query,
-      } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+      <!-- CTA -->
+      <hr class="divider">
+      <div class="cta-box">
+        <h3 id="detailCtaTitle">この猫が気になったら</h3>
+        <p>まずはお気軽にお問い合わせください。担当スタッフよりご連絡いたします。</p>
+        <a href="contact.html" class="btn btn-primary btn-lg">お問い合わせする →</a>
+      </div>
+    </div>
+  </section>
 
-      const q = query(collection(db, "cats"), orderBy("createdAt", "desc"));
-      const snapshot = await getDocs(q);
-      const grid = document.getElementById("catGrid");
-      grid.innerHTML = ""; // ダミーデータを消す
+  <!-- 関連する猫 -->
+  <section class="related-section">
+    <div class="container">
+      <span class="section-label">関連コンテンツ</span>
+      <h2 class="section-title" style="margin-bottom:24px;">他の猫も見てみる</h2>
+      <div class="cat-grid" id="relatedGrid"></div>
+    </div>
+  </section>
+</div>
 
-      snapshot.forEach((doc) => {
-        const cat = doc.data();
-        grid.innerHTML += `
-      <div class="cat-card" onclick="showDetail('${doc.id}')">
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-logo">愛アイクラブ 里親募集</div>
+        <p class="footer-desc">保護猫たちに温かい家族を。愛アイクラブは三重県を拠点に活動する保護団体です。</p>
+      </div>
+      <div class="footer-col"><h4>猫を探す</h4><ul><li><a href="cats.html">猫一覧</a></li><li><a href="flow.html">お迎えの流れ</a></li><li><a href="conditions.html">飼い主の条件</a></li></ul></div>
+      <div class="footer-col"><h4>情報</h4><ul><li><a href="column.html">コラム</a></li><li><a href="contact.html">お問い合わせ</a></li></ul></div>
+      <div class="footer-col"><h4>団体向け</h4><ul><li><a href="login.html">ログイン</a></li><li><a href="register.html">猫を登録する</a></li></ul></div>
+    </div>
+    <div class="footer-bottom">
+      <span class="footer-copy">© 2026 愛アイクラブ 里親募集サイト（仮）</span>
+    </div>
+  </div>
+</footer>
+
+<!-- 通常スクリプト -->
+<script>
+  function toggleMenu() {
+    document.getElementById('mobileMenu').classList.toggle('open');
+  }
+
+  // バッジHTML生成
+  function badgeHtml(status, large) {
+    const map = {
+      '募集中':      'badge-open',
+      'トライアル中': 'badge-trial',
+      '譲渡決定':    'badge-done',
+    };
+    const cls = map[status] || 'badge-open';
+    if (large) {
+      return `<span class="detail-badge ${cls}">${status}</span>`;
+    }
+    return `<span class="cat-badge ${cls}">${status}</span>`;
+  }
+
+  // YouTube URLを埋め込みURLに変換
+  function toEmbedUrl(url) {
+    if (!url) return '';
+    const m = url.match(/(?:v=|youtu\.be\/)([^&\s]+)/);
+    return m ? 'https://www.youtube.com/embed/' + m[1] : '';
+  }
+
+  // 画像URLがあれば<img>、なければ絵文字
+  function imgContent(url) {
+    return url
+      ? `<img src="${url}" alt="猫の写真" onerror="this.parentElement.innerHTML='🐱'">`
+      : '🐱';
+  }
+
+  // 猫カードHTML生成
+  function catCardHtml(cat) {
+    // imageUrls（新形式）またはimageUrl（旧形式）に対応
+    const firstImg = (cat.imageUrls && cat.imageUrls.length > 0)
+      ? cat.imageUrls[0]
+      : (cat.imageUrl || '');
+    return `
+      <div class="cat-card" onclick="showDetail('${cat.id}')" style="cursor:pointer;">
         <div class="cat-card-img">
-          ${
-            cat.imageUrl
-              ? `<img src="${cat.imageUrl}" alt="${cat.name}">`
-              : "🐱"
-          }
-          <span class="cat-badge badge-open">${cat.status}</span>
+          ${imgContent(firstImg)}
+          ${badgeHtml(cat.status)}
         </div>
         <div class="cat-card-body">
           <div class="cat-card-name">${cat.name}</div>
-          <div class="cat-card-meta">${cat.age ?? ""}・${cat.sex ?? ""}</div>
+          <div class="cat-card-meta">${[cat.age, cat.sex, cat.color].filter(Boolean).join('・')}</div>
         </div>
       </div>`;
+  }
+
+  // 全データをメモリに保持してフィルタリング
+  let allCats = [];
+
+  function applyFilter() {
+    const name   = document.getElementById('nameSearch').value.trim().toLowerCase();
+    const age    = document.getElementById('ageFilter').value;
+    const sex    = document.getElementById('sexFilter').value;
+    const color  = document.getElementById('colorFilter').value;
+    const breed  = document.getElementById('breedFilter').value;
+    const status = document.getElementById('statusFilter').value;
+
+    const filtered = allCats.filter(cat =>
+      (!name   || cat.name.toLowerCase().includes(name)) &&
+      (!age    || cat.age   === age)   &&
+      (!sex    || cat.sex   === sex)   &&
+      (!color  || cat.color === color) &&
+      (!breed  || cat.breed === breed) &&
+      (!status || cat.status === status)
+    );
+
+    renderCatGrid(filtered);
+  }
+
+  function renderCatGrid(cats) {
+    const grid     = document.getElementById('catGrid');
+    const empty    = document.getElementById('emptyState');
+    const countEl  = document.getElementById('catsCount');
+
+    if (cats.length === 0) {
+      grid.style.display  = 'none';
+      empty.style.display = 'block';
+      countEl.textContent = '0匹の猫が見つかりました';
+    } else {
+      grid.style.display  = '';
+      empty.style.display = 'none';
+      grid.innerHTML = cats.map(catCardHtml).join('');
+      countEl.textContent = cats.length + '匹の猫が見つかりました';
+    }
+  }
+
+  // 詳細表示
+  function showDetail(id) {
+    const cat = allCats.find(c => c.id === id);
+    if (!cat) return;
+
+    // パンくず・タイトル
+    document.getElementById('detailBreadcrumb').textContent = cat.name + 'の詳細';
+    document.title = cat.name + '｜愛アイクラブ 里親募集';
+
+    // 画像
+    const imgEl = document.getElementById('detailImg');
+    // imageUrls（新形式）またはimageUrl（旧形式）に対応
+    const imageUrls = cat.imageUrls && cat.imageUrls.length > 0
+      ? cat.imageUrls
+      : (cat.imageUrl ? [cat.imageUrl] : []);
+
+    // メイン画像を表示する関数
+    function setMainImage(url, thumbEls) {
+      imgEl.innerHTML = url
+        ? `<img src="${url}" alt="${cat.name}" onerror="this.parentElement.innerHTML='🐱'">`
+        : '🐱';
+      imgEl.innerHTML += badgeHtml(cat.status, true);
+      // アクティブなサムネイルを更新
+      if (thumbEls) {
+        thumbEls.forEach(t => t.classList.remove('active'));
+      }
+    }
+
+    // メイン画像セット（最初は1枚目）
+    setMainImage(imageUrls[0], null);
+    imgEl.innerHTML = (imageUrls[0]
+      ? `<img src="${imageUrls[0]}" alt="${cat.name}" onerror="this.parentElement.innerHTML='🐱'">`
+      : '🐱') + badgeHtml(cat.status, true);
+
+    // サムネイル生成（2枚以上あるとき、または動画があるとき表示）
+    const thumbsWrap = document.getElementById('detailThumbs');
+    const thumbsRow  = document.getElementById('detailThumbsRow');
+    const embedUrl   = toEmbedUrl(cat.videoUrl);
+
+    if (imageUrls.length > 1 || embedUrl) {
+      thumbsWrap.style.display = 'block';
+      thumbsRow.innerHTML = '';
+
+      // 画像サムネイル
+      imageUrls.forEach((url, i) => {
+        const thumb = document.createElement('div');
+        thumb.className = 'detail-thumb' + (i === 0 ? ' active' : '');
+        thumb.innerHTML = `<img src="${url}" alt="写真${i+1}" onerror="this.style.fontSize='24px';this.outerHTML='🐱'">`;
+        thumb.addEventListener('click', () => {
+          // メイン画像を切り替え
+          imgEl.innerHTML = `<img src="${url}" alt="${cat.name}" onerror="this.parentElement.innerHTML='🐱'">` + badgeHtml(cat.status, true);
+          // アクティブ状態を更新
+          thumbsRow.querySelectorAll('.detail-thumb').forEach(t => t.classList.remove('active'));
+          thumb.classList.add('active');
+        });
+        thumbsRow.appendChild(thumb);
       });
-    </script>
-  </body>
+
+      // 動画サムネイル
+      if (embedUrl) {
+        const videoThumb = document.createElement('div');
+        videoThumb.className = 'detail-thumb detail-thumb-video';
+        videoThumb.innerHTML = '▶';
+        videoThumb.title = '動画を見る';
+        videoThumb.addEventListener('click', () => {
+          // メイン部分を動画に切り替え
+          imgEl.innerHTML = `<div style="width:100%;height:100%;"><iframe src="${embedUrl}" style="width:100%;height:100%;border:none;" allowfullscreen></iframe></div>`;
+          thumbsRow.querySelectorAll('.detail-thumb').forEach(t => t.classList.remove('active'));
+          videoThumb.classList.add('active');
+        });
+        thumbsRow.appendChild(videoThumb);
+      }
+    } else {
+      thumbsWrap.style.display = 'none';
+    }
+
+    // YouTube動画（サムネイルがない場合はメイン画像下に表示）
+    const videoWrap = document.getElementById('detailVideoWrap');
+    if (embedUrl && imageUrls.length <= 1) {
+      document.getElementById('detailVideo').src = embedUrl;
+      videoWrap.style.display = 'block';
+    } else {
+      videoWrap.style.display = 'none';
+    }
+
+    // 名前・かな
+    document.getElementById('detailName').textContent = cat.name;
+    document.getElementById('detailKana').textContent = cat.kana || '';
+
+    // タグ
+    const tags = [cat.age, cat.sex, cat.color, cat.breed, cat.ageText ? cat.ageText : ''].filter(Boolean);
+    document.getElementById('detailTags').innerHTML =
+      tags.map(t => `<span class="tag">${t}</span>`).join('');
+
+    // お問い合わせボタン
+    document.getElementById('detailContactBtn').textContent = cat.name + 'にお問い合わせする →';
+    document.getElementById('detailCtaTitle').textContent   = cat.name + 'のことが気になったら';
+
+    // プロフィール表
+    const profileRows = [
+      ['年齢',     cat.ageText  || '-'],
+      ['性別',     cat.sex      || '-'],
+      ['猫種',     cat.breed    || '-'],
+      ['毛の柄',   cat.color    || '-'],
+      ['体重',     cat.weight   || '-'],
+      ['保護場所', cat.place    || '-'],
+      ['保護日',   cat.rescueDate || '-'],
+    ];
+    document.getElementById('detailProfile').innerHTML =
+      profileRows.map(([label, val]) =>
+        `<tr><td>${label}</td><td>${val}</td></tr>`
+      ).join('');
+
+    // 性格
+    document.getElementById('detailDesc').textContent = cat.desc || '-';
+
+    // 健康状態
+    const h = cat.health || {};
+    const healthItems = [
+      { key: 'vaccine', label: 'ワクチン接種済み' },
+      { key: 'flea',    label: 'ノミ・ダニ駆除済み' },
+      { key: 'fiv',     label: 'FIV・FeLV検査済み' },
+      { key: 'neuter',  label: '去勢・避妊手術済み' },
+      { key: 'chip',    label: 'マイクロチップ装着' },
+    ];
+    document.getElementById('detailHealth').innerHTML =
+      healthItems.map(item => `
+        <div class="check-item">
+          <div class="check-icon ${h[item.key] ? 'check-ok' : 'check-ng'}">
+            ${h[item.key] ? '✓' : '✗'}
+          </div>
+          ${item.label}
+        </div>`
+      ).join('') +
+      (cat.healthNote
+        ? `<p style="font-size:13px;color:var(--text-muted);margin-top:10px;line-height:1.7;">※ ${cat.healthNote}</p>`
+        : '');
+
+    // 飼い主条件
+    const c = cat.conditions || {};
+    const condItems = [
+      { label: '完全室内飼育',           val: c.indoor  },
+      { label: '単身者',                 val: c.single  },
+      { label: '高齢者（70歳以上）',      val: c.elderly },
+      { label: 'お子さんがいる家庭',      val: c.kids    },
+      { label: '先住猫・先住犬',          val: c.pets    },
+      { label: '賃貸（ペット可物件）',    val: c.rental  },
+    ];
+    const pillClass = v => {
+      if (!v) return '';
+      if (['必須','要証明書類','要相談'].includes(v)) return 'pill-req';
+      if (['不可'].includes(v)) return 'pill-ng';
+      return 'pill-ok';
+    };
+    document.getElementById('detailConditions').innerHTML =
+      condItems.filter(i => i.val).map(i =>
+        `<div class="cond-row">
+          <span class="cond-label">${i.label}</span>
+          <span class="pill ${pillClass(i.val)}">${i.val}</span>
+        </div>`
+      ).join('');
+
+    // 関連猫（現在の猫以外から最大3匹）
+    const related = allCats.filter(c => c.id !== id).slice(0, 3);
+    document.getElementById('relatedGrid').innerHTML =
+      related.map(catCardHtml).join('');
+
+    // 表示切り替え
+    document.getElementById('listView').style.display   = 'none';
+    document.getElementById('detailView').style.display = 'block';
+    window.scrollTo(0, 0);
+  }
+
+  function showList() {
+    document.getElementById('detailView').style.display = 'none';
+    document.getElementById('listView').style.display   = 'block';
+    document.title = '猫を探す｜愛アイクラブ 里親募集';
+    window.scrollTo(0, 0);
+  }
+
+  // Enterキーで検索
+  document.getElementById('nameSearch').addEventListener('keydown', e => {
+    if (e.key === 'Enter') applyFilter();
+  });
+</script>
+
+<!-- Firebase読み込み（type="module"） -->
+<script type="module">
+  import { db } from './firebase.js';
+  import {
+    collection,
+    getDocs,
+    orderBy,
+    query,
+  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  async function loadCats() {
+    const skeletonGrid = document.getElementById('skeletonGrid');
+    const catGrid      = document.getElementById('catGrid');
+    const countEl      = document.getElementById('catsCount');
+
+    try {
+      // Firestoreから取得（登録日時の新しい順）
+      const q        = query(collection(db, 'cats'), orderBy('createdAt', 'desc'));
+      const snapshot = await getDocs(q);
+
+      // グローバル変数に保持（フィルタリングで使う）
+      allCats = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      // スケルトンを非表示・実データを表示
+      skeletonGrid.style.display = 'none';
+      catGrid.style.display = '';
+
+      if (allCats.length === 0) {
+        document.getElementById('emptyState').style.display = 'block';
+        countEl.textContent = '現在募集中の猫はいません';
+      } else {
+        catGrid.innerHTML = allCats.map(catCardHtml).join('');
+        countEl.textContent = allCats.length + '匹の猫が見つかりました';
+      }
+
+    } catch (e) {
+      // エラー時
+      skeletonGrid.style.display = 'none';
+      document.getElementById('emptyState').style.display = 'block';
+      document.getElementById('emptyState').innerHTML = `
+        <div class="empty-icon">⚠️</div>
+        <div class="empty-title">データの読み込みに失敗しました</div>
+        <div class="empty-desc">
+          ページを再読み込みしてみてください。<br>
+          解決しない場合は<a href="contact.html">お問い合わせ</a>ください。
+        </div>`;
+      countEl.textContent = '';
+      console.error('Firestore読み込みエラー:', e);
+    }
+  }
+
+  // ページ読み込み時に実行
+  loadCats();
+</script>
+
+</body>
 </html>

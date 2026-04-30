@@ -1,758 +1,399 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ja">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>猫を登録する｜愛アイクラブ</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="style.css" />
-    <style>
-      .admin-bar {
-        background: var(--accent);
-        border-bottom: 1px solid var(--border);
-        padding: 0 24px;
-      }
-      .admin-bar-inner {
-        max-width: 1100px;
-        margin: 0 auto;
-        display: flex;
-        gap: 4px;
-      }
-      .admin-tab {
-        font-size: 13px;
-        font-weight: 600;
-        padding: 12px 18px;
-        color: var(--text-muted);
-        border-bottom: 3px solid transparent;
-        cursor: pointer;
-        transition: all var(--transition);
-      }
-      .admin-tab:hover {
-        color: var(--primary);
-      }
-      .admin-tab.active {
-        color: var(--primary);
-        border-bottom-color: var(--primary);
-      }
-      .register-layout {
-        display: grid;
-        grid-template-columns: 1fr 320px;
-        gap: 32px;
-        align-items: start;
-      }
-      .form-card {
-        background: var(--white);
-        border-radius: var(--radius-lg);
-        border: 1px solid var(--border);
-        padding: 28px;
-        margin-bottom: 20px;
-      }
-      .form-card-title {
-        font-size: 15px;
-        font-weight: 800;
-        color: var(--primary-dark);
-        margin-bottom: 20px;
-        padding-bottom: 12px;
-        border-bottom: 2px solid var(--primary-light);
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-      .form-card-num {
-        width: 24px;
-        height: 24px;
-        border-radius: 50%;
-        background: var(--primary);
-        color: var(--white);
-        font-size: 12px;
-        font-weight: 800;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-      }
-      .check-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-      }
-      .check-label {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 14px;
-        cursor: pointer;
-      }
-      .check-label input {
-        accent-color: var(--primary);
-        width: 15px;
-        height: 15px;
-      }
-      .cond-select-row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 10px 0;
-        border-bottom: 1px solid var(--border);
-        gap: 12px;
-      }
-      .cond-select-row:last-child {
-        border-bottom: none;
-      }
-      .cond-select-row label {
-        font-size: 14px;
-        color: var(--text);
-        flex: 1;
-      }
-      .cond-select-row select {
-        font-size: 13px;
-        padding: 6px 10px;
-        border: 1px solid var(--border-md);
-        border-radius: var(--radius-sm);
-        background: var(--white);
-        color: var(--text);
-        font-family: var(--font-sans);
-        appearance: none;
-        -webkit-appearance: none;
-        min-width: 110px;
-      }
-      .status-btns {
-        display: flex;
-        gap: 10px;
-      }
-      .status-btn {
-        flex: 1;
-        padding: 10px 8px;
-        border-radius: var(--radius-md);
-        border: 2px solid var(--border-md);
-        font-size: 13px;
-        font-weight: 700;
-        text-align: center;
-        cursor: pointer;
-        background: var(--white);
-        color: var(--text-muted);
-        transition: all var(--transition);
-      }
-      .status-btn.sel-open {
-        background: #d4edd4;
-        color: #1a5a1a;
-        border-color: #1a5a1a;
-      }
-      .status-btn.sel-trial {
-        background: #fff0cc;
-        color: #7a5500;
-        border-color: #c8a030;
-      }
-      .status-btn.sel-done {
-        background: #e0e0e0;
-        color: #555;
-        border-color: #aaa;
-      }
-      .action-row {
-        display: flex;
-        gap: 10px;
-      }
-      .sidebar-card {
-        background: var(--white);
-        border-radius: var(--radius-lg);
-        border: 1px solid var(--border);
-        padding: 20px;
-        margin-bottom: 16px;
-      }
-      .sidebar-title {
-        font-size: 13px;
-        font-weight: 700;
-        color: var(--primary-dark);
-        margin-bottom: 12px;
-      }
-      @media (max-width: 768px) {
-        .register-layout {
-          grid-template-columns: 1fr;
-        }
-        .check-grid {
-          grid-template-columns: 1fr;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <nav class="nav">
-      <div class="nav-inner">
-        <a href="index.html" class="nav-logo"
-          >愛アイ<span>クラブ</span> 里親募集</a
-        >
-        <ul class="nav-links">
-          <li><a href="cats.html">猫を探す</a></li>
-          <li><a href="column.html">コラム</a></li>
-          <li><a href="contact.html">お問い合わせ</a></li>
-        </ul>
-        <div style="display: flex; align-items: center; gap: 12px">
-          <span id="userLabel" style="font-size: 13px; color: var(--text-muted)"
-            >読み込み中...</span
-          >
-          <button class="nav-login-btn" onclick="handleLogout()">
-            ログアウト
-          </button>
-        </div>
-      </div>
-    </nav>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>猫を登録する｜愛アイクラブ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .admin-bar { background: var(--accent); border-bottom: 1px solid var(--border); padding: 0 24px; }
+    .admin-bar-inner { max-width: 1100px; margin: 0 auto; display: flex; gap: 4px; }
+    .admin-tab { font-size: 13px; font-weight: 600; padding: 12px 18px; color: var(--text-muted); border-bottom: 3px solid transparent; cursor: pointer; transition: all var(--transition); }
+    .admin-tab:hover { color: var(--primary); }
+    .admin-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+    .register-layout { display: grid; grid-template-columns: 1fr 320px; gap: 32px; align-items: start; }
+    .form-card { background: var(--white); border-radius: var(--radius-lg); border: 1px solid var(--border); padding: 28px; margin-bottom: 20px; }
+    .form-card-title { font-size: 15px; font-weight: 800; color: var(--primary-dark); margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px solid var(--primary-light); display: flex; align-items: center; gap: 8px; }
+    .form-card-num { width: 24px; height: 24px; border-radius: 50%; background: var(--primary); color: var(--white); font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .check-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .check-label { display: flex; align-items: center; gap: 8px; font-size: 14px; cursor: pointer; }
+    .check-label input { accent-color: var(--primary); width: 15px; height: 15px; }
+    .cond-select-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); gap: 12px; }
+    .cond-select-row:last-child { border-bottom: none; }
+    .cond-select-row label { font-size: 14px; color: var(--text); flex: 1; }
+    .cond-select-row select { font-size: 13px; padding: 6px 10px; border: 1px solid var(--border-md); border-radius: var(--radius-sm); background: var(--white); color: var(--text); font-family: var(--font-sans); appearance: none; -webkit-appearance: none; min-width: 110px; }
+    .status-btns { display: flex; gap: 10px; }
+    .status-btn { flex: 1; padding: 10px 8px; border-radius: var(--radius-md); border: 2px solid var(--border-md); font-size: 13px; font-weight: 700; text-align: center; cursor: pointer; background: var(--white); color: var(--text-muted); transition: all var(--transition); }
+    .status-btn.sel-open  { background: #d4edd4; color: #1a5a1a; border-color: #1a5a1a; }
+    .status-btn.sel-trial { background: #fff0cc; color: #7a5500; border-color: #c8a030; }
+    .status-btn.sel-done  { background: #e0e0e0; color: #555;    border-color: #aaa; }
+    .action-row { display: flex; gap: 10px; }
+    .sidebar-card { background: var(--white); border-radius: var(--radius-lg); border: 1px solid var(--border); padding: 20px; margin-bottom: 16px; }
+    .sidebar-title { font-size: 13px; font-weight: 700; color: var(--primary-dark); margin-bottom: 12px; }
+    @media (max-width: 768px) { .register-layout { grid-template-columns: 1fr; } .check-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
 
-    <div class="breadcrumb">
-      <div class="breadcrumb-inner">
-        <a href="index.html">管理トップ</a
-        ><span class="sep">›</span>猫を登録する
-      </div>
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">愛アイ<span>クラブ</span> 里親募集</a>
+    <ul class="nav-links">
+      <li><a href="cats.html">猫を探す</a></li>
+      <li><a href="column.html">コラム</a></li>
+      <li><a href="contact.html">お問い合わせ</a></li>
+    </ul>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <span id="userLabel" style="font-size:13px;color:var(--text-muted);">読み込み中...</span>
+      <button class="nav-login-btn" onclick="handleLogout()">ログアウト</button>
+    </div>
+  </div>
+</nav>
+
+<div class="breadcrumb">
+  <div class="breadcrumb-inner">
+    <a href="index.html">管理トップ</a><span class="sep">›</span>猫を登録する
+  </div>
+</div>
+
+<div class="admin-bar">
+  <div class="admin-bar-inner">
+    <div class="admin-tab" onclick="location.href='cats.html'">登録猫一覧</div>
+    <div class="admin-tab active">新規登録</div>
+    <div class="admin-tab">イベント管理</div>
+  </div>
+</div>
+
+<section class="section">
+  <div class="container">
+    <div style="margin-bottom:24px;">
+      <span class="section-label">団体管理</span>
+      <h1 class="section-title">猫を新規登録する</h1>
+      <p style="font-size:14px;color:var(--text-muted);">入力後「登録して公開」を押すとサイトに公開されます。下書き保存も可能です。</p>
     </div>
 
-    <div class="admin-bar">
-      <div class="admin-bar-inner">
-        <div class="admin-tab" onclick="location.href = 'cats.html'">
-          登録猫一覧
-        </div>
-        <div class="admin-tab active">新規登録</div>
-        <div class="admin-tab">イベント管理</div>
-      </div>
+    <div id="successMsg" class="alert alert-success" style="display:none;margin-bottom:24px;">
+      猫の情報を登録しました！トップページの猫一覧に表示されています。
+      <a href="cats.html">→ 登録した猫を確認する</a>
     </div>
+    <div id="errorMsg" class="alert alert-error" style="display:none;margin-bottom:24px;"></div>
 
-    <section class="section">
-      <div class="container">
-        <div style="margin-bottom: 24px">
-          <span class="section-label">団体管理</span>
-          <h1 class="section-title">猫を新規登録する</h1>
-          <p style="font-size: 14px; color: var(--text-muted)">
-            入力後「登録して公開」を押すとサイトに公開されます。下書き保存も可能です。
+    <div class="register-layout">
+      <div>
+
+        <!-- ① 基本情報 -->
+        <div class="form-card">
+          <div class="form-card-title"><div class="form-card-num">1</div>基本情報</div>
+          <div class="form-2col">
+            <div class="form-group">
+              <label class="form-label">名前<span class="required">必須</span></label>
+              <input type="text" class="form-input" id="catName" placeholder="例：みかん">
+            </div>
+            <div class="form-group">
+              <label class="form-label">よみがな</label>
+              <input type="text" class="form-input" id="catKana" placeholder="例：みかん">
+            </div>
+          </div>
+          <div class="form-2col">
+            <div class="form-group">
+              <label class="form-label">性別<span class="required">必須</span></label>
+              <select class="form-select" id="catSex">
+                <option value="">選択してください</option>
+                <option>オス</option><option>メス</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">年齢区分<span class="required">必須</span></label>
+              <select class="form-select" id="catAge">
+                <option value="">選択してください</option>
+                <option>子猫</option><option>成猫</option><option>老猫</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-2col">
+            <div class="form-group">
+              <label class="form-label">推定年齢</label>
+              <input type="text" class="form-input" id="catAgeText" placeholder="例：3ヶ月">
+            </div>
+            <div class="form-group">
+              <label class="form-label">体重</label>
+              <input type="text" class="form-input" id="catWeight" placeholder="例：0.8kg">
+            </div>
+          </div>
+          <div class="form-2col">
+            <div class="form-group">
+              <label class="form-label">猫種<span class="required">必須</span></label>
+              <select class="form-select" id="catBreed">
+                <option value="">選択してください</option>
+                <option>雑種</option><option>スコティッシュフォールド</option>
+                <option>マンチカン</option><option>アメリカンショートヘア</option><option>その他</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">毛の柄<span class="required">必須</span></label>
+              <select class="form-select" id="catColor">
+                <option value="">選択してください</option>
+                <option>キジトラ</option><option>白猫</option><option>黒猫</option>
+                <option>白黒</option><option>三毛</option><option>茶トラ</option><option>サバトラ</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-2col">
+            <div class="form-group">
+              <label class="form-label">保護場所</label>
+              <input type="text" class="form-input" id="catPlace" placeholder="例：三重県〇〇市">
+            </div>
+            <div class="form-group">
+              <label class="form-label">保護日</label>
+              <input type="date" class="form-input" id="catDate">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">性格・特徴<span class="required">必須</span></label>
+            <textarea class="form-textarea" id="catDesc" style="min-height:120px;"
+              placeholder="猫の性格や特徴、エピソードなどを自由に記入してください。里親さんに伝えたいことを詳しく書くほど、マッチングがうまくいきます。"></textarea>
+          </div>
+        </div>
+
+        <!-- ② 健康状態 -->
+        <div class="form-card">
+          <div class="form-card-title"><div class="form-card-num">2</div>健康状態</div>
+          <div class="check-grid" style="margin-bottom:16px;">
+            <label class="check-label"><input type="checkbox" id="chkVaccine"> ワクチン接種済み</label>
+            <label class="check-label"><input type="checkbox" id="chkFlea"> ノミ・ダニ駆除済み</label>
+            <label class="check-label"><input type="checkbox" id="chkFiv"> FIV・FeLV検査済み</label>
+            <label class="check-label"><input type="checkbox" id="chkNeuter"> 去勢・避妊手術済み</label>
+            <label class="check-label"><input type="checkbox" id="chkChip"> マイクロチップ装着</label>
+            <label class="check-label"><input type="checkbox" id="chkOther"> その他医療処置あり</label>
+          </div>
+          <div class="form-group">
+            <label class="form-label">健康面の備考・注意事項</label>
+            <textarea class="form-textarea" id="catHealthNote" style="min-height:72px;"
+              placeholder="例：FIV陽性のため完全室内飼育が必須です。去勢手術はお迎え後にお願いします。"></textarea>
+          </div>
+        </div>
+
+        <!-- ③ 写真・動画（URLで管理・最大4枚） -->
+        <div class="form-card">
+          <div class="form-card-title"><div class="form-card-num">3</div>写真・動画</div>
+          <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;line-height:1.7;">
+            画像は <a href="https://imgbb.com" target="_blank">imgbb.com</a> にアップロードして
+            「直接リンク（.jpgや.pngで終わるURL）」を貼り付けてください。<br>
+            <strong>1枚目がメイン画像</strong>になります。2〜4枚目はサムネイルとして表示されます。
+          </p>
+          <div class="form-group">
+            <label class="form-label">画像URL①<span class="required">メイン</span></label>
+            <input type="url" class="form-input" id="imageUrl1"
+              placeholder="例：https://i.ibb.co/xxxxxxx/cat1.jpg">
+          </div>
+          <div class="form-group">
+            <label class="form-label">画像URL②</label>
+            <input type="url" class="form-input" id="imageUrl2"
+              placeholder="例：https://i.ibb.co/xxxxxxx/cat2.jpg">
+          </div>
+          <div class="form-group">
+            <label class="form-label">画像URL③</label>
+            <input type="url" class="form-input" id="imageUrl3"
+              placeholder="例：https://i.ibb.co/xxxxxxx/cat3.jpg">
+          </div>
+          <div class="form-group">
+            <label class="form-label">画像URL④</label>
+            <input type="url" class="form-input" id="imageUrl4"
+              placeholder="例：https://i.ibb.co/xxxxxxx/cat4.jpg">
+          </div>
+          <div class="form-group" style="margin-top:8px;">
+            <label class="form-label">動画URL（YouTube）</label>
+            <input type="url" class="form-input" id="videoUrl"
+              placeholder="例：https://www.youtube.com/watch?v=xxxxx">
+            <p class="form-hint">
+              動画はYouTubeに<strong>限定公開</strong>でアップロードして、そのURLを貼り付けてください。
+            </p>
+          </div>
+        </div>
+
+        <!-- ④ 飼い主の条件 -->
+        <div class="form-card">
+          <div class="form-card-title"><div class="form-card-num">4</div>飼い主の条件</div>
+          <div>
+            <div class="cond-select-row"><label>完全室内飼育</label><select id="condIndoor"><option>必須</option><option>推奨</option><option>不問</option></select></div>
+            <div class="cond-select-row"><label>単身者</label><select id="condSingle"><option>応募可</option><option>要相談</option><option>不可</option></select></div>
+            <div class="cond-select-row"><label>高齢者（70歳以上）</label><select id="condElderly"><option>要相談</option><option>応募可</option><option>不可</option></select></div>
+            <div class="cond-select-row"><label>小さなお子さんがいる家庭</label><select id="condKids"><option>可</option><option>要相談</option><option>不可</option></select></div>
+            <div class="cond-select-row"><label>先住猫・先住犬</label><select id="condPets"><option>可</option><option>要相談</option><option>不可</option></select></div>
+            <div class="cond-select-row"><label>賃貸（ペット可物件）</label><select id="condRental"><option>要証明書類</option><option>不問</option></select></div>
+          </div>
+        </div>
+
+        <!-- ⑤ ステータス -->
+        <div class="form-card">
+          <div class="form-card-title"><div class="form-card-num">5</div>掲載ステータス</div>
+          <div class="status-btns">
+            <div class="status-btn sel-open"  id="statusOpen"  onclick="selectStatus('募集中')">募集中</div>
+            <div class="status-btn"           id="statusTrial" onclick="selectStatus('トライアル中')">トライアル中</div>
+            <div class="status-btn"           id="statusDone"  onclick="selectStatus('譲渡決定')">譲渡決定</div>
+          </div>
+          <p class="form-hint" style="margin-top:10px;">※ 登録後もいつでも変更できます。</p>
+        </div>
+
+        <!-- ⑥ アクション -->
+        <div class="action-row">
+          <button class="btn btn-outline" onclick="location.href='cats.html'">キャンセル</button>
+          <button class="btn btn-secondary" onclick="saveDraft()">下書き保存</button>
+          <button class="btn btn-primary" style="flex:2;" onclick="publishCat()">登録して公開</button>
+        </div>
+
+      </div>
+
+      <!-- サイドバー -->
+      <div>
+        <div class="sidebar-card">
+          <div class="sidebar-title">入力のポイント</div>
+          <ul style="font-size:13px;color:var(--text-muted);line-height:1.8;padding-left:16px;">
+            <li>名前・性格は里親さんが最初に読みます</li>
+            <li>写真は明るく、顔がよく見えるものを選ぶと◎</li>
+            <li>動画があると問い合わせが増えます</li>
+            <li>健康状態は正確に記入してください</li>
+          </ul>
+        </div>
+        <div class="sidebar-card">
+          <div class="sidebar-title">ステータスの説明</div>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <div><span class="pill pill-ok" style="margin-right:8px;">募集中</span><span style="font-size:13px;color:var(--text-muted);">里親募集中</span></div>
+            <div><span class="pill pill-req" style="margin-right:8px;">トライアル</span><span style="font-size:13px;color:var(--text-muted);">お試し中</span></div>
+            <div><span style="font-size:11px;font-weight:700;padding:4px 12px;border-radius:99px;background:#e0e0e0;color:#555;margin-right:8px;">譲渡決定</span><span style="font-size:13px;color:var(--text-muted);">里親決定済み</span></div>
+          </div>
+        </div>
+        <div class="sidebar-card">
+          <div class="sidebar-title">画像URLの取得方法</div>
+          <ol style="font-size:13px;color:var(--text-muted);line-height:1.9;padding-left:16px;">
+            <li><a href="https://imgbb.com" target="_blank">imgbb.com</a> にアクセス</li>
+            <li>「画像をアップロード」で写真を選ぶ</li>
+            <li>アップロード完了後<br>「<strong>直接リンク</strong>」のURLをコピー</li>
+            <li>入力欄に貼り付ける</li>
+          </ol>
+          <p style="font-size:12px;color:var(--text-muted);margin-top:8px;line-height:1.6;">
+            ※ 「ibb.co/〜」ではなく<br>「<strong>i.ibb.co/〜.jpg</strong>」のURLを使ってください。
           </p>
         </div>
-
-        <div
-          id="successMsg"
-          class="alert alert-success"
-          style="display: none; margin-bottom: 24px"
-        >
-          猫の情報を登録しました！トップページの猫一覧に表示されています。
-          <a href="cats.html">→ 登録した猫を確認する</a>
-        </div>
-        <div
-          id="errorMsg"
-          class="alert alert-error"
-          style="display: none; margin-bottom: 24px"
-        ></div>
-
-        <div class="register-layout">
-          <div>
-            <!-- ① 基本情報 -->
-            <div class="form-card">
-              <div class="form-card-title">
-                <div class="form-card-num">1</div>
-                基本情報
-              </div>
-              <div class="form-2col">
-                <div class="form-group">
-                  <label class="form-label"
-                    >名前<span class="required">必須</span></label
-                  >
-                  <input
-                    type="text"
-                    class="form-input"
-                    id="catName"
-                    placeholder="例：みかん"
-                  />
-                </div>
-                <div class="form-group">
-                  <label class="form-label">よみがな</label>
-                  <input
-                    type="text"
-                    class="form-input"
-                    id="catKana"
-                    placeholder="例：みかん"
-                  />
-                </div>
-              </div>
-              <div class="form-2col">
-                <div class="form-group">
-                  <label class="form-label"
-                    >性別<span class="required">必須</span></label
-                  >
-                  <select class="form-select" id="catSex">
-                    <option value="">選択してください</option>
-                    <option>オス</option>
-                    <option>メス</option>
-                  </select>
-                </div>
-                <div class="form-group">
-                  <label class="form-label"
-                    >年齢区分<span class="required">必須</span></label
-                  >
-                  <select class="form-select" id="catAge">
-                    <option value="">選択してください</option>
-                    <option>子猫</option>
-                    <option>成猫</option>
-                    <option>老猫</option>
-                  </select>
-                </div>
-              </div>
-              <div class="form-2col">
-                <div class="form-group">
-                  <label class="form-label">推定年齢</label>
-                  <input
-                    type="text"
-                    class="form-input"
-                    id="catAgeText"
-                    placeholder="例：3ヶ月"
-                  />
-                </div>
-                <div class="form-group">
-                  <label class="form-label">体重</label>
-                  <input
-                    type="text"
-                    class="form-input"
-                    id="catWeight"
-                    placeholder="例：0.8kg"
-                  />
-                </div>
-              </div>
-              <div class="form-2col">
-                <div class="form-group">
-                  <label class="form-label"
-                    >猫種<span class="required">必須</span></label
-                  >
-                  <select class="form-select" id="catBreed">
-                    <option value="">選択してください</option>
-                    <option>雑種</option>
-                    <option>スコティッシュフォールド</option>
-                    <option>マンチカン</option>
-                    <option>アメリカンショートヘア</option>
-                    <option>その他</option>
-                  </select>
-                </div>
-                <div class="form-group">
-                  <label class="form-label"
-                    >毛の柄<span class="required">必須</span></label
-                  >
-                  <select class="form-select" id="catColor">
-                    <option value="">選択してください</option>
-                    <option>キジトラ</option>
-                    <option>白猫</option>
-                    <option>黒猫</option>
-                    <option>白黒</option>
-                    <option>三毛</option>
-                    <option>茶トラ</option>
-                    <option>サバトラ</option>
-                  </select>
-                </div>
-              </div>
-              <div class="form-2col">
-                <div class="form-group">
-                  <label class="form-label">保護場所</label>
-                  <input
-                    type="text"
-                    class="form-input"
-                    id="catPlace"
-                    placeholder="例：三重県〇〇市"
-                  />
-                </div>
-                <div class="form-group">
-                  <label class="form-label">保護日</label>
-                  <input type="date" class="form-input" id="catDate" />
-                </div>
-              </div>
-              <div class="form-group">
-                <label class="form-label"
-                  >性格・特徴<span class="required">必須</span></label
-                >
-                <textarea
-                  class="form-textarea"
-                  id="catDesc"
-                  style="min-height: 120px"
-                  placeholder="猫の性格や特徴、エピソードなどを自由に記入してください。里親さんに伝えたいことを詳しく書くほど、マッチングがうまくいきます。"
-                ></textarea>
-              </div>
-            </div>
-
-            <!-- ② 健康状態 -->
-            <div class="form-card">
-              <div class="form-card-title">
-                <div class="form-card-num">2</div>
-                健康状態
-              </div>
-              <div class="check-grid" style="margin-bottom: 16px">
-                <label class="check-label"
-                  ><input type="checkbox" id="chkVaccine" />
-                  ワクチン接種済み</label
-                >
-                <label class="check-label"
-                  ><input type="checkbox" id="chkFlea" />
-                  ノミ・ダニ駆除済み</label
-                >
-                <label class="check-label"
-                  ><input type="checkbox" id="chkFiv" />
-                  FIV・FeLV検査済み</label
-                >
-                <label class="check-label"
-                  ><input type="checkbox" id="chkNeuter" />
-                  去勢・避妊手術済み</label
-                >
-                <label class="check-label"
-                  ><input type="checkbox" id="chkChip" />
-                  マイクロチップ装着</label
-                >
-                <label class="check-label"
-                  ><input type="checkbox" id="chkOther" />
-                  その他医療処置あり</label
-                >
-              </div>
-              <div class="form-group">
-                <label class="form-label">健康面の備考・注意事項</label>
-                <textarea
-                  class="form-textarea"
-                  id="catHealthNote"
-                  style="min-height: 72px"
-                  placeholder="例：FIV陽性のため完全室内飼育が必須です。去勢手術はお迎え後にお願いします。"
-                ></textarea>
-              </div>
-            </div>
-
-            <!-- ③ 写真・動画（URLで管理） -->
-            <div class="form-card">
-              <div class="form-card-title">
-                <div class="form-card-num">3</div>
-                写真・動画
-              </div>
-              <div class="form-group">
-                <label class="form-label">メイン画像URL</label>
-                <input
-                  type="url"
-                  class="form-input"
-                  id="imageUrl"
-                  placeholder="例：https://i.imgur.com/xxxxx.jpg"
-                />
-                <p class="form-hint">
-                  画像は
-                  <a href="https://imgbb.com" target="_blank">imgbb.com</a> や
-                  Googleフォトなどにアップロードして、そのURLを貼り付けてください。
-                </p>
-              </div>
-              <div class="form-group">
-                <label class="form-label">動画URL（YouTube）</label>
-                <input
-                  type="url"
-                  class="form-input"
-                  id="videoUrl"
-                  placeholder="例：https://www.youtube.com/watch?v=xxxxx"
-                />
-                <p class="form-hint">
-                  動画はYouTubeに限定公開でアップロードして、そのURLを貼り付けてください。
-                </p>
-              </div>
-            </div>
-
-            <!-- ④ 飼い主の条件 -->
-            <div class="form-card">
-              <div class="form-card-title">
-                <div class="form-card-num">4</div>
-                飼い主の条件
-              </div>
-              <div>
-                <div class="cond-select-row">
-                  <label>完全室内飼育</label
-                  ><select id="condIndoor">
-                    <option>必須</option>
-                    <option>推奨</option>
-                    <option>不問</option>
-                  </select>
-                </div>
-                <div class="cond-select-row">
-                  <label>単身者</label
-                  ><select id="condSingle">
-                    <option>応募可</option>
-                    <option>要相談</option>
-                    <option>不可</option>
-                  </select>
-                </div>
-                <div class="cond-select-row">
-                  <label>高齢者（70歳以上）</label
-                  ><select id="condElderly">
-                    <option>要相談</option>
-                    <option>応募可</option>
-                    <option>不可</option>
-                  </select>
-                </div>
-                <div class="cond-select-row">
-                  <label>小さなお子さんがいる家庭</label
-                  ><select id="condKids">
-                    <option>可</option>
-                    <option>要相談</option>
-                    <option>不可</option>
-                  </select>
-                </div>
-                <div class="cond-select-row">
-                  <label>先住猫・先住犬</label
-                  ><select id="condPets">
-                    <option>可</option>
-                    <option>要相談</option>
-                    <option>不可</option>
-                  </select>
-                </div>
-                <div class="cond-select-row">
-                  <label>賃貸（ペット可物件）</label
-                  ><select id="condRental">
-                    <option>要証明書類</option>
-                    <option>不問</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-
-            <!-- ⑤ ステータス -->
-            <div class="form-card">
-              <div class="form-card-title">
-                <div class="form-card-num">5</div>
-                掲載ステータス
-              </div>
-              <div class="status-btns">
-                <div
-                  class="status-btn sel-open"
-                  id="statusOpen"
-                  onclick="selectStatus('募集中')"
-                >
-                  募集中
-                </div>
-                <div
-                  class="status-btn"
-                  id="statusTrial"
-                  onclick="selectStatus('トライアル中')"
-                >
-                  トライアル中
-                </div>
-                <div
-                  class="status-btn"
-                  id="statusDone"
-                  onclick="selectStatus('譲渡決定')"
-                >
-                  譲渡決定
-                </div>
-              </div>
-              <p class="form-hint" style="margin-top: 10px">
-                ※ 登録後もいつでも変更できます。
-              </p>
-            </div>
-
-            <!-- ⑥ アクション -->
-            <div class="action-row">
-              <button
-                class="btn btn-outline"
-                onclick="location.href = 'cats.html'"
-              >
-                キャンセル
-              </button>
-              <button class="btn btn-secondary" onclick="saveDraft()">
-                下書き保存
-              </button>
-              <button
-                class="btn btn-primary"
-                style="flex: 2"
-                onclick="publishCat()"
-              >
-                登録して公開
-              </button>
-            </div>
-          </div>
-
-          <!-- サイドバー -->
-          <div>
-            <div class="sidebar-card">
-              <div class="sidebar-title">入力のポイント</div>
-              <ul
-                style="
-                  font-size: 13px;
-                  color: var(--text-muted);
-                  line-height: 1.8;
-                  padding-left: 16px;
-                "
-              >
-                <li>名前・性格は里親さんが最初に読みます</li>
-                <li>写真は明るく、顔がよく見えるものを選ぶと◎</li>
-                <li>動画があると問い合わせが増えます</li>
-                <li>健康状態は正確に記入してください</li>
-              </ul>
-            </div>
-            <div class="sidebar-card">
-              <div class="sidebar-title">ステータスの説明</div>
-              <div style="display: flex; flex-direction: column; gap: 10px">
-                <div>
-                  <span class="pill pill-ok" style="margin-right: 8px"
-                    >募集中</span
-                  ><span style="font-size: 13px; color: var(--text-muted)"
-                    >里親募集中</span
-                  >
-                </div>
-                <div>
-                  <span class="pill pill-req" style="margin-right: 8px"
-                    >トライアル</span
-                  ><span style="font-size: 13px; color: var(--text-muted)"
-                    >お試し中</span
-                  >
-                </div>
-                <div>
-                  <span
-                    style="
-                      font-size: 11px;
-                      font-weight: 700;
-                      padding: 4px 12px;
-                      border-radius: 99px;
-                      background: #e0e0e0;
-                      color: #555;
-                      margin-right: 8px;
-                    "
-                    >譲渡決定</span
-                  ><span style="font-size: 13px; color: var(--text-muted)"
-                    >里親決定済み</span
-                  >
-                </div>
-              </div>
-            </div>
-            <div class="sidebar-card">
-              <div class="sidebar-title">画像URLの取得方法</div>
-              <ol
-                style="
-                  font-size: 13px;
-                  color: var(--text-muted);
-                  line-height: 1.9;
-                  padding-left: 16px;
-                "
-              >
-                <li>
-                  <a href="https://imgbb.com" target="_blank">imgbb.com</a>
-                  にアクセス
-                </li>
-                <li>「画像をアップロード」で写真を選ぶ</li>
-                <li>「直接リンク」のURLをコピー</li>
-                <li>上の入力欄に貼り付ける</li>
-              </ol>
-            </div>
-          </div>
-        </div>
       </div>
-    </section>
+    </div>
+  </div>
+</section>
 
-    <!-- ✅ 通常のscriptは </body> 直前 -->
-    <script>
-      let currentStatus = "募集中";
+<!-- ✅ 通常のscriptは </body> 直前 -->
+<script>
+  let currentStatus = '募集中';
 
-      function selectStatus(status) {
-        currentStatus = status;
-        document.getElementById("statusOpen").className =
-          "status-btn" + (status === "募集中" ? " sel-open" : "");
-        document.getElementById("statusTrial").className =
-          "status-btn" + (status === "トライアル中" ? " sel-trial" : "");
-        document.getElementById("statusDone").className =
-          "status-btn" + (status === "譲渡決定" ? " sel-done" : "");
-      }
+  function selectStatus(status) {
+    currentStatus = status;
+    document.getElementById('statusOpen').className  = 'status-btn' + (status === '募集中'       ? ' sel-open'  : '');
+    document.getElementById('statusTrial').className = 'status-btn' + (status === 'トライアル中'  ? ' sel-trial' : '');
+    document.getElementById('statusDone').className  = 'status-btn' + (status === '譲渡決定'      ? ' sel-done'  : '');
+  }
 
-      function saveDraft() {
-        alert("下書きとして保存しました。一般には公開されていません。");
-      }
-    </script>
+  function saveDraft() {
+    alert('下書きとして保存しました。一般には公開されていません。');
+  }
+</script>
 
-    <!-- ✅ Firebase処理はtype="module"で別ブロック・必ず</body>直前 -->
-    <script type="module">
-      import { auth } from "./firebase.js";
-      import { db } from "./firebase.js";
-      import {
-        onAuthStateChanged,
-        signOut,
-      } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-      import {
-        collection,
-        addDoc,
-        serverTimestamp,
-      } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+<!-- ✅ Firebase処理はtype="module"で別ブロック・必ず</body>直前 -->
+<script type="module">
+  import { auth } from './firebase.js';
+  import { db }   from './firebase.js';
+  import { onAuthStateChanged, signOut }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { collection, addDoc, serverTimestamp }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-      // ── ログイン状態チェック ──
-      onAuthStateChanged(auth, (user) => {
-        if (!user) {
-          location.href = "login.html"; // 未ログインは弾く
-        } else {
-          document.getElementById("userLabel").textContent = user.email;
-        }
+  // ── ログイン状態チェック ──
+  onAuthStateChanged(auth, (user) => {
+    if (!user) {
+      location.href = 'login.html'; // 未ログインは弾く
+    } else {
+      document.getElementById('userLabel').textContent = user.email;
+    }
+  });
+
+  // ── ログアウト ──
+  window.handleLogout = async function () {
+    await signOut(auth);
+    location.href = 'login.html';
+  };
+
+  // ── 登録して公開 ──
+  window.publishCat = async function () {
+    const name  = document.getElementById('catName').value.trim();
+    const sex   = document.getElementById('catSex').value;
+    const age   = document.getElementById('catAge').value;
+    const breed = document.getElementById('catBreed').value;
+    const color = document.getElementById('catColor').value;
+    const desc  = document.getElementById('catDesc').value.trim();
+    const errEl = document.getElementById('errorMsg');
+
+    // 必須チェック
+    if (!name || !sex || !age || !breed || !color || !desc) {
+      errEl.style.display = 'block';
+      errEl.textContent = '必須項目（名前・性別・年齢区分・猫種・毛の柄・性格）をすべて入力してください。';
+      window.scrollTo(0, 0);
+      return;
+    }
+    errEl.style.display = 'none';
+
+    try {
+      // Firestoreに保存
+      await addDoc(collection(db, 'cats'), {
+        name,
+        kana:       document.getElementById('catKana').value.trim(),
+        sex,
+        age,
+        ageText:    document.getElementById('catAgeText').value.trim(),
+        weight:     document.getElementById('catWeight').value.trim(),
+        breed,
+        color,
+        place:      document.getElementById('catPlace').value.trim(),
+        rescueDate: document.getElementById('catDate').value,
+        desc,
+        // 画像URL①〜④のうち入力されたものだけ配列に格納
+        imageUrls: [
+          document.getElementById('imageUrl1').value.trim(),
+          document.getElementById('imageUrl2').value.trim(),
+          document.getElementById('imageUrl3').value.trim(),
+          document.getElementById('imageUrl4').value.trim(),
+        ].filter(url => url !== ''),
+        videoUrl:   document.getElementById('videoUrl').value.trim(),
+        health: {
+          vaccine: document.getElementById('chkVaccine').checked,
+          flea:    document.getElementById('chkFlea').checked,
+          fiv:     document.getElementById('chkFiv').checked,
+          neuter:  document.getElementById('chkNeuter').checked,
+          chip:    document.getElementById('chkChip').checked,
+          other:   document.getElementById('chkOther').checked,
+        },
+        healthNote: document.getElementById('catHealthNote').value.trim(),
+        conditions: {
+          indoor:  document.getElementById('condIndoor').value,
+          single:  document.getElementById('condSingle').value,
+          elderly: document.getElementById('condElderly').value,
+          kids:    document.getElementById('condKids').value,
+          pets:    document.getElementById('condPets').value,
+          rental:  document.getElementById('condRental').value,
+        },
+        status:    currentStatus,
+        createdAt: serverTimestamp(),
       });
 
-      // ── ログアウト ──
-      window.handleLogout = async function () {
-        await signOut(auth);
-        location.href = "login.html";
-      };
+      document.getElementById('successMsg').style.display = 'block';
+      window.scrollTo(0, 0);
 
-      // ── 登録して公開 ──
-      window.publishCat = async function () {
-        const name = document.getElementById("catName").value.trim();
-        const sex = document.getElementById("catSex").value;
-        const age = document.getElementById("catAge").value;
-        const breed = document.getElementById("catBreed").value;
-        const color = document.getElementById("catColor").value;
-        const desc = document.getElementById("catDesc").value.trim();
-        const errEl = document.getElementById("errorMsg");
+    } catch (e) {
+      errEl.style.display = 'block';
+      errEl.textContent = '登録に失敗しました。もう一度お試しください。（' + e.message + '）';
+      window.scrollTo(0, 0);
+    }
+  };
+</script>
 
-        // 必須チェック
-        if (!name || !sex || !age || !breed || !color || !desc) {
-          errEl.style.display = "block";
-          errEl.textContent =
-            "必須項目（名前・性別・年齢区分・猫種・毛の柄・性格）をすべて入力してください。";
-          window.scrollTo(0, 0);
-          return;
-        }
-        errEl.style.display = "none";
-
-        try {
-          // Firestoreに保存
-          await addDoc(collection(db, "cats"), {
-            name,
-            kana: document.getElementById("catKana").value.trim(),
-            sex,
-            age,
-            ageText: document.getElementById("catAgeText").value.trim(),
-            weight: document.getElementById("catWeight").value.trim(),
-            breed,
-            color,
-            place: document.getElementById("catPlace").value.trim(),
-            rescueDate: document.getElementById("catDate").value,
-            desc,
-            imageUrl: document.getElementById("imageUrl").value.trim(),
-            videoUrl: document.getElementById("videoUrl").value.trim(),
-            health: {
-              vaccine: document.getElementById("chkVaccine").checked,
-              flea: document.getElementById("chkFlea").checked,
-              fiv: document.getElementById("chkFiv").checked,
-              neuter: document.getElementById("chkNeuter").checked,
-              chip: document.getElementById("chkChip").checked,
-              other: document.getElementById("chkOther").checked,
-            },
-            healthNote: document.getElementById("catHealthNote").value.trim(),
-            conditions: {
-              indoor: document.getElementById("condIndoor").value,
-              single: document.getElementById("condSingle").value,
-              elderly: document.getElementById("condElderly").value,
-              kids: document.getElementById("condKids").value,
-              pets: document.getElementById("condPets").value,
-              rental: document.getElementById("condRental").value,
-            },
-            status: currentStatus,
-            createdAt: serverTimestamp(),
-          });
-
-          document.getElementById("successMsg").style.display = "block";
-          window.scrollTo(0, 0);
-        } catch (e) {
-          errEl.style.display = "block";
-          errEl.textContent =
-            "登録に失敗しました。もう一度お試しください。（" + e.message + "）";
-          window.scrollTo(0, 0);
-        }
-      };
-    </script>
-  </body>
+</body>
 </html>
