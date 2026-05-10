@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>猫の管理｜愛アイクラブ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .admin-bar { background: var(--accent); border-bottom: 1px solid var(--border); padding: 0 24px; }
+    .admin-bar-inner { max-width: 1100px; margin: 0 auto; display: flex; gap: 4px; }
+    .admin-tab { font-size: 13px; font-weight: 600; padding: 12px 18px; color: var(--text-muted); border-bottom: 3px solid transparent; cursor: pointer; transition: all var(--transition); }
+    .admin-tab:hover { color: var(--primary); }
+    .admin-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+    /* 管理一覧テーブル */
+    .manage-table { width: 100%; border-collapse: collapse; background: var(--white); border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--border); }
+    .manage-table th { background: var(--accent); padding: 12px 16px; font-size: 12px; font-weight: 700; color: var(--primary-dark); text-align: left; border-bottom: 1px solid var(--border); white-space: nowrap; }
+    .manage-table td { padding: 12px 16px; font-size: 13px; color: var(--text); border-bottom: 1px solid var(--border); vertical-align: middle; }
+    .manage-table tr:last-child td { border-bottom: none; }
+    .manage-table tr:hover td { background: var(--gray-50); }
+    .manage-table .cat-thumb { width: 52px; height: 52px; border-radius: var(--radius-md); object-fit: cover; background: var(--gray-200); display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
+    .manage-table .cat-thumb img { width: 100%; height: 100%; object-fit: cover; border-radius: var(--radius-md); }
+    .btn-edit { font-size: 12px; padding: 5px 14px; border-radius: var(--radius-sm); border: 1.5px solid var(--primary); background: transparent; color: var(--primary); cursor: pointer; font-family: var(--font-sans); font-weight: 600; transition: all var(--transition); }
+    .btn-edit:hover { background: var(--primary); color: var(--white); }
+    .btn-delete { font-size: 12px; padding: 5px 14px; border-radius: var(--radius-sm); border: 1.5px solid #c0392b; background: transparent; color: #c0392b; cursor: pointer; font-family: var(--font-sans); font-weight: 600; transition: all var(--transition); margin-left: 6px; }
+    .btn-delete:hover { background: #c0392b; color: var(--white); }
+
+    /* スケルトン */
+    .skeleton { background: var(--gray-200); border-radius: var(--radius-md); animation: skeleton-pulse 1.4s ease-in-out infinite; }
+    @keyframes skeleton-pulse { 0%,100%{opacity:1}50%{opacity:0.4} }
+
+    /* 空状態 */
+    .empty-state { text-align: center; padding: 64px 24px; color: var(--text-muted); }
+    .empty-icon { font-size: 48px; margin-bottom: 16px; }
+    .empty-title { font-size: 18px; font-weight: 700; color: var(--primary-dark); margin-bottom: 8px; }
+
+    /* モーダル（編集・削除確認） */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 200; align-items: center; justify-content: center; padding: 20px; }
+    .modal-overlay.open { display: flex; }
+    .modal { background: var(--white); border-radius: var(--radius-xl); padding: 32px; width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-lg); }
+    .modal-title { font-size: 18px; font-weight: 800; color: var(--primary-dark); margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    .modal-close { background: none; border: none; font-size: 20px; color: var(--text-muted); cursor: pointer; line-height: 1; }
+    .modal-close:hover { color: var(--text); }
+    .modal-actions { display: flex; gap: 10px; margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border); }
+
+    /* 編集フォーム（モーダル内） */
+    .edit-form-group { margin-bottom: 14px; }
+    .edit-form-group label { display: block; font-size: 12px; font-weight: 700; color: var(--text-muted); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.04em; }
+    .edit-form-group input,
+    .edit-form-group select,
+    .edit-form-group textarea { width: 100%; padding: 9px 12px; border: 1.5px solid var(--border-md); border-radius: var(--radius-sm); font-size: 14px; font-family: var(--font-sans); color: var(--text); background: var(--white); transition: border-color var(--transition); appearance: none; }
+    .edit-form-group input:focus,
+    .edit-form-group select:focus,
+    .edit-form-group textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(42,90,114,0.1); }
+    .edit-form-group textarea { min-height: 80px; resize: vertical; line-height: 1.6; }
+    .edit-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .status-btns { display: flex; gap: 8px; }
+    .status-btn { flex: 1; padding: 8px 4px; border-radius: var(--radius-md); border: 2px solid var(--border-md); font-size: 12px; font-weight: 700; text-align: center; cursor: pointer; background: var(--white); color: var(--text-muted); transition: all var(--transition); }
+    .status-btn.sel-open  { background: #d4edd4; color: #1a5a1a; border-color: #1a5a1a; }
+    .status-btn.sel-trial { background: #fff0cc; color: #7a5500; border-color: #c8a030; }
+    .status-btn.sel-done  { background: #e0e0e0; color: #555;    border-color: #aaa; }
+    .check-grid-sm { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .check-label-sm { display: flex; align-items: center; gap: 6px; font-size: 13px; cursor: pointer; }
+    .check-label-sm input { accent-color: var(--primary); width: 14px; height: 14px; }
+    .loading-btn { opacity: 0.7; cursor: not-allowed; pointer-events: none; }
+
+    /* 削除確認モーダル */
+    .delete-warning { background: #fde8e8; border: 1px solid #f5c0c0; border-radius: var(--radius-md); padding: 14px 16px; font-size: 14px; color: #a03030; line-height: 1.7; margin-bottom: 8px; }
+    .delete-cat-name { font-size: 18px; font-weight: 800; color: var(--primary-dark); margin-bottom: 12px; }
+
+    @media (max-width: 768px) {
+      .manage-table { display: block; overflow-x: auto; }
+      .edit-2col { grid-template-columns: 1fr; }
+      .check-grid-sm { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">愛アイ<span>クラブ</span> 里親募集</a>
+    <ul class="nav-links">
+      <li><a href="cats.html">猫を探す</a></li>
+      <li><a href="column.html">コラム</a></li>
+      <li><a href="contact.html">お問い合わせ</a></li>
+    </ul>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <span id="userLabel" style="font-size:13px;color:var(--text-muted);">読み込み中...</span>
+      <button class="nav-login-btn" onclick="handleLogout()">ログアウト</button>
+    </div>
+  </div>
+</nav>
+
+<div class="breadcrumb">
+  <div class="breadcrumb-inner">
+    <a href="index.html">管理トップ</a><span class="sep">›</span>登録猫の管理
+  </div>
+</div>
+
+<div class="admin-bar">
+  <div class="admin-bar-inner">
+    <div class="admin-tab active">登録猫一覧</div>
+    <div class="admin-tab" onclick="location.href='register.html'">新規登録</div>
+    <div class="admin-tab" onclick="location.href='admin-contacts.html'">お問い合わせ管理</div>
+  </div>
+</div>
+
+<section class="section">
+  <div class="container">
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:24px;flex-wrap:wrap;gap:12px;">
+      <div>
+        <span class="section-label">団体管理</span>
+        <h1 class="section-title">登録猫の管理</h1>
+        <p style="font-size:14px;color:var(--text-muted);">登録した猫の編集・削除ができます。</p>
+      </div>
+      <a href="register.html" class="btn btn-primary">＋ 新規登録</a>
+    </div>
+
+    <!-- スケルトン -->
+    <div id="skeletonArea">
+      <div style="height:60px;border-radius:var(--radius-md);margin-bottom:8px;" class="skeleton"></div>
+      <div style="height:60px;border-radius:var(--radius-md);margin-bottom:8px;" class="skeleton"></div>
+      <div style="height:60px;border-radius:var(--radius-md);" class="skeleton"></div>
+    </div>
+
+    <!-- 一覧テーブル -->
+    <div id="tableWrap" style="display:none;overflow-x:auto;">
+      <table class="manage-table">
+        <thead>
+          <tr>
+            <th>写真</th>
+            <th>名前</th>
+            <th>性別</th>
+            <th>年齢</th>
+            <th>猫種</th>
+            <th>毛の柄</th>
+            <th>状態</th>
+            <th>登録日</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody id="catTableBody"></tbody>
+      </table>
+    </div>
+
+    <!-- 空状態 -->
+    <div id="emptyState" class="empty-state" style="display:none;">
+      <div class="empty-icon">🐱</div>
+      <div class="empty-title">登録されている猫はいません</div>
+      <a href="register.html" class="btn btn-primary" style="margin-top:16px;">最初の猫を登録する</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== 編集モーダル ===== -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal">
+    <div class="modal-title">
+      猫の情報を編集
+      <button class="modal-close" onclick="closeEditModal()">✕</button>
+    </div>
+
+    <div id="editError" class="alert alert-error" style="display:none;margin-bottom:16px;"></div>
+
+    <!-- 基本情報 -->
+    <div class="edit-2col">
+      <div class="edit-form-group">
+        <label>名前<span style="color:#c0392b;margin-left:3px;">必須</span></label>
+        <input type="text" id="editName" placeholder="例：みかん">
+      </div>
+      <div class="edit-form-group">
+        <label>よみがな</label>
+        <input type="text" id="editKana" placeholder="例：みかん">
+      </div>
+    </div>
+    <div class="edit-2col">
+      <div class="edit-form-group">
+        <label>性別<span style="color:#c0392b;margin-left:3px;">必須</span></label>
+        <select id="editSex">
+          <option value="">選択</option>
+          <option>オス</option><option>メス</option>
+        </select>
+      </div>
+      <div class="edit-form-group">
+        <label>年齢区分<span style="color:#c0392b;margin-left:3px;">必須</span></label>
+        <select id="editAge">
+          <option value="">選択</option>
+          <option>子猫</option><option>成猫</option><option>老猫</option>
+        </select>
+      </div>
+    </div>
+    <div class="edit-2col">
+      <div class="edit-form-group">
+        <label>推定年齢</label>
+        <input type="text" id="editAgeText" placeholder="例：3ヶ月">
+      </div>
+      <div class="edit-form-group">
+        <label>体重</label>
+        <input type="text" id="editWeight" placeholder="例：0.8kg">
+      </div>
+    </div>
+    <div class="edit-2col">
+      <div class="edit-form-group">
+        <label>猫種<span style="color:#c0392b;margin-left:3px;">必須</span></label>
+        <select id="editBreed">
+          <option value="">選択</option>
+          <option>雑種</option><option>スコティッシュフォールド</option>
+          <option>マンチカン</option><option>アメリカンショートヘア</option><option>その他</option>
+        </select>
+      </div>
+      <div class="edit-form-group">
+        <label>毛の柄<span style="color:#c0392b;margin-left:3px;">必須</span></label>
+        <select id="editColor">
+          <option value="">選択</option>
+          <option>キジトラ</option><option>白猫</option><option>黒猫</option>
+          <option>白黒</option><option>三毛</option><option>茶トラ</option><option>サバトラ</option>
+        </select>
+      </div>
+    </div>
+    <div class="edit-2col">
+      <div class="edit-form-group">
+        <label>保護場所</label>
+        <input type="text" id="editPlace" placeholder="例：三重県〇〇市">
+      </div>
+      <div class="edit-form-group">
+        <label>保護日</label>
+        <input type="date" id="editDate">
+      </div>
+    </div>
+    <div class="edit-form-group">
+      <label>性格・特徴<span style="color:#c0392b;margin-left:3px;">必須</span></label>
+      <textarea id="editDesc" placeholder="猫の性格や特徴..."></textarea>
+    </div>
+
+    <!-- 画像URL -->
+    <div class="edit-form-group">
+      <label>画像URL① （メイン）</label>
+      <input type="url" id="editImageUrl1" placeholder="https://i.ibb.co/...">
+    </div>
+    <div class="edit-form-group">
+      <label>画像URL②</label>
+      <input type="url" id="editImageUrl2" placeholder="https://i.ibb.co/...">
+    </div>
+    <div class="edit-form-group">
+      <label>画像URL③</label>
+      <input type="url" id="editImageUrl3" placeholder="https://i.ibb.co/...">
+    </div>
+    <div class="edit-form-group">
+      <label>画像URL④</label>
+      <input type="url" id="editImageUrl4" placeholder="https://i.ibb.co/...">
+    </div>
+    <div class="edit-form-group">
+      <label>動画URL（YouTube・ショート可）</label>
+      <input type="url" id="editVideoUrl" placeholder="https://youtube.com/shorts/...">
+    </div>
+
+    <!-- 健康状態 -->
+    <div class="edit-form-group">
+      <label>健康状態</label>
+      <div class="check-grid-sm">
+        <label class="check-label-sm"><input type="checkbox" id="editVaccine"> ワクチン接種済み</label>
+        <label class="check-label-sm"><input type="checkbox" id="editFlea"> ノミ・ダニ駆除済み</label>
+        <label class="check-label-sm"><input type="checkbox" id="editFiv"> FIV・FeLV検査済み</label>
+        <label class="check-label-sm"><input type="checkbox" id="editNeuter"> 去勢・避妊手術済み</label>
+        <label class="check-label-sm"><input type="checkbox" id="editChip"> マイクロチップ装着</label>
+      </div>
+    </div>
+    <div class="edit-form-group">
+      <label>健康面の備考</label>
+      <textarea id="editHealthNote" style="min-height:60px;" placeholder="注意事項など"></textarea>
+    </div>
+
+    <!-- 飼い主の条件 -->
+    <div class="edit-form-group">
+      <label>飼い主の条件</label>
+      <div style="border:1px solid var(--border);border-radius:var(--radius-md);overflow:hidden;">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid var(--border);">
+          <span style="font-size:13px;">完全室内飼育</span>
+          <select id="editCondIndoor" style="font-size:12px;padding:4px 8px;border:1px solid var(--border-md);border-radius:4px;"><option>必須</option><option>推奨</option><option>不問</option></select>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid var(--border);">
+          <span style="font-size:13px;">単身者</span>
+          <select id="editCondSingle" style="font-size:12px;padding:4px 8px;border:1px solid var(--border-md);border-radius:4px;"><option>応募可</option><option>要相談</option><option>不可</option></select>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid var(--border);">
+          <span style="font-size:13px;">高齢者（70歳以上）</span>
+          <select id="editCondElderly" style="font-size:12px;padding:4px 8px;border:1px solid var(--border-md);border-radius:4px;"><option>要相談</option><option>応募可</option><option>不可</option></select>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid var(--border);">
+          <span style="font-size:13px;">お子さんがいる家庭</span>
+          <select id="editCondKids" style="font-size:12px;padding:4px 8px;border:1px solid var(--border-md);border-radius:4px;"><option>可</option><option>要相談</option><option>不可</option></select>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid var(--border);">
+          <span style="font-size:13px;">先住猫・先住犬</span>
+          <select id="editCondPets" style="font-size:12px;padding:4px 8px;border:1px solid var(--border-md);border-radius:4px;"><option>可</option><option>要相談</option><option>不可</option></select>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;">
+          <span style="font-size:13px;">賃貸（ペット可物件）</span>
+          <select id="editCondRental" style="font-size:12px;padding:4px 8px;border:1px solid var(--border-md);border-radius:4px;"><option>要証明書類</option><option>不問</option></select>
+        </div>
+      </div>
+    </div>
+
+    <!-- ステータス -->
+    <div class="edit-form-group">
+      <label>掲載ステータス</label>
+      <div class="status-btns">
+        <div class="status-btn sel-open"  id="editStatusOpen"  onclick="setEditStatus('募集中')">募集中</div>
+        <div class="status-btn"           id="editStatusTrial" onclick="setEditStatus('トライアル中')">トライアル中</div>
+        <div class="status-btn"           id="editStatusDone"  onclick="setEditStatus('譲渡決定')">譲渡決定</div>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeEditModal()" style="flex:1;">キャンセル</button>
+      <button class="btn btn-primary" id="saveBtn" onclick="saveEdit()" style="flex:2;">変更を保存する</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 削除確認モーダル ===== -->
+<div class="modal-overlay" id="deleteModal">
+  <div class="modal" style="max-width:400px;">
+    <div class="modal-title">
+      削除の確認
+      <button class="modal-close" onclick="closeDeleteModal()">✕</button>
+    </div>
+    <div class="delete-cat-name" id="deleteCatName"></div>
+    <div class="delete-warning">
+      この操作は取り消せません。本当に削除してよいですか？
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeDeleteModal()" style="flex:1;">キャンセル</button>
+      <button class="btn" id="confirmDeleteBtn" onclick="confirmDelete()"
+        style="flex:1;background:#c0392b;color:#fff;border:none;">削除する</button>
+    </div>
+  </div>
+</div>
+
+<!-- 通常スクリプト -->
+<script>
+  let editStatus = '募集中';
+  let editDocId  = null;
+  let deleteDocId = null;
+  let allCats = [];
+
+  // 日付フォーマット
+  function formatDate(ts) {
+    if (!ts) return '-';
+    const d = ts.toDate ? ts.toDate() : new Date(ts);
+    return d.toLocaleDateString('ja-JP', { year:'numeric', month:'2-digit', day:'2-digit' });
+  }
+
+  // バッジHTML
+  function badgeHtml(status) {
+    const map = { '募集中':'badge-open', 'トライアル中':'badge-trial', '譲渡決定':'badge-done' };
+    return `<span class="cat-badge ${map[status]||'badge-open'}">${status}</span>`;
+  }
+
+  // ステータスボタンの選択
+  function setEditStatus(s) {
+    editStatus = s;
+    document.getElementById('editStatusOpen').className  = 'status-btn' + (s==='募集中'       ? ' sel-open'  : '');
+    document.getElementById('editStatusTrial').className = 'status-btn' + (s==='トライアル中'  ? ' sel-trial' : '');
+    document.getElementById('editStatusDone').className  = 'status-btn' + (s==='譲渡決定'      ? ' sel-done'  : '');
+  }
+
+  // テーブル行を描画
+  function renderTable(cats) {
+    const tbody = document.getElementById('catTableBody');
+    const tableWrap = document.getElementById('tableWrap');
+    const emptyState = document.getElementById('emptyState');
+
+    if (cats.length === 0) {
+      tableWrap.style.display = 'none';
+      emptyState.style.display = 'block';
+      return;
+    }
+
+    tableWrap.style.display = 'block';
+    emptyState.style.display = 'none';
+
+    tbody.innerHTML = cats.map(cat => {
+      const firstImg = (cat.imageUrls && cat.imageUrls.length > 0)
+        ? cat.imageUrls[0] : (cat.imageUrl || '');
+      const thumbHtml = firstImg
+        ? `<div class="cat-thumb"><img src="${firstImg}" alt="${cat.name}" onerror="this.parentElement.innerHTML='🐱'"></div>`
+        : `<div class="cat-thumb">🐱</div>`;
+      return `
+        <tr>
+          <td>${thumbHtml}</td>
+          <td><strong>${cat.name}</strong>${cat.kana ? `<br><span style="font-size:11px;color:var(--text-muted);">${cat.kana}</span>` : ''}</td>
+          <td>${cat.sex || '-'}</td>
+          <td>${cat.age || '-'}${cat.ageText ? `<br><span style="font-size:11px;color:var(--text-muted);">${cat.ageText}</span>` : ''}</td>
+          <td>${cat.breed || '-'}</td>
+          <td>${cat.color || '-'}</td>
+          <td>${badgeHtml(cat.status)}</td>
+          <td style="font-size:12px;color:var(--text-muted);">${formatDate(cat.createdAt)}</td>
+          <td style="white-space:nowrap;">
+            <button class="btn-edit" onclick="openEditModal('${cat.id}')">編集</button>
+            <button class="btn-delete" onclick="openDeleteModal('${cat.id}')">削除</button>
+          </td>
+        </tr>`;
+    }).join('');
+  }
+
+  // 編集モーダルを開く
+  function openEditModal(id) {
+    const cat = allCats.find(c => c.id === id);
+    if (!cat) return;
+    editDocId = id;
+
+    // フォームに現在の値をセット
+    document.getElementById('editName').value      = cat.name      || '';
+    document.getElementById('editKana').value      = cat.kana      || '';
+    document.getElementById('editSex').value       = cat.sex       || '';
+    document.getElementById('editAge').value       = cat.age       || '';
+    document.getElementById('editAgeText').value   = cat.ageText   || '';
+    document.getElementById('editWeight').value    = cat.weight    || '';
+    document.getElementById('editBreed').value     = cat.breed     || '';
+    document.getElementById('editColor').value     = cat.color     || '';
+    document.getElementById('editPlace').value     = cat.place     || '';
+    document.getElementById('editDate').value      = cat.rescueDate|| '';
+    document.getElementById('editDesc').value      = cat.desc      || '';
+    document.getElementById('editVideoUrl').value  = cat.videoUrl  || '';
+    document.getElementById('editHealthNote').value= cat.healthNote|| '';
+
+    // 画像URL（複数対応）
+    const urls = cat.imageUrls || (cat.imageUrl ? [cat.imageUrl] : []);
+    document.getElementById('editImageUrl1').value = urls[0] || '';
+    document.getElementById('editImageUrl2').value = urls[1] || '';
+    document.getElementById('editImageUrl3').value = urls[2] || '';
+    document.getElementById('editImageUrl4').value = urls[3] || '';
+
+    // 健康状態
+    const h = cat.health || {};
+    document.getElementById('editVaccine').checked = h.vaccine || false;
+    document.getElementById('editFlea').checked    = h.flea    || false;
+    document.getElementById('editFiv').checked     = h.fiv     || false;
+    document.getElementById('editNeuter').checked  = h.neuter  || false;
+    document.getElementById('editChip').checked    = h.chip    || false;
+
+    // 飼い主条件
+    const c = cat.conditions || {};
+    document.getElementById('editCondIndoor').value  = c.indoor  || '必須';
+    document.getElementById('editCondSingle').value  = c.single  || '応募可';
+    document.getElementById('editCondElderly').value = c.elderly || '要相談';
+    document.getElementById('editCondKids').value    = c.kids    || '可';
+    document.getElementById('editCondPets').value    = c.pets    || '可';
+    document.getElementById('editCondRental').value  = c.rental  || '要証明書類';
+
+    // ステータス
+    setEditStatus(cat.status || '募集中');
+
+    document.getElementById('editError').style.display = 'none';
+    document.getElementById('editModal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeEditModal() {
+    document.getElementById('editModal').classList.remove('open');
+    document.body.style.overflow = '';
+    editDocId = null;
+  }
+
+  // 削除モーダルを開く
+  function openDeleteModal(id) {
+    const cat = allCats.find(c => c.id === id);
+    if (!cat) return;
+    deleteDocId = id;
+    document.getElementById('deleteCatName').textContent = '「' + cat.name + '」を削除しますか？';
+    document.getElementById('deleteModal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeDeleteModal() {
+    document.getElementById('deleteModal').classList.remove('open');
+    document.body.style.overflow = '';
+    deleteDocId = null;
+  }
+
+  // モーダル外クリックで閉じる
+  document.getElementById('editModal').addEventListener('click', e => {
+    if (e.target === document.getElementById('editModal')) closeEditModal();
+  });
+  document.getElementById('deleteModal').addEventListener('click', e => {
+    if (e.target === document.getElementById('deleteModal')) closeDeleteModal();
+  });
+</script>
+
+<!-- Firebase処理 -->
+<script type="module">
+  import { auth, db } from './firebase.js';
+  import { onAuthStateChanged, signOut }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { collection, getDocs, doc, updateDoc, deleteDoc, orderBy, query, serverTimestamp }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  // ── ログイン状態チェック ──
+  onAuthStateChanged(auth, (user) => {
+    if (!user) { location.href = 'login.html'; return; }
+    document.getElementById('userLabel').textContent = user.email;
+    loadCats();
+  });
+
+  window.handleLogout = async function () {
+    await signOut(auth);
+    location.href = 'login.html';
+  };
+
+  // ── 猫一覧を読み込む ──
+  async function loadCats() {
+    const skeleton = document.getElementById('skeletonArea');
+    try {
+      const q = query(collection(db, 'cats'), orderBy('createdAt', 'desc'));
+      const snapshot = await getDocs(q);
+      allCats = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+      skeleton.style.display = 'none';
+      renderTable(allCats);
+    } catch (e) {
+      skeleton.style.display = 'none';
+      document.getElementById('emptyState').style.display = 'block';
+      document.getElementById('emptyState').innerHTML = `
+        <div class="empty-icon">⚠️</div>
+        <div class="empty-title">読み込みに失敗しました</div>
+        <p style="font-size:14px;color:var(--text-muted);">ページを再読み込みしてください。</p>`;
+      console.error(e);
+    }
+  }
+
+  // ── 変更を保存する ──
+  window.saveEdit = async function () {
+    if (!editDocId) return;
+    const name  = document.getElementById('editName').value.trim();
+    const sex   = document.getElementById('editSex').value;
+    const age   = document.getElementById('editAge').value;
+    const breed = document.getElementById('editBreed').value;
+    const color = document.getElementById('editColor').value;
+    const desc  = document.getElementById('editDesc').value.trim();
+    const errEl = document.getElementById('editError');
+    const btn   = document.getElementById('saveBtn');
+
+    if (!name || !sex || !age || !breed || !color || !desc) {
+      errEl.style.display = 'block';
+      errEl.textContent = '必須項目（名前・性別・年齢区分・猫種・毛の柄・性格）をすべて入力してください。';
+      return;
+    }
+    errEl.style.display = 'none';
+    btn.textContent = '保存中...';
+    btn.classList.add('loading-btn');
+
+    try {
+      const imageUrls = [
+        document.getElementById('editImageUrl1').value.trim(),
+        document.getElementById('editImageUrl2').value.trim(),
+        document.getElementById('editImageUrl3').value.trim(),
+        document.getElementById('editImageUrl4').value.trim(),
+      ].filter(u => u !== '');
+
+      const updateData = {
+        name,
+        kana:       document.getElementById('editKana').value.trim(),
+        sex,
+        age,
+        ageText:    document.getElementById('editAgeText').value.trim(),
+        weight:     document.getElementById('editWeight').value.trim(),
+        breed,
+        color,
+        place:      document.getElementById('editPlace').value.trim(),
+        rescueDate: document.getElementById('editDate').value,
+        desc,
+        imageUrls,
+        videoUrl:   document.getElementById('editVideoUrl').value.trim(),
+        health: {
+          vaccine: document.getElementById('editVaccine').checked,
+          flea:    document.getElementById('editFlea').checked,
+          fiv:     document.getElementById('editFiv').checked,
+          neuter:  document.getElementById('editNeuter').checked,
+          chip:    document.getElementById('editChip').checked,
+        },
+        healthNote: document.getElementById('editHealthNote').value.trim(),
+        conditions: {
+          indoor:  document.getElementById('editCondIndoor').value,
+          single:  document.getElementById('editCondSingle').value,
+          elderly: document.getElementById('editCondElderly').value,
+          kids:    document.getElementById('editCondKids').value,
+          pets:    document.getElementById('editCondPets').value,
+          rental:  document.getElementById('editCondRental').value,
+        },
+        status: editStatus,
+        updatedAt: serverTimestamp(),
+      };
+
+      await updateDoc(doc(db, 'cats', editDocId), updateData);
+
+      // メモリのデータも更新
+      const idx = allCats.findIndex(c => c.id === editDocId);
+      if (idx !== -1) allCats[idx] = { ...allCats[idx], ...updateData };
+      renderTable(allCats);
+
+      closeEditModal();
+      btn.textContent = '変更を保存する';
+      btn.classList.remove('loading-btn');
+
+    } catch (e) {
+      errEl.style.display = 'block';
+      errEl.textContent = '保存に失敗しました。もう一度お試しください。';
+      btn.textContent = '変更を保存する';
+      btn.classList.remove('loading-btn');
+      console.error(e);
+    }
+  };
+
+  // ── 削除を実行する ──
+  window.confirmDelete = async function () {
+    if (!deleteDocId) return;
+    const btn = document.getElementById('confirmDeleteBtn');
+    btn.textContent = '削除中...';
+    btn.classList.add('loading-btn');
+
+    try {
+      await deleteDoc(doc(db, 'cats', deleteDocId));
+
+      // メモリからも削除して再描画
+      allCats = allCats.filter(c => c.id !== deleteDocId);
+      renderTable(allCats);
+      closeDeleteModal();
+
+      btn.textContent = '削除する';
+      btn.classList.remove('loading-btn');
+
+    } catch (e) {
+      alert('削除に失敗しました。もう一度お試しください。');
+      btn.textContent = '削除する';
+      btn.classList.remove('loading-btn');
+      console.error(e);
+    }
+  };
+</script>
+
+</body>
+</html>
