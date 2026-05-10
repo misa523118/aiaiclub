@@ -291,11 +291,19 @@
   }
 
   // YouTube URLを埋め込みURLに変換
-  function toEmbedUrl(url) {
-    if (!url) return '';
-    const m = url.match(/(?:v=|youtu\.be\/)([^&\s]+)/);
-    return m ? 'https://www.youtube.com/embed/' + m[1] : '';
-  }
+function toEmbedUrl(url) {
+  if (!url) return '';
+  // ショート形式: youtube.com/shorts/XXXXXXXXXXX
+  const shorts = url.match(/youtube\.com\/shorts\/([^?&\s]+)/);
+  if (shorts) return 'https://www.youtube.com/embed/' + shorts[1];
+  // 通常形式: youtube.com/watch?v=XXXXXXXXXXX
+  const watch = url.match(/[?&]v=([^&\s]+)/);
+  if (watch) return 'https://www.youtube.com/embed/' + watch[1];
+  // 短縮形式: youtu.be/XXXXXXXXXXX
+  const short = url.match(/youtu\.be\/([^?&\s]+)/);
+  if (short) return 'https://www.youtube.com/embed/' + short[1];
+  return '';
+}
 
   // 画像URLがあれば<img>、なければ絵文字
   function imgContent(url) {
