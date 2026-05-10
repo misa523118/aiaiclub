@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>コラム管理｜愛アイクラブ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .admin-bar { background: var(--accent); border-bottom: 1px solid var(--border); padding: 0 24px; }
+    .admin-bar-inner { max-width: 1100px; margin: 0 auto; display: flex; gap: 4px; }
+    .admin-tab { font-size: 13px; font-weight: 600; padding: 12px 18px; color: var(--text-muted); border-bottom: 3px solid transparent; cursor: pointer; transition: all var(--transition); }
+    .admin-tab:hover { color: var(--primary); }
+    .admin-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+    /* 2カラムレイアウト */
+    .col-manage-layout { display: grid; grid-template-columns: 1fr 380px; gap: 32px; align-items: start; }
+
+    /* 記事一覧 */
+    .col-list { display: flex; flex-direction: column; gap: 10px; }
+    .col-list-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px 20px; display: flex; align-items: center; gap: 16px; transition: all var(--transition); }
+    .col-list-card:hover { box-shadow: var(--shadow-sm); }
+    .col-list-thumb { width: 64px; height: 52px; border-radius: var(--radius-md); background: var(--gray-200); flex-shrink: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+    .col-list-thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .col-list-body { flex: 1; min-width: 0; }
+    .col-list-title { font-size: 14px; font-weight: 700; color: var(--primary-dark); margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .col-list-meta { font-size: 12px; color: var(--text-muted); display: flex; gap: 10px; flex-wrap: wrap; }
+    .col-list-actions { display: flex; gap: 6px; flex-shrink: 0; }
+    .btn-edit-sm { font-size: 12px; padding: 5px 12px; border-radius: var(--radius-sm); border: 1.5px solid var(--primary); background: transparent; color: var(--primary); cursor: pointer; font-family: var(--font-sans); font-weight: 600; transition: all var(--transition); white-space: nowrap; }
+    .btn-edit-sm:hover { background: var(--primary); color: var(--white); }
+    .btn-delete-sm { font-size: 12px; padding: 5px 12px; border-radius: var(--radius-sm); border: 1.5px solid #c0392b; background: transparent; color: #c0392b; cursor: pointer; font-family: var(--font-sans); font-weight: 600; transition: all var(--transition); white-space: nowrap; }
+    .btn-delete-sm:hover { background: #c0392b; color: var(--white); }
+
+    /* 投稿・編集フォーム */
+    .form-card { background: var(--white); border-radius: var(--radius-lg); border: 1px solid var(--border); padding: 24px; position: sticky; top: 80px; }
+    .form-card-title { font-size: 15px; font-weight: 800; color: var(--primary-dark); margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px solid var(--primary-light); display: flex; align-items: center; justify-content: space-between; }
+    .form-card-title span { font-size: 12px; font-weight: 400; color: var(--text-muted); }
+    .form-group { margin-bottom: 14px; }
+    .form-label { display: block; font-size: 12px; font-weight: 700; color: var(--text-muted); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.04em; }
+    .form-input, .form-select, .form-textarea { width: 100%; padding: 9px 12px; border: 1.5px solid var(--border-md); border-radius: var(--radius-sm); font-size: 14px; font-family: var(--font-sans); color: var(--text); background: var(--white); transition: border-color var(--transition); appearance: none; }
+    .form-input:focus, .form-select:focus, .form-textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(42,90,114,0.1); }
+    .form-textarea { min-height: 220px; resize: vertical; line-height: 1.7; }
+    .form-hint { font-size: 11px; color: var(--text-muted); margin-top: 4px; line-height: 1.5; }
+    .publish-toggle { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border: 1.5px solid var(--border-md); border-radius: var(--radius-md); cursor: pointer; transition: all var(--transition); }
+    .publish-toggle.published { border-color: #1a5a1a; background: #f0fdf0; }
+    .toggle-switch { width: 36px; height: 20px; border-radius: 99px; background: var(--gray-200); position: relative; transition: background var(--transition); flex-shrink: 0; }
+    .toggle-switch.on { background: #2a6a2a; }
+    .toggle-knob { width: 16px; height: 16px; border-radius: 50%; background: var(--white); position: absolute; top: 2px; left: 2px; transition: left var(--transition); box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+    .toggle-switch.on .toggle-knob { left: 18px; }
+    .toggle-label { font-size: 13px; font-weight: 600; color: var(--text); }
+    .form-actions { display: flex; gap: 8px; margin-top: 16px; }
+    .loading-btn { opacity: 0.7; cursor: not-allowed; pointer-events: none; }
+
+    /* スケルトン */
+    .skeleton { background: var(--gray-200); border-radius: var(--radius-md); animation: skeleton-pulse 1.4s ease-in-out infinite; }
+    @keyframes skeleton-pulse { 0%,100%{opacity:1}50%{opacity:0.4} }
+
+    /* 削除確認 */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 200; align-items: center; justify-content: center; padding: 20px; }
+    .modal-overlay.open { display: flex; }
+    .modal { background: var(--white); border-radius: var(--radius-xl); padding: 28px; width: 100%; max-width: 380px; box-shadow: var(--shadow-lg); }
+    .modal-title { font-size: 17px; font-weight: 800; color: var(--primary-dark); margin-bottom: 12px; }
+    .modal-body { font-size: 14px; color: var(--text-muted); line-height: 1.7; margin-bottom: 20px; }
+    .modal-actions { display: flex; gap: 10px; }
+
+    /* 公開/下書きバッジ */
+    .badge-pub { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px; background: #d4edd4; color: #1a5a1a; }
+    .badge-draft { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px; background: var(--gray-100); color: var(--text-muted); }
+
+    .empty-state { text-align: center; padding: 48px 24px; color: var(--text-muted); }
+    .empty-icon { font-size: 40px; margin-bottom: 12px; }
+
+    @media (max-width: 900px) {
+      .col-manage-layout { grid-template-columns: 1fr; }
+      .form-card { position: static; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">愛アイ<span>クラブ</span> 里親募集</a>
+    <ul class="nav-links">
+      <li><a href="cats.html">猫を探す</a></li>
+      <li><a href="column.html">コラム</a></li>
+      <li><a href="contact.html">お問い合わせ</a></li>
+    </ul>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <span id="userLabel" style="font-size:13px;color:var(--text-muted);">読み込み中...</span>
+      <button class="nav-login-btn" onclick="handleLogout()">ログアウト</button>
+    </div>
+  </div>
+</nav>
+
+<div class="breadcrumb">
+  <div class="breadcrumb-inner">
+    <a href="index.html">管理トップ</a><span class="sep">›</span>コラム管理
+  </div>
+</div>
+
+<div class="admin-bar">
+  <div class="admin-bar-inner">
+    <div class="admin-tab" onclick="location.href='admin-cats.html'">登録猫一覧</div>
+    <div class="admin-tab" onclick="location.href='register.html'">新規登録</div>
+    <div class="admin-tab active">コラム管理</div>
+    <div class="admin-tab" onclick="location.href='admin-contacts.html'">お問い合わせ管理</div>
+  </div>
+</div>
+
+<section class="section">
+  <div class="container">
+    <div style="margin-bottom:24px;">
+      <span class="section-label">団体管理</span>
+      <h1 class="section-title">コラム管理</h1>
+      <p style="font-size:14px;color:var(--text-muted);">記事の投稿・編集・削除ができます。</p>
+    </div>
+
+    <div class="col-manage-layout">
+
+      <!-- 左：記事一覧 -->
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+          <h2 style="font-size:15px;font-weight:700;color:var(--primary-dark);">投稿済み記事</h2>
+          <button class="btn btn-primary btn-sm" onclick="resetForm()">＋ 新規作成</button>
+        </div>
+
+        <!-- スケルトン -->
+        <div id="skeletonList" style="display:flex;flex-direction:column;gap:10px;">
+          <div style="height:72px;border-radius:var(--radius-lg);" class="skeleton"></div>
+          <div style="height:72px;border-radius:var(--radius-lg);" class="skeleton"></div>
+          <div style="height:72px;border-radius:var(--radius-lg);" class="skeleton"></div>
+        </div>
+
+        <!-- 記事一覧 -->
+        <div class="col-list" id="colList" style="display:none;"></div>
+
+        <!-- 空状態 -->
+        <div id="emptyState" class="empty-state" style="display:none;">
+          <div class="empty-icon">📝</div>
+          <p>まだ記事がありません。右のフォームから投稿してください。</p>
+        </div>
+      </div>
+
+      <!-- 右：投稿・編集フォーム -->
+      <div>
+        <div class="form-card">
+          <div class="form-card-title">
+            <span id="formTitle">新規記事を投稿</span>
+            <span id="editingLabel" style="display:none;color:var(--primary);font-weight:700;font-size:12px;">編集中</span>
+          </div>
+
+          <div id="formError" class="alert alert-error" style="display:none;margin-bottom:14px;"></div>
+          <div id="formSuccess" class="alert alert-success" style="display:none;margin-bottom:14px;"></div>
+
+          <div class="form-group">
+            <label class="form-label">タイトル<span style="color:#c0392b;margin-left:3px;">必須</span></label>
+            <input type="text" class="form-input" id="colTitle" placeholder="例：はじめての保護猫との暮らし方">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">カテゴリ<span style="color:#c0392b;margin-left:3px;">必須</span></label>
+            <select class="form-select" id="colCategory">
+              <option value="">選択してください</option>
+              <option>はじめての猫</option>
+              <option>健康・医療</option>
+              <option>飼育マメ知識</option>
+              <option>保護猫の話</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">著者名</label>
+            <input type="text" class="form-input" id="colAuthor" placeholder="例：愛アイクラブ スタッフ">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">アイキャッチ画像URL</label>
+            <input type="url" class="form-input" id="colImageUrl" placeholder="https://i.ibb.co/...">
+            <p class="form-hint">imgbb.com にアップロードして「直接リンク」のURLを貼り付けてください。空欄の場合は絵文字が表示されます。</p>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">絵文字（画像なしの場合）</label>
+            <input type="text" class="form-input" id="colEmoji" placeholder="例：🐾" maxlength="4" style="font-size:20px;">
+            <p class="form-hint">画像URLがない場合のアイキャッチ代わりに使います。</p>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              本文<span style="color:#c0392b;margin-left:3px;">必須</span>
+            </label>
+            <textarea class="form-textarea" id="colBody"
+              placeholder="本文をここに書いてください。&#10;&#10;段落を分けるには1行空けてください。&#10;&#10;## 見出しをつける場合&#10;「## 」で始めると見出しになります。"></textarea>
+            <p class="form-hint">
+              段落の区切り：1行空ける<br>
+              見出し：行頭に「## 」をつける（例：## 猫の迎え方）
+            </p>
+          </div>
+
+          <!-- 公開/下書きトグル -->
+          <div class="form-group">
+            <label class="form-label">公開設定</label>
+            <div class="publish-toggle" id="publishToggle" onclick="togglePublish()">
+              <div class="toggle-switch" id="toggleSwitch">
+                <div class="toggle-knob"></div>
+              </div>
+              <span class="toggle-label" id="toggleLabel">下書き（非公開）</span>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button class="btn btn-outline btn-sm" onclick="resetForm()" style="flex:1;">リセット</button>
+            <button class="btn btn-primary" id="submitBtn" onclick="submitColumn()" style="flex:2;">投稿する</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- 削除確認モーダル -->
+<div class="modal-overlay" id="deleteModal">
+  <div class="modal">
+    <div class="modal-title">記事を削除しますか？</div>
+    <div class="modal-body" id="deleteModalBody"></div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeDeleteModal()" style="flex:1;">キャンセル</button>
+      <button class="btn" id="confirmDeleteBtn" onclick="confirmDelete()"
+        style="flex:1;background:#c0392b;color:#fff;border:none;">削除する</button>
+    </div>
+  </div>
+</div>
+
+<!-- 通常スクリプト -->
+<script>
+  let isPublished = false;
+  let editDocId   = null;
+  let deleteDocId = null;
+  let allCols     = [];
+
+  function togglePublish() {
+    isPublished = !isPublished;
+    const sw    = document.getElementById('toggleSwitch');
+    const label = document.getElementById('toggleLabel');
+    const wrap  = document.getElementById('publishToggle');
+    sw.classList.toggle('on', isPublished);
+    wrap.classList.toggle('published', isPublished);
+    label.textContent = isPublished ? '公開する' : '下書き（非公開）';
+  }
+
+  function formatDate(ts) {
+    if (!ts) return '';
+    const d = ts.toDate ? ts.toDate() : new Date(ts);
+    return d.toLocaleDateString('ja-JP', { year:'numeric', month:'2-digit', day:'2-digit' });
+  }
+
+  function renderList(cols) {
+    const listEl  = document.getElementById('colList');
+    const emptyEl = document.getElementById('emptyState');
+    if (cols.length === 0) {
+      listEl.style.display  = 'none';
+      emptyEl.style.display = 'block';
+      return;
+    }
+    listEl.style.display  = 'flex';
+    emptyEl.style.display = 'none';
+    listEl.innerHTML = cols.map(col => {
+      const thumbHtml = col.imageUrl
+        ? `<img src="${col.imageUrl}" alt="${col.title}" onerror="this.parentElement.innerHTML='📝'">`
+        : (col.emoji || '📝');
+      return `
+        <div class="col-list-card">
+          <div class="col-list-thumb">${thumbHtml}</div>
+          <div class="col-list-body">
+            <div class="col-list-title">${col.title}</div>
+            <div class="col-list-meta">
+              <span>${col.category || ''}</span>
+              <span>${formatDate(col.createdAt)}</span>
+              <span class="${col.published ? 'badge-pub' : 'badge-draft'}">${col.published ? '公開中' : '下書き'}</span>
+            </div>
+          </div>
+          <div class="col-list-actions">
+            <button class="btn-edit-sm" onclick="loadEditForm('${col.id}')">編集</button>
+            <button class="btn-delete-sm" onclick="openDeleteModal('${col.id}')">削除</button>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  // フォームをリセット（新規作成モード）
+  function resetForm() {
+    editDocId = null;
+    document.getElementById('formTitle').textContent     = '新規記事を投稿';
+    document.getElementById('editingLabel').style.display = 'none';
+    document.getElementById('submitBtn').textContent     = '投稿する';
+    document.getElementById('colTitle').value    = '';
+    document.getElementById('colCategory').value = '';
+    document.getElementById('colAuthor').value   = '';
+    document.getElementById('colImageUrl').value = '';
+    document.getElementById('colEmoji').value    = '';
+    document.getElementById('colBody').value     = '';
+    document.getElementById('formError').style.display   = 'none';
+    document.getElementById('formSuccess').style.display = 'none';
+    if (isPublished) togglePublish(); // 下書きに戻す
+  }
+
+  // 編集フォームに値をセット
+  function loadEditForm(id) {
+    const col = allCols.find(c => c.id === id);
+    if (!col) return;
+    editDocId = id;
+    document.getElementById('formTitle').textContent      = '記事を編集中';
+    document.getElementById('editingLabel').style.display = 'inline';
+    document.getElementById('submitBtn').textContent      = '変更を保存する';
+    document.getElementById('colTitle').value    = col.title    || '';
+    document.getElementById('colCategory').value = col.category || '';
+    document.getElementById('colAuthor').value   = col.author   || '';
+    document.getElementById('colImageUrl').value = col.imageUrl || '';
+    document.getElementById('colEmoji').value    = col.emoji    || '';
+    document.getElementById('colBody').value     = col.body     || '';
+    document.getElementById('formError').style.display   = 'none';
+    document.getElementById('formSuccess').style.display = 'none';
+    // 公開状態を同期
+    if (isPublished !== !!col.published) togglePublish();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // 削除モーダル
+  function openDeleteModal(id) {
+    const col = allCols.find(c => c.id === id);
+    if (!col) return;
+    deleteDocId = id;
+    document.getElementById('deleteModalBody').textContent =
+      '「' + col.title + '」を削除します。この操作は取り消せません。';
+    document.getElementById('deleteModal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeDeleteModal() {
+    document.getElementById('deleteModal').classList.remove('open');
+    document.body.style.overflow = '';
+    deleteDocId = null;
+  }
+  document.getElementById('deleteModal').addEventListener('click', e => {
+    if (e.target === document.getElementById('deleteModal')) closeDeleteModal();
+  });
+</script>
+
+<!-- Firebase処理 -->
+<script type="module">
+  import { auth, db } from './firebase.js';
+  import { onAuthStateChanged, signOut }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { collection, getDocs, doc, addDoc, updateDoc, deleteDoc, orderBy, query, serverTimestamp }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  // ── ログイン状態チェック ──
+  onAuthStateChanged(auth, (user) => {
+    if (!user) { location.href = 'login.html'; return; }
+    document.getElementById('userLabel').textContent = user.email;
+    loadColumns();
+  });
+
+  window.handleLogout = async function () {
+    await signOut(auth);
+    location.href = 'login.html';
+  };
+
+  // ── 記事一覧を読み込む ──
+  async function loadColumns() {
+    const skeleton = document.getElementById('skeletonList');
+    try {
+      const q = query(collection(db, 'columns'), orderBy('createdAt', 'desc'));
+      const snapshot = await getDocs(q);
+      allCols = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+      skeleton.style.display = 'none';
+      renderList(allCols);
+    } catch (e) {
+      skeleton.style.display = 'none';
+      document.getElementById('emptyState').style.display = 'block';
+      console.error(e);
+    }
+  }
+
+  // ── 投稿・更新 ──
+  window.submitColumn = async function () {
+    const title    = document.getElementById('colTitle').value.trim();
+    const category = document.getElementById('colCategory').value;
+    const body     = document.getElementById('colBody').value.trim();
+    const errEl    = document.getElementById('formError');
+    const sucEl    = document.getElementById('formSuccess');
+    const btn      = document.getElementById('submitBtn');
+
+    if (!title || !category || !body) {
+      errEl.style.display = 'block';
+      errEl.textContent   = '必須項目（タイトル・カテゴリ・本文）を入力してください。';
+      sucEl.style.display = 'none';
+      return;
+    }
+    errEl.style.display = 'none';
+    btn.classList.add('loading-btn');
+    btn.textContent = '保存中...';
+
+    const data = {
+      title,
+      category,
+      author:    document.getElementById('colAuthor').value.trim(),
+      imageUrl:  document.getElementById('colImageUrl').value.trim(),
+      emoji:     document.getElementById('colEmoji').value.trim() || '📝',
+      body,
+      published: isPublished,
+    };
+
+    try {
+      if (editDocId) {
+        // 更新
+        await updateDoc(doc(db, 'columns', editDocId), {
+          ...data,
+          updatedAt: serverTimestamp(),
+        });
+        const idx = allCols.findIndex(c => c.id === editDocId);
+        if (idx !== -1) allCols[idx] = { ...allCols[idx], ...data };
+        sucEl.textContent = '記事を更新しました。';
+      } else {
+        // 新規投稿
+        const ref = await addDoc(collection(db, 'columns'), {
+          ...data,
+          createdAt: serverTimestamp(),
+        });
+        allCols.unshift({ id: ref.id, ...data, createdAt: null });
+        sucEl.textContent = isPublished
+          ? '記事を公開しました！'
+          : '下書きとして保存しました。';
+        resetForm();
+      }
+
+      sucEl.style.display = 'block';
+      renderList(allCols);
+
+    } catch (e) {
+      errEl.style.display = 'block';
+      errEl.textContent   = '保存に失敗しました。もう一度お試しください。';
+      console.error(e);
+    } finally {
+      btn.classList.remove('loading-btn');
+      btn.textContent = editDocId ? '変更を保存する' : '投稿する';
+    }
+  };
+
+  // ── 削除 ──
+  window.confirmDelete = async function () {
+    if (!deleteDocId) return;
+    const btn = document.getElementById('confirmDeleteBtn');
+    btn.textContent = '削除中...';
+    btn.classList.add('loading-btn');
+    try {
+      await deleteDoc(doc(db, 'columns', deleteDocId));
+      allCols = allCols.filter(c => c.id !== deleteDocId);
+      renderList(allCols);
+      closeDeleteModal();
+      // 編集中だった場合はリセット
+      if (editDocId === deleteDocId) resetForm();
+    } catch (e) {
+      alert('削除に失敗しました。もう一度お試しください。');
+      console.error(e);
+    } finally {
+      btn.textContent = '削除する';
+      btn.classList.remove('loading-btn');
+    }
+  };
+</script>
+
+</body>
+</html>
