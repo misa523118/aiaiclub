@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>イベント管理｜愛アイクラブ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .admin-bar { background: var(--accent); border-bottom: 1px solid var(--border); padding: 0 24px; }
+    .admin-bar-inner { max-width: 1100px; margin: 0 auto; display: flex; gap: 4px; flex-wrap: wrap; }
+    .admin-tab { font-size: 13px; font-weight: 600; padding: 12px 18px; color: var(--text-muted); border-bottom: 3px solid transparent; cursor: pointer; transition: all var(--transition); white-space: nowrap; }
+    .admin-tab:hover { color: var(--primary); }
+    .admin-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+    .event-layout { display: grid; grid-template-columns: 1fr 360px; gap: 32px; align-items: start; }
+    .event-list { display: flex; flex-direction: column; gap: 10px; }
+    .event-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px 20px; display: flex; align-items: center; gap: 16px; transition: all var(--transition); }
+    .event-card:hover { box-shadow: var(--shadow-sm); }
+    .event-date-box { text-align: center; background: var(--primary-light); border-radius: var(--radius-md); padding: 8px 14px; flex-shrink: 0; min-width: 60px; }
+    .event-date-box .month { font-size: 10px; font-weight: 700; color: var(--primary); text-transform: uppercase; }
+    .event-date-box .day { font-size: 24px; font-weight: 800; color: var(--primary-dark); line-height: 1.1; }
+    .event-body { flex: 1; min-width: 0; }
+    .event-title-text { font-size: 14px; font-weight: 700; color: var(--primary-dark); margin-bottom: 4px; }
+    .event-meta { font-size: 12px; color: var(--text-muted); display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    .event-actions { display: flex; gap: 6px; flex-shrink: 0; }
+    .btn-edit-sm { font-size: 12px; padding: 5px 12px; border-radius: var(--radius-sm); border: 1.5px solid var(--primary); background: transparent; color: var(--primary); cursor: pointer; font-family: var(--font-sans); font-weight: 600; transition: all var(--transition); white-space: nowrap; }
+    .btn-edit-sm:hover { background: var(--primary); color: var(--white); }
+    .btn-delete-sm { font-size: 12px; padding: 5px 12px; border-radius: var(--radius-sm); border: 1.5px solid #c0392b; background: transparent; color: #c0392b; cursor: pointer; font-family: var(--font-sans); font-weight: 600; transition: all var(--transition); white-space: nowrap; }
+    .btn-delete-sm:hover { background: #c0392b; color: var(--white); }
+    .form-card { background: var(--white); border-radius: var(--radius-lg); border: 1px solid var(--border); padding: 24px; position: sticky; top: 80px; }
+    .form-card-title { font-size: 15px; font-weight: 800; color: var(--primary-dark); margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px solid var(--primary-light); display: flex; align-items: center; justify-content: space-between; }
+    .form-group { margin-bottom: 14px; }
+    .form-label { display: block; font-size: 12px; font-weight: 700; color: var(--text-muted); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.04em; }
+    .form-input, .form-select, .form-textarea { width: 100%; padding: 9px 12px; border: 1.5px solid var(--border-md); border-radius: var(--radius-sm); font-size: 14px; font-family: var(--font-sans); color: var(--text); background: var(--white); transition: border-color var(--transition); appearance: none; -webkit-appearance: none; }
+    .form-input:focus, .form-select:focus, .form-textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(42,90,114,0.1); }
+    .form-textarea { min-height: 72px; resize: vertical; line-height: 1.6; }
+    .form-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .form-actions { display: flex; gap: 8px; margin-top: 16px; }
+    .loading-btn { opacity: 0.7; cursor: not-allowed; pointer-events: none; }
+    .skeleton { background: var(--gray-200); border-radius: var(--radius-md); animation: skeleton-pulse 1.4s ease-in-out infinite; }
+    @keyframes skeleton-pulse { 0%,100%{opacity:1}50%{opacity:0.4} }
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 200; align-items: center; justify-content: center; padding: 20px; }
+    .modal-overlay.open { display: flex; }
+    .modal { background: var(--white); border-radius: var(--radius-xl); padding: 28px; width: 100%; max-width: 380px; box-shadow: var(--shadow-lg); }
+    .modal-title { font-size: 17px; font-weight: 800; color: var(--primary-dark); margin-bottom: 12px; }
+    .modal-body { font-size: 14px; color: var(--text-muted); line-height: 1.7; margin-bottom: 20px; }
+    .modal-actions { display: flex; gap: 10px; }
+    .type-badge { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px; white-space: nowrap; }
+    .type-joto  { background: #d4edd4; color: #1a5a1a; }
+    .type-cafe  { background: var(--primary-light); color: var(--primary-dark); }
+    .type-other { background: var(--gray-100); color: var(--text-muted); }
+    .empty-state { text-align: center; padding: 48px 24px; color: var(--text-muted); }
+    .empty-icon { font-size: 40px; margin-bottom: 12px; }
+    @media (max-width: 900px) { .event-layout { grid-template-columns: 1fr; } .form-card { position: static; } .form-2col { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">愛アイ<span>クラブ</span> 里親募集</a>
+    <ul class="nav-links">
+      <li><a href="cats.html">猫を探す</a></li>
+      <li><a href="column.html">コラム</a></li>
+      <li><a href="contact.html">お問い合わせ</a></li>
+    </ul>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <span id="userLabel" style="font-size:13px;color:var(--text-muted);">読み込み中...</span>
+      <button class="nav-login-btn" onclick="handleLogout()">ログアウト</button>
+    </div>
+  </div>
+</nav>
+
+<div class="breadcrumb">
+  <div class="breadcrumb-inner">
+    <a href="index.html">管理トップ</a><span class="sep">›</span>イベント管理
+  </div>
+</div>
+
+<div class="admin-bar">
+  <div class="admin-bar-inner">
+    <div class="admin-tab" onclick="location.href='admin-cats.html'">登録猫一覧</div>
+    <div class="admin-tab" onclick="location.href='register.html'">新規登録</div>
+    <div class="admin-tab active">イベント管理</div>
+    <div class="admin-tab" onclick="location.href='admin-column.html'">コラム管理</div>
+    <div class="admin-tab" onclick="location.href='admin-contacts.html'">お問い合わせ管理</div>
+  </div>
+</div>
+
+<section class="section">
+  <div class="container">
+    <div style="margin-bottom:24px;">
+      <span class="section-label">団体管理</span>
+      <h1 class="section-title">イベント管理</h1>
+      <p style="font-size:14px;color:var(--text-muted);">譲渡会・イベントの登録・編集・削除ができます。トップページのカレンダーに自動反映されます。</p>
+    </div>
+
+    <div class="event-layout">
+
+      <!-- 左：イベント一覧 -->
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+          <h2 style="font-size:15px;font-weight:700;color:var(--primary-dark);">登録済みイベント</h2>
+          <button class="btn btn-primary btn-sm" onclick="resetForm()">＋ 新規追加</button>
+        </div>
+
+        <div id="skeletonList" style="display:flex;flex-direction:column;gap:10px;">
+          <div style="height:80px;border-radius:var(--radius-lg);" class="skeleton"></div>
+          <div style="height:80px;border-radius:var(--radius-lg);" class="skeleton"></div>
+          <div style="height:80px;border-radius:var(--radius-lg);" class="skeleton"></div>
+        </div>
+
+        <div class="event-list" id="eventList" style="display:none;"></div>
+
+        <div id="emptyState" class="empty-state" style="display:none;">
+          <div class="empty-icon">📅</div>
+          <p>登録済みのイベントはありません。<br>右のフォームから追加してください。</p>
+        </div>
+      </div>
+
+      <!-- 右：フォーム -->
+      <div>
+        <div class="form-card">
+          <div class="form-card-title">
+            <span id="formTitle">新規イベントを追加</span>
+            <span id="editingLabel" style="display:none;color:var(--primary);font-weight:700;font-size:12px;">編集中</span>
+          </div>
+
+          <div id="formError"   class="alert alert-error"   style="display:none;margin-bottom:14px;"></div>
+          <div id="formSuccess" class="alert alert-success" style="display:none;margin-bottom:14px;"></div>
+
+          <div class="form-group">
+            <label class="form-label">イベント名<span style="color:#c0392b;margin-left:3px;">必須</span></label>
+            <input type="text" class="form-input" id="evTitle" placeholder="例：春の譲渡会">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">種別<span style="color:#c0392b;margin-left:3px;">必須</span></label>
+            <select class="form-select" id="evType">
+              <option value="">選択してください</option>
+              <option value="譲渡会">譲渡会</option>
+              <option value="カフェ開放">保護猫カフェ開放</option>
+              <option value="その他">その他</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">開催日<span style="color:#c0392b;margin-left:3px;">必須</span></label>
+            <input type="date" class="form-input" id="evDate">
+          </div>
+
+          <div class="form-2col">
+            <div class="form-group">
+              <label class="form-label">開始時間</label>
+              <input type="time" class="form-input" id="evStartTime">
+            </div>
+            <div class="form-group">
+              <label class="form-label">終了時間</label>
+              <input type="time" class="form-input" id="evEndTime">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">会場名<span style="color:#c0392b;margin-left:3px;">必須</span></label>
+            <input type="text" class="form-input" id="evVenue" placeholder="例：三重県〇〇市民会館">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">住所</label>
+            <input type="text" class="form-input" id="evAddress" placeholder="例：三重県〇〇市〇〇町1-2-3">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">詳細・備考</label>
+            <textarea class="form-textarea" id="evNote"
+              placeholder="例：入場無料・予約不要。当日直接会場にお越しください。"></textarea>
+          </div>
+
+          <div class="form-actions">
+            <button class="btn btn-outline btn-sm" onclick="resetForm()" style="flex:1;">リセット</button>
+            <button class="btn btn-primary" id="submitBtn" onclick="submitEvent()" style="flex:2;">追加する</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- 削除確認モーダル -->
+<div class="modal-overlay" id="deleteModal">
+  <div class="modal">
+    <div class="modal-title">イベントを削除しますか？</div>
+    <div class="modal-body" id="deleteModalBody"></div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeDeleteModal()" style="flex:1;">キャンセル</button>
+      <button class="btn" id="confirmDeleteBtn" onclick="confirmDelete()"
+        style="flex:1;background:#c0392b;color:#fff;border:none;">削除する</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  let editDocId   = null;
+  let deleteDocId = null;
+  let allEvents   = [];
+
+  const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+  function getMonthDay(dateStr) {
+    if (!dateStr) return { month:'-', day:'-' };
+    const d = new Date(dateStr + 'T00:00:00');
+    return { month: MONTHS[d.getMonth()], day: d.getDate() };
+  }
+
+  function formatDateJa(dateStr) {
+    if (!dateStr) return '-';
+    const d = new Date(dateStr + 'T00:00:00');
+    const w = ['日','月','火','水','木','金','土'];
+    return (d.getMonth()+1) + '月' + d.getDate() + '日（' + w[d.getDay()] + '）';
+  }
+
+  function typeBadge(type) {
+    const cls = type==='譲渡会' ? 'type-joto' : type==='カフェ開放' ? 'type-cafe' : 'type-other';
+    return `<span class="type-badge ${cls}">${type||'その他'}</span>`;
+  }
+
+  function renderList(events) {
+    const listEl  = document.getElementById('eventList');
+    const emptyEl = document.getElementById('emptyState');
+    if (events.length === 0) {
+      listEl.style.display  = 'none';
+      emptyEl.style.display = 'block';
+      return;
+    }
+    listEl.style.display  = 'flex';
+    emptyEl.style.display = 'none';
+    const sorted = [...events].sort((a,b) => (a.date||'').localeCompare(b.date||''));
+    listEl.innerHTML = sorted.map(ev => {
+      const { month, day } = getMonthDay(ev.date);
+      const timeStr = ev.startTime
+        ? ev.startTime + (ev.endTime ? ' 〜 ' + ev.endTime : '')
+        : '';
+      return `
+        <div class="event-card">
+          <div class="event-date-box">
+            <div class="month">${month}</div>
+            <div class="day">${day}</div>
+          </div>
+          <div class="event-body">
+            <div class="event-title-text">${ev.title}</div>
+            <div class="event-meta">
+              ${typeBadge(ev.type)}
+              <span>📍 ${ev.venue||'-'}</span>
+              ${timeStr ? `<span>🕐 ${timeStr}</span>` : ''}
+            </div>
+          </div>
+          <div class="event-actions">
+            <button class="btn-edit-sm"   onclick="loadEditForm('${ev.id}')">編集</button>
+            <button class="btn-delete-sm" onclick="openDeleteModal('${ev.id}')">削除</button>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  function resetForm() {
+    editDocId = null;
+    document.getElementById('formTitle').textContent      = '新規イベントを追加';
+    document.getElementById('editingLabel').style.display = 'none';
+    document.getElementById('submitBtn').textContent      = '追加する';
+    ['evTitle','evDate','evStartTime','evEndTime','evVenue','evAddress','evNote']
+      .forEach(id => { document.getElementById(id).value = ''; });
+    document.getElementById('evType').value = '';
+    document.getElementById('formError').style.display   = 'none';
+    document.getElementById('formSuccess').style.display = 'none';
+  }
+
+  function loadEditForm(id) {
+    const ev = allEvents.find(e => e.id === id);
+    if (!ev) return;
+    editDocId = id;
+    document.getElementById('formTitle').textContent      = 'イベントを編集中';
+    document.getElementById('editingLabel').style.display = 'inline';
+    document.getElementById('submitBtn').textContent      = '変更を保存する';
+    document.getElementById('evTitle').value     = ev.title     || '';
+    document.getElementById('evType').value      = ev.type      || '';
+    document.getElementById('evDate').value      = ev.date      || '';
+    document.getElementById('evStartTime').value = ev.startTime || '';
+    document.getElementById('evEndTime').value   = ev.endTime   || '';
+    document.getElementById('evVenue').value     = ev.venue     || '';
+    document.getElementById('evAddress').value   = ev.address   || '';
+    document.getElementById('evNote').value      = ev.note      || '';
+    document.getElementById('formError').style.display   = 'none';
+    document.getElementById('formSuccess').style.display = 'none';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function openDeleteModal(id) {
+    const ev = allEvents.find(e => e.id === id);
+    if (!ev) return;
+    deleteDocId = id;
+    document.getElementById('deleteModalBody').textContent =
+      '「' + ev.title + '」（' + formatDateJa(ev.date) + '）を削除します。この操作は取り消せません。';
+    document.getElementById('deleteModal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeDeleteModal() {
+    document.getElementById('deleteModal').classList.remove('open');
+    document.body.style.overflow = '';
+    deleteDocId = null;
+  }
+
+  document.getElementById('deleteModal').addEventListener('click', e => {
+    if (e.target === document.getElementById('deleteModal')) closeDeleteModal();
+  });
+</script>
+
+<script type="module">
+  import { auth, db } from './firebase.js';
+  import { onAuthStateChanged, signOut }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { collection, getDocs, doc, addDoc, updateDoc, deleteDoc, orderBy, query, serverTimestamp }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  onAuthStateChanged(auth, (user) => {
+    if (!user) { location.href = 'login.html'; return; }
+    document.getElementById('userLabel').textContent = user.email;
+    loadEvents();
+  });
+
+  window.handleLogout = async function () {
+    await signOut(auth);
+    location.href = 'login.html';
+  };
+
+  async function loadEvents() {
+    const skeleton = document.getElementById('skeletonList');
+    try {
+      const q = query(collection(db, 'events'), orderBy('date', 'asc'));
+      const snapshot = await getDocs(q);
+      allEvents = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+      skeleton.style.display = 'none';
+      renderList(allEvents);
+    } catch (e) {
+      skeleton.style.display = 'none';
+      document.getElementById('emptyState').style.display = 'block';
+      console.error('イベント読み込みエラー:', e);
+    }
+  }
+
+  window.submitEvent = async function () {
+    const title = document.getElementById('evTitle').value.trim();
+    const type  = document.getElementById('evType').value;
+    const date  = document.getElementById('evDate').value;
+    const venue = document.getElementById('evVenue').value.trim();
+    const errEl = document.getElementById('formError');
+    const sucEl = document.getElementById('formSuccess');
+    const btn   = document.getElementById('submitBtn');
+
+    if (!title || !type || !date || !venue) {
+      errEl.style.display = 'block';
+      errEl.textContent   = '必須項目（イベント名・種別・開催日・会場名）を入力してください。';
+      sucEl.style.display = 'none';
+      return;
+    }
+    errEl.style.display = 'none';
+    btn.classList.add('loading-btn');
+    btn.textContent = '保存中...';
+
+    const data = {
+      title, type, date,
+      startTime: document.getElementById('evStartTime').value,
+      endTime:   document.getElementById('evEndTime').value,
+      venue,
+      address:   document.getElementById('evAddress').value.trim(),
+      note:      document.getElementById('evNote').value.trim(),
+    };
+
+    try {
+      if (editDocId) {
+        await updateDoc(doc(db, 'events', editDocId), { ...data, updatedAt: serverTimestamp() });
+        const idx = allEvents.findIndex(e => e.id === editDocId);
+        if (idx !== -1) allEvents[idx] = { ...allEvents[idx], ...data };
+        sucEl.textContent = 'イベントを更新しました。';
+      } else {
+        const ref = await addDoc(collection(db, 'events'), { ...data, createdAt: serverTimestamp() });
+        allEvents.push({ id: ref.id, ...data });
+        sucEl.textContent = 'イベントを追加しました！';
+        resetForm();
+      }
+      sucEl.style.display = 'block';
+      renderList(allEvents);
+    } catch (e) {
+      errEl.style.display = 'block';
+      errEl.textContent   = '保存に失敗しました。もう一度お試しください。';
+      console.error(e);
+    } finally {
+      btn.classList.remove('loading-btn');
+      btn.textContent = editDocId ? '変更を保存する' : '追加する';
+    }
+  };
+
+  window.confirmDelete = async function () {
+    if (!deleteDocId) return;
+    const btn = document.getElementById('confirmDeleteBtn');
+    btn.textContent = '削除中...';
+    btn.classList.add('loading-btn');
+    try {
+      await deleteDoc(doc(db, 'events', deleteDocId));
+      allEvents = allEvents.filter(e => e.id !== deleteDocId);
+      renderList(allEvents);
+      closeDeleteModal();
+      if (editDocId === deleteDocId) resetForm();
+    } catch (e) {
+      alert('削除に失敗しました。もう一度お試しください。');
+      console.error(e);
+    } finally {
+      btn.textContent = '削除する';
+      btn.classList.remove('loading-btn');
+    }
+  };
+</script>
+
+</body>
+</html>
