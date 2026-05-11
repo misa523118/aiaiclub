@@ -47,6 +47,12 @@
       .flow-step-card:not(:last-child)::after { display: none; }
       .column-grid { grid-template-columns: 1fr; }
     }
+  .calendar-note {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 3px;
+    line-height: 1.5;
+}
   </style>
 </head>
 <body>
@@ -362,17 +368,18 @@ function toggleMenu() {
         const timeStr = ev.startTime
           ? ` ${ev.startTime}${ev.endTime ? ' 〜 ' + ev.endTime : ''}`
           : '';
-        return `
-          <div class="calendar-item">
-            <div class="calendar-date">
-              <div class="month">${month}</div>
-              <div class="day">${day}</div>
-            </div>
-            <div class="calendar-info">
-              <div class="calendar-title">${ev.title}${timeStr}</div>
-              <div class="calendar-place">📍 ${ev.venue || ''}${ev.address ? '　' + ev.address : ''}</div>
-            </div>
-          </div>`;
+       return `
+  <div class="calendar-item">
+    <div class="calendar-date">
+      <div class="month">${month}</div>
+      <div class="day">${day}</div>
+    </div>
+    <div class="calendar-info">
+      <div class="calendar-title">${ev.title}${timeStr}</div>
+      <div class="calendar-place">📍 ${ev.venue || ''}${ev.address ? '　' + ev.address : ''}</div>
+      ${ev.note ? `<div class="calendar-note">${ev.note}</div>` : ''}
+    </div>
+  </div>`;
       }).join('');
 
     } catch (e) {
