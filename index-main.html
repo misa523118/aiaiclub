@@ -211,14 +211,9 @@
         <h2 class="section-title">譲渡会・イベント情報</h2>
       </div>
     </div>
-    <div class="calendar-list">
-      <div class="calendar-item">
-        <div class="calendar-date"><div class="month">Apr</div><div class="day">12</div></div>
-        <div class="calendar-info">
-          <div class="calendar-title">春の譲渡会</div>
-          <div class="calendar-place">📍 三重県〇〇市民会館</div>
-        </div>
-      </div>
+   <div class="calendar-list" id="calendarList">
+  <div style="padding:24px;text-align:center;color:var(--text-muted);font-size:14px;">読み込み中...</div>
+</div>
       <div class="calendar-item">
         <div class="calendar-date"><div class="month">Apr</div><div class="day">19</div></div>
         <div class="calendar-info">
@@ -330,6 +325,63 @@
 function toggleMenu() {
   document.getElementById('mobileMenu').classList.toggle('open');
 }
+</script>
+  <script type="module">
+  import { db } from './firebase.js';
+  import { collection, getDocs, orderBy, query }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun',
+                  'Jul','Aug','Sep','Oct','Nov','Dec'];
+
+  async function loadEvents() {
+    const listEl = document.getElementById('calendarList');
+    try {
+      const today = new Date().toISOString().split('T')[0];
+      const q = query(collection(db, 'events'), orderBy('date', 'asc'));
+      const snapshot = await getDocs(q);
+
+      // 今日以降のイベントのみ・最大5件表示
+      const events = snapshot.docs
+        .map(d => ({ id: d.id, ...d.data() }))
+        .filter(ev => ev.date >= today)
+        .slice(0, 5);
+
+      if (events.length === 0) {
+        listEl.innerHTML = `
+          <div style="padding:24px;text-align:center;color:var(--text-muted);font-size:14px;">
+            現在予定されているイベントはありません。
+          </div>`;
+        return;
+      }
+
+      listEl.innerHTML = events.map(ev => {
+        const d = new Date(ev.date + 'T00:00:00');
+        const month = MONTHS[d.getMonth()];
+        const day   = d.getDate();
+        const timeStr = ev.startTime
+          ? ` ${ev.startTime}${ev.endTime ? ' 〜 ' + ev.endTime : ''}`
+          : '';
+        return `
+          <div class="calendar-item">
+            <div class="calendar-date">
+              <div class="month">${month}</div>
+              <div class="day">${day}</div>
+            </div>
+            <div class="calendar-info">
+              <div class="calendar-title">${ev.title}${timeStr}</div>
+              <div class="calendar-place">📍 ${ev.venue || ''}${ev.address ? '　' + ev.address : ''}</div>
+            </div>
+          </div>`;
+      }).join('');
+
+    } catch (e) {
+      listEl.innerHTML = '';
+      console.error('イベント読み込みエラー:', e);
+    }
+  }
+
+  loadEvents();
 </script>
 </body>
 </html>
