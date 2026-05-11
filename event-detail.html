@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>イベント詳細｜愛アイクラブ 里親募集</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* イベント情報カード */
+    .event-info-card {
+      background: var(--white);
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--border);
+      padding: 32px;
+      margin-bottom: 48px;
+      box-shadow: var(--shadow-sm);
+    }
+    .event-info-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 24px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    .event-big-date {
+      text-align: center;
+      background: var(--primary-light);
+      border-radius: var(--radius-lg);
+      padding: 16px 20px;
+      flex-shrink: 0;
+      min-width: 80px;
+    }
+    .event-big-date .month { font-size: 13px; font-weight: 700; color: var(--primary); text-transform: uppercase; }
+    .event-big-date .day   { font-size: 40px; font-weight: 800; color: var(--primary-dark); line-height: 1; }
+    .event-big-date .week  { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+    .event-info-body { flex: 1; }
+    .event-info-title { font-size: clamp(20px, 3vw, 28px); font-weight: 800; color: var(--primary-dark); margin-bottom: 8px; letter-spacing: -0.02em; }
+    .event-type-badge { font-size: 12px; font-weight: 700; padding: 4px 12px; border-radius: 99px; display: inline-block; margin-bottom: 12px; }
+    .type-joto  { background: #d4edd4; color: #1a5a1a; }
+    .type-cafe  { background: var(--primary-light); color: var(--primary-dark); }
+    .type-other { background: var(--gray-100); color: var(--text-muted); }
+    .event-detail-list { display: flex; flex-direction: column; gap: 10px; }
+    .event-detail-item { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; }
+    .event-detail-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+    .event-detail-text { color: var(--text-muted); line-height: 1.6; }
+    .event-note-box {
+      background: var(--accent);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      font-size: 14px;
+      color: var(--primary-dark);
+      line-height: 1.7;
+      margin-top: 16px;
+      border: 1px solid var(--border);
+    }
+
+    /* 猫一覧 */
+    .cats-section-title {
+      font-size: clamp(18px, 2.5vw, 22px);
+      font-weight: 800;
+      color: var(--primary-dark);
+      margin-bottom: 8px;
+      letter-spacing: -0.02em;
+    }
+    .cats-count { font-size: 13px; color: var(--text-muted); margin-bottom: 24px; }
+
+    /* スケルトン */
+    .skeleton { background: var(--gray-200); border-radius: var(--radius-md); animation: skeleton-pulse 1.4s ease-in-out infinite; }
+    @keyframes skeleton-pulse { 0%,100%{opacity:1}50%{opacity:0.4} }
+
+    /* 猫なし・エラー */
+    .empty-state { text-align: center; padding: 64px 24px; color: var(--text-muted); }
+    .empty-icon  { font-size: 48px; margin-bottom: 16px; }
+    .empty-title { font-size: 18px; font-weight: 700; color: var(--primary-dark); margin-bottom: 8px; }
+
+    /* 詳細モーダル */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; align-items: flex-start; justify-content: center; padding: 20px; overflow-y: auto; }
+    .modal-overlay.open { display: flex; }
+    .modal { background: var(--white); border-radius: var(--radius-xl); width: 100%; max-width: 680px; box-shadow: var(--shadow-lg); margin: auto; overflow: hidden; }
+    .modal-img { width: 100%; height: 260px; background: var(--gray-200); display: flex; align-items: center; justify-content: center; font-size: 72px; overflow: hidden; position: relative; }
+    .modal-img img { width: 100%; height: 100%; object-fit: cover; }
+    .modal-body { padding: 24px 28px; }
+    .modal-close-btn { position: absolute; top: 12px; right: 12px; width: 36px; height: 36px; border-radius: 50%; background: rgba(0,0,0,0.4); color: var(--white); border: none; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 10; }
+    .modal-cat-name { font-size: 24px; font-weight: 800; color: var(--primary-dark); margin-bottom: 4px; }
+    .modal-cat-kana { font-size: 13px; color: var(--text-muted); margin-bottom: 12px; }
+    .modal-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+    .modal-tag { font-size: 12px; padding: 4px 12px; border-radius: 99px; background: var(--primary-light); color: var(--primary-dark); font-weight: 500; }
+    .modal-desc { font-size: 14px; color: var(--text-muted); line-height: 1.8; margin-bottom: 20px; }
+    .modal-checklist { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+    .modal-check-item { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+    .modal-check-icon { width: 18px; height: 18px; border-radius: 3px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; }
+    .check-ok { background: #d4edd4; color: #1a5a1a; }
+    .check-ng { background: #fde8e8; color: #c0392b; }
+    .modal-actions { display: flex; gap: 10px; }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">愛アイ<span>クラブ</span> 里親募集</a>
+    <ul class="nav-links">
+      <li><a href="cats.html">猫を探す</a></li>
+      <li><a href="flow.html">お迎えの流れ</a></li>
+      <li><a href="conditions.html">飼い主の条件</a></li>
+      <li><a href="column.html">コラム</a></li>
+      <li><a href="contact.html">お問い合わせ</a></li>
+    </ul>
+    <button class="nav-login-btn" onclick="location.href='login.html'">団体ログイン</button>
+    <button class="nav-hamburger" onclick="toggleMenu()"><span></span><span></span><span></span></button>
+  </div>
+  <div class="nav-mobile-menu" id="mobileMenu">
+    <a href="cats.html">猫を探す</a><a href="flow.html">お迎えの流れ</a>
+    <a href="conditions.html">飼い主の条件</a><a href="column.html">コラム</a>
+    <a href="contact.html">お問い合わせ</a><a href="login.html">団体ログイン</a>
+  </div>
+</nav>
+
+<div class="breadcrumb" id="breadcrumb">
+  <div class="breadcrumb-inner">
+    <a href="index.html">トップ</a><span class="sep">›</span>
+    <span id="breadcrumbTitle">イベント詳細</span>
+  </div>
+</div>
+
+<section class="section">
+  <div class="container">
+
+    <!-- ローディング中 -->
+    <div id="loadingState">
+      <div class="skeleton" style="height:180px;border-radius:var(--radius-xl);margin-bottom:32px;"></div>
+      <div class="cat-grid">
+        <div class="skeleton" style="height:220px;border-radius:var(--radius-lg);"></div>
+        <div class="skeleton" style="height:220px;border-radius:var(--radius-lg);"></div>
+        <div class="skeleton" style="height:220px;border-radius:var(--radius-lg);"></div>
+      </div>
+    </div>
+
+    <!-- エラー・イベントなし -->
+    <div id="errorState" class="empty-state" style="display:none;">
+      <div class="empty-icon">⚠️</div>
+      <div class="empty-title">イベントが見つかりませんでした</div>
+      <a href="index.html" class="btn btn-secondary" style="margin-top:16px;">トップページに戻る</a>
+    </div>
+
+    <!-- イベント情報 -->
+    <div id="eventContent" style="display:none;">
+
+      <div class="event-info-card">
+        <div class="event-info-header">
+          <div class="event-big-date">
+            <div class="month" id="evMonth"></div>
+            <div class="day"   id="evDay"></div>
+            <div class="week"  id="evWeek"></div>
+          </div>
+          <div class="event-info-body">
+            <div class="event-type-badge" id="evTypeBadge"></div>
+            <div class="event-info-title" id="evTitle"></div>
+            <div class="event-detail-list">
+              <div class="event-detail-item" id="evTimeRow" style="display:none;">
+                <span class="event-detail-icon">🕐</span>
+                <span class="event-detail-text" id="evTime"></span>
+              </div>
+              <div class="event-detail-item">
+                <span class="event-detail-icon">📍</span>
+                <span class="event-detail-text" id="evVenue"></span>
+              </div>
+              <div class="event-detail-item" id="evAddressRow" style="display:none;">
+                <span class="event-detail-icon">🗺️</span>
+                <span class="event-detail-text" id="evAddress"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="evNoteBox" class="event-note-box" style="display:none;"></div>
+        <div style="margin-top:20px;">
+          <a href="contact.html" class="btn btn-primary">このイベントについてお問い合わせする →</a>
+        </div>
+      </div>
+
+      <!-- 参加猫一覧 -->
+      <div id="catsSection">
+        <div class="cats-section-title">参加する猫たち</div>
+        <div class="cats-count" id="catsCount"></div>
+        <div class="cat-grid" id="catGrid"></div>
+        <div id="noCats" class="empty-state" style="display:none;">
+          <div class="empty-icon">🐱</div>
+          <div class="empty-title">参加猫は未定です</div>
+          <p style="font-size:14px;">詳しくはお問い合わせください。</p>
+          <a href="contact.html" class="btn btn-secondary" style="margin-top:16px;">お問い合わせする</a>
+        </div>
+      </div>
+
+      <hr class="divider" style="margin-top:48px;">
+      <div class="cta-box">
+        <h3>気になった猫がいたら</h3>
+        <p>まずはお気軽にお問い合わせください。当日会場でもスタッフにお声がけいただけます。</p>
+        <a href="contact.html" class="btn btn-primary btn-lg">お問い合わせする →</a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- 猫詳細モーダル -->
+<div class="modal-overlay" id="catModal">
+  <div class="modal">
+    <div class="modal-img" id="modalImg">
+      <button class="modal-close-btn" onclick="closeModal()">✕</button>
+      🐱
+    </div>
+    <div class="modal-body">
+      <div class="modal-cat-name" id="modalName"></div>
+      <div class="modal-cat-kana" id="modalKana"></div>
+      <div class="modal-tags"    id="modalTags"></div>
+      <div class="modal-desc"    id="modalDesc"></div>
+      <div class="modal-checklist" id="modalHealth"></div>
+      <div class="modal-actions">
+        <a href="contact.html" class="btn btn-primary" style="flex:1;">お問い合わせする →</a>
+        <a id="modalDetailLink" href="cats.html" class="btn btn-secondary" style="flex:1;">一覧で見る</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div><div class="footer-logo">愛アイクラブ 里親募集</div><p class="footer-desc">保護猫たちに温かい家族を。愛アイクラブは三重県を拠点に活動する保護団体です。</p></div>
+      <div class="footer-col"><h4>猫を探す</h4><ul><li><a href="cats.html">猫一覧</a></li><li><a href="flow.html">お迎えの流れ</a></li><li><a href="conditions.html">飼い主の条件</a></li></ul></div>
+      <div class="footer-col"><h4>情報</h4><ul><li><a href="column.html">コラム</a></li><li><a href="contact.html">お問い合わせ</a></li></ul></div>
+      <div class="footer-col"><h4>団体向け</h4><ul><li><a href="login.html">ログイン</a></li></ul></div>
+    </div>
+    <div class="footer-bottom"><span class="footer-copy">© 2026 愛アイクラブ 里親募集サイト（仮）</span></div>
+  </div>
+</footer>
+
+<script>
+  function toggleMenu() { document.getElementById('mobileMenu').classList.toggle('open'); }
+
+  const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const WEEKS  = ['日','月','火','水','木','金','土'];
+
+  let currentCat = null;
+
+  // 猫カードのHTML
+  function catCardHtml(cat) {
+    const firstImg = (cat.imageUrls && cat.imageUrls.length > 0)
+      ? cat.imageUrls[0] : (cat.imageUrl || '');
+    const statusMap = { '募集中':'badge-open', 'トライアル中':'badge-trial', '譲渡決定':'badge-done' };
+    const badgeCls  = statusMap[cat.status] || 'badge-open';
+    return `
+      <div class="cat-card" onclick="openCatModal('${cat.id}')" style="cursor:pointer;">
+        <div class="cat-card-img">
+          ${firstImg
+            ? `<img src="${firstImg}" alt="${cat.name}" onerror="this.parentElement.innerHTML='🐱'">`
+            : '🐱'}
+          <span class="cat-badge ${badgeCls}">${cat.status||'募集中'}</span>
+        </div>
+        <div class="cat-card-body">
+          <div class="cat-card-name">${cat.name}</div>
+          <div class="cat-card-meta">${[cat.age, cat.sex, cat.color].filter(Boolean).join('・')}</div>
+        </div>
+      </div>`;
+  }
+
+  // 猫詳細モーダルを開く
+  function openCatModal(id) {
+    currentCat = window._eventCats ? window._eventCats.find(c => c.id === id) : null;
+    if (!currentCat) return;
+    const cat = currentCat;
+
+    const firstImg = (cat.imageUrls && cat.imageUrls.length > 0)
+      ? cat.imageUrls[0] : (cat.imageUrl || '');
+    const modalImg = document.getElementById('modalImg');
+    modalImg.innerHTML = `<button class="modal-close-btn" onclick="closeModal()">✕</button>` +
+      (firstImg
+        ? `<img src="${firstImg}" alt="${cat.name}" onerror="this.parentElement.innerHTML='🐱'">`
+        : '🐱');
+    const statusMap = { '募集中':'badge-open', 'トライアル中':'badge-trial', '譲渡決定':'badge-done' };
+    const badgeCls  = statusMap[cat.status] || 'badge-open';
+    modalImg.innerHTML += `<span class="cat-badge ${badgeCls}" style="position:absolute;top:12px;left:12px;">${cat.status||'募集中'}</span>`;
+
+    document.getElementById('modalName').textContent = cat.name || '';
+    document.getElementById('modalKana').textContent = cat.kana || '';
+
+    const tags = [cat.age, cat.sex, cat.color, cat.breed].filter(Boolean);
+    document.getElementById('modalTags').innerHTML =
+      tags.map(t => `<span class="modal-tag">${t}</span>`).join('');
+
+    document.getElementById('modalDesc').textContent = cat.desc || '';
+
+    const h = cat.health || {};
+    const healthItems = [
+      { key:'vaccine', label:'ワクチン接種済み' },
+      { key:'flea',    label:'ノミ・ダニ駆除済み' },
+      { key:'fiv',     label:'FIV・FeLV検査済み' },
+      { key:'neuter',  label:'去勢・避妊手術済み' },
+    ];
+    document.getElementById('modalHealth').innerHTML =
+      healthItems.map(item => `
+        <div class="modal-check-item">
+          <div class="modal-check-icon ${h[item.key] ? 'check-ok' : 'check-ng'}">
+            ${h[item.key] ? '✓' : '✗'}
+          </div>
+          ${item.label}
+        </div>`
+      ).join('');
+
+    document.getElementById('catModal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    document.getElementById('catModal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  // モーダル外クリックで閉じる
+  document.getElementById('catModal').addEventListener('click', e => {
+    if (e.target === document.getElementById('catModal')) closeModal();
+  });
+</script>
+
+<script type="module">
+  import { db } from './firebase.js';
+  import { doc, getDoc, collection, getDocs, query, where, orderBy }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  // URLパラメータからイベントIDを取得
+  const params  = new URLSearchParams(location.search);
+  const eventId = params.get('id');
+
+  async function loadEventDetail() {
+    const loadingEl = document.getElementById('loadingState');
+    const errorEl   = document.getElementById('errorState');
+    const contentEl = document.getElementById('eventContent');
+
+    if (!eventId) {
+      loadingEl.style.display = 'none';
+      errorEl.style.display   = 'block';
+      return;
+    }
+
+    try {
+      // イベントデータを取得
+      const evSnap = await getDoc(doc(db, 'events', eventId));
+      if (!evSnap.exists()) {
+        loadingEl.style.display = 'none';
+        errorEl.style.display   = 'block';
+        return;
+      }
+      const ev = { id: evSnap.id, ...evSnap.data() };
+
+      // ページタイトル・パンくず
+      document.title = ev.title + '｜愛アイクラブ';
+      document.getElementById('breadcrumbTitle').textContent = ev.title;
+
+      // 日付
+      const d = new Date(ev.date + 'T00:00:00');
+      document.getElementById('evMonth').textContent = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()];
+      document.getElementById('evDay').textContent   = d.getDate();
+      document.getElementById('evWeek').textContent  = ['日','月','火','水','木','金','土'][d.getDay()] + '曜日';
+
+      // 種別バッジ
+      const typeEl  = document.getElementById('evTypeBadge');
+      const typeMap = { '譲渡会':'type-joto', 'カフェ開放':'type-cafe' };
+      typeEl.textContent  = ev.type || '';
+      typeEl.className    = 'event-type-badge ' + (typeMap[ev.type] || 'type-other');
+
+      // タイトル・時間・会場
+      document.getElementById('evTitle').textContent = ev.title || '';
+      if (ev.startTime) {
+        const timeStr = ev.startTime + (ev.endTime ? ' 〜 ' + ev.endTime : '');
+        document.getElementById('evTime').textContent      = timeStr;
+        document.getElementById('evTimeRow').style.display = 'flex';
+      }
+      document.getElementById('evVenue').textContent = ev.venue || '';
+      if (ev.address) {
+        document.getElementById('evAddress').textContent      = ev.address;
+        document.getElementById('evAddressRow').style.display = 'flex';
+      }
+      if (ev.note) {
+        const noteBox = document.getElementById('evNoteBox');
+        noteBox.textContent      = ev.note;
+        noteBox.style.display    = 'block';
+      }
+
+      // 参加猫一覧を取得
+      const catIds = ev.catIds || [];
+      let cats = [];
+      if (catIds.length > 0) {
+        // Firestoreから猫データを取得（10件以下ならin句で一括取得）
+        const catSnap = await getDocs(collection(db, 'cats'));
+        const allCats = catSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+        cats = allCats.filter(c => catIds.includes(c.id));
+      }
+
+      // グローバルに保存（モーダル表示で使用）
+      window._eventCats = cats;
+
+      // 猫グリッドを描画
+      const grid    = document.getElementById('catGrid');
+      const noCats  = document.getElementById('noCats');
+      const countEl = document.getElementById('catsCount');
+
+      if (cats.length === 0) {
+        grid.style.display   = 'none';
+        noCats.style.display = 'block';
+        countEl.textContent  = '';
+      } else {
+        grid.style.display   = '';
+        noCats.style.display = 'none';
+        countEl.textContent  = cats.length + '匹が参加予定です';
+        grid.innerHTML = cats.map(cat => catCardHtml(cat)).join('');
+      }
+
+      loadingEl.style.display = 'none';
+      contentEl.style.display = 'block';
+
+    } catch (e) {
+      loadingEl.style.display = 'none';
+      errorEl.style.display   = 'block';
+      console.error('イベント読み込みエラー:', e);
+    }
+  }
+
+  loadEventDetail();
+</script>
+
+</body>
+</html>
