@@ -13,22 +13,29 @@
     .admin-tab { font-size: 13px; font-weight: 600; padding: 12px 18px; color: var(--text-muted); border-bottom: 3px solid transparent; cursor: pointer; transition: all var(--transition); white-space: nowrap; }
     .admin-tab:hover { color: var(--primary); }
     .admin-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
-    .event-layout { display: grid; grid-template-columns: 1fr 360px; gap: 32px; align-items: start; }
+
+    .event-layout { display: grid; grid-template-columns: 1fr 420px; gap: 32px; align-items: start; }
+
+    /* イベント一覧 */
     .event-list { display: flex; flex-direction: column; gap: 10px; }
-    .event-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px 20px; display: flex; align-items: center; gap: 16px; transition: all var(--transition); }
+    .event-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px 20px; display: flex; align-items: flex-start; gap: 16px; transition: all var(--transition); }
     .event-card:hover { box-shadow: var(--shadow-sm); }
     .event-date-box { text-align: center; background: var(--primary-light); border-radius: var(--radius-md); padding: 8px 14px; flex-shrink: 0; min-width: 60px; }
     .event-date-box .month { font-size: 10px; font-weight: 700; color: var(--primary); text-transform: uppercase; }
     .event-date-box .day { font-size: 24px; font-weight: 800; color: var(--primary-dark); line-height: 1.1; }
     .event-body { flex: 1; min-width: 0; }
     .event-title-text { font-size: 14px; font-weight: 700; color: var(--primary-dark); margin-bottom: 4px; }
-    .event-meta { font-size: 12px; color: var(--text-muted); display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
-    .event-actions { display: flex; gap: 6px; flex-shrink: 0; }
+    .event-meta { font-size: 12px; color: var(--text-muted); display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 4px; }
+    .event-cats-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+    .event-cat-chip { font-size: 11px; padding: 2px 8px; border-radius: 99px; background: var(--primary-light); color: var(--primary-dark); font-weight: 500; }
+    .event-actions { display: flex; gap: 6px; flex-shrink: 0; flex-direction: column; }
     .btn-edit-sm { font-size: 12px; padding: 5px 12px; border-radius: var(--radius-sm); border: 1.5px solid var(--primary); background: transparent; color: var(--primary); cursor: pointer; font-family: var(--font-sans); font-weight: 600; transition: all var(--transition); white-space: nowrap; }
     .btn-edit-sm:hover { background: var(--primary); color: var(--white); }
     .btn-delete-sm { font-size: 12px; padding: 5px 12px; border-radius: var(--radius-sm); border: 1.5px solid #c0392b; background: transparent; color: #c0392b; cursor: pointer; font-family: var(--font-sans); font-weight: 600; transition: all var(--transition); white-space: nowrap; }
     .btn-delete-sm:hover { background: #c0392b; color: var(--white); }
-    .form-card { background: var(--white); border-radius: var(--radius-lg); border: 1px solid var(--border); padding: 24px; position: sticky; top: 80px; }
+
+    /* フォーム */
+    .form-card { background: var(--white); border-radius: var(--radius-lg); border: 1px solid var(--border); padding: 24px; position: sticky; top: 80px; max-height: calc(100vh - 100px); overflow-y: auto; }
     .form-card-title { font-size: 15px; font-weight: 800; color: var(--primary-dark); margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px solid var(--primary-light); display: flex; align-items: center; justify-content: space-between; }
     .form-group { margin-bottom: 14px; }
     .form-label { display: block; font-size: 12px; font-weight: 700; color: var(--text-muted); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.04em; }
@@ -38,28 +45,52 @@
     .form-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .form-actions { display: flex; gap: 8px; margin-top: 16px; }
     .loading-btn { opacity: 0.7; cursor: not-allowed; pointer-events: none; }
+
+    /* 参加猫選択エリア */
+    .cat-select-area { border: 1.5px solid var(--border-md); border-radius: var(--radius-md); max-height: 240px; overflow-y: auto; }
+    .cat-select-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-bottom: 1px solid var(--border); cursor: pointer; transition: background var(--transition); user-select: none; }
+    .cat-select-item:last-child { border-bottom: none; }
+    .cat-select-item:hover { background: var(--gray-50); }
+    .cat-select-item input[type=checkbox] { accent-color: var(--primary); width: 16px; height: 16px; flex-shrink: 0; cursor: pointer; }
+    .cat-select-thumb { width: 36px; height: 36px; border-radius: var(--radius-sm); background: var(--gray-200); flex-shrink: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+    .cat-select-thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .cat-select-info { flex: 1; min-width: 0; }
+    .cat-select-name { font-size: 13px; font-weight: 600; color: var(--text); }
+    .cat-select-meta { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+    .cat-select-msg { padding: 20px 12px; text-align: center; font-size: 13px; color: var(--text-muted); }
+
+    /* スケルトン */
     .skeleton { background: var(--gray-200); border-radius: var(--radius-md); animation: skeleton-pulse 1.4s ease-in-out infinite; }
     @keyframes skeleton-pulse { 0%,100%{opacity:1}50%{opacity:0.4} }
+
+    /* 削除確認モーダル */
     .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 200; align-items: center; justify-content: center; padding: 20px; }
     .modal-overlay.open { display: flex; }
     .modal { background: var(--white); border-radius: var(--radius-xl); padding: 28px; width: 100%; max-width: 380px; box-shadow: var(--shadow-lg); }
     .modal-title { font-size: 17px; font-weight: 800; color: var(--primary-dark); margin-bottom: 12px; }
     .modal-body { font-size: 14px; color: var(--text-muted); line-height: 1.7; margin-bottom: 20px; }
     .modal-actions { display: flex; gap: 10px; }
+
     .type-badge { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px; white-space: nowrap; }
     .type-joto  { background: #d4edd4; color: #1a5a1a; }
     .type-cafe  { background: var(--primary-light); color: var(--primary-dark); }
     .type-other { background: var(--gray-100); color: var(--text-muted); }
+
     .empty-state { text-align: center; padding: 48px 24px; color: var(--text-muted); }
     .empty-icon { font-size: 40px; margin-bottom: 12px; }
-    @media (max-width: 900px) { .event-layout { grid-template-columns: 1fr; } .form-card { position: static; } .form-2col { grid-template-columns: 1fr; } }
+
+    @media (max-width: 960px) {
+      .event-layout { grid-template-columns: 1fr; }
+      .form-card { position: static; max-height: none; }
+      .form-2col { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
 
 <nav class="nav">
   <div class="nav-inner">
-    <a href="index-main.html" class="nav-logo">愛アイ<span>クラブ</span> 里親募集</a>
+    <a href="index.html" class="nav-logo">愛アイ<span>クラブ</span> 里親募集</a>
     <ul class="nav-links">
       <li><a href="cats.html">猫を探す</a></li>
       <li><a href="column.html">コラム</a></li>
@@ -74,7 +105,7 @@
 
 <div class="breadcrumb">
   <div class="breadcrumb-inner">
-    <a href="index-main.html">管理トップ</a><span class="sep">›</span>イベント管理
+    <a href="index.html">管理トップ</a><span class="sep">›</span>イベント管理
   </div>
 </div>
 
@@ -93,7 +124,9 @@
     <div style="margin-bottom:24px;">
       <span class="section-label">団体管理</span>
       <h1 class="section-title">イベント管理</h1>
-      <p style="font-size:14px;color:var(--text-muted);">譲渡会・イベントの登録・編集・削除ができます。トップページのカレンダーに自動反映されます。</p>
+      <p style="font-size:14px;color:var(--text-muted);">
+        譲渡会・イベントの登録・編集・削除ができます。参加する猫を選ぶと、イベントページに猫一覧が表示されます。
+      </p>
     </div>
 
     <div class="event-layout">
@@ -106,9 +139,9 @@
         </div>
 
         <div id="skeletonList" style="display:flex;flex-direction:column;gap:10px;">
-          <div style="height:80px;border-radius:var(--radius-lg);" class="skeleton"></div>
-          <div style="height:80px;border-radius:var(--radius-lg);" class="skeleton"></div>
-          <div style="height:80px;border-radius:var(--radius-lg);" class="skeleton"></div>
+          <div style="height:88px;border-radius:var(--radius-lg);" class="skeleton"></div>
+          <div style="height:88px;border-radius:var(--radius-lg);" class="skeleton"></div>
+          <div style="height:88px;border-radius:var(--radius-lg);" class="skeleton"></div>
         </div>
 
         <div class="event-list" id="eventList" style="display:none;"></div>
@@ -177,6 +210,18 @@
               placeholder="例：入場無料・予約不要。当日直接会場にお越しください。"></textarea>
           </div>
 
+          <!-- ★ 参加猫の選択 -->
+          <div class="form-group">
+            <label class="form-label">参加する猫を選択</label>
+            <div class="cat-select-area" id="catSelectArea">
+              <div class="cat-select-msg">猫データを読み込み中...</div>
+            </div>
+            <p style="font-size:11px;color:var(--text-muted);margin-top:6px;line-height:1.6;">
+              ✅ チェックした猫がイベントページに表示されます。<br>
+              選択しなくてもイベントは登録できます。
+            </p>
+          </div>
+
           <div class="form-actions">
             <button class="btn btn-outline btn-sm" onclick="resetForm()" style="flex:1;">リセット</button>
             <button class="btn btn-primary" id="submitBtn" onclick="submitEvent()" style="flex:2;">追加する</button>
@@ -205,6 +250,7 @@
   let editDocId   = null;
   let deleteDocId = null;
   let allEvents   = [];
+  let allCats     = [];
 
   const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
@@ -226,6 +272,39 @@
     return `<span class="type-badge ${cls}">${type||'その他'}</span>`;
   }
 
+  // チェックされた猫IDを取得
+  function getSelectedCatIds() {
+    return Array.from(document.querySelectorAll('.cat-check:checked')).map(cb => cb.value);
+  }
+
+  // 参加猫の選択チェックボックスを描画
+  function renderCatSelect(selectedIds = []) {
+    const area = document.getElementById('catSelectArea');
+    if (allCats.length === 0) {
+      area.innerHTML = '<div class="cat-select-msg">登録されている猫がいません。先に猫を登録してください。</div>';
+      return;
+    }
+    area.innerHTML = allCats.map(cat => {
+      const firstImg = (cat.imageUrls && cat.imageUrls.length > 0)
+        ? cat.imageUrls[0] : (cat.imageUrl || '');
+      const thumbHtml = firstImg
+        ? `<img src="${firstImg}" alt="${cat.name}" onerror="this.parentElement.innerHTML='🐱'">`
+        : '🐱';
+      const checked = selectedIds.includes(cat.id) ? 'checked' : '';
+      const meta = [cat.age, cat.sex, cat.color].filter(Boolean).join('・');
+      return `
+        <label class="cat-select-item">
+          <input type="checkbox" class="cat-check" value="${cat.id}" ${checked}>
+          <div class="cat-select-thumb">${thumbHtml}</div>
+          <div class="cat-select-info">
+            <div class="cat-select-name">${cat.name}</div>
+            <div class="cat-select-meta">${meta}</div>
+          </div>
+        </label>`;
+    }).join('');
+  }
+
+  // イベント一覧を描画
   function renderList(events) {
     const listEl  = document.getElementById('eventList');
     const emptyEl = document.getElementById('emptyState');
@@ -236,12 +315,21 @@
     }
     listEl.style.display  = 'flex';
     emptyEl.style.display = 'none';
+
     const sorted = [...events].sort((a,b) => (a.date||'').localeCompare(b.date||''));
     listEl.innerHTML = sorted.map(ev => {
       const { month, day } = getMonthDay(ev.date);
       const timeStr = ev.startTime
-        ? ev.startTime + (ev.endTime ? ' 〜 ' + ev.endTime : '')
-        : '';
+        ? ev.startTime + (ev.endTime ? ' 〜 ' + ev.endTime : '') : '';
+      // 参加猫チップ
+      const catIds   = ev.catIds || [];
+      const catChips = catIds
+        .map(id => {
+          const cat = allCats.find(c => c.id === id);
+          return cat ? `<span class="event-cat-chip">🐱 ${cat.name}</span>` : '';
+        })
+        .filter(Boolean).join('');
+
       return `
         <div class="event-card">
           <div class="event-date-box">
@@ -255,6 +343,7 @@
               <span>📍 ${ev.venue||'-'}</span>
               ${timeStr ? `<span>🕐 ${timeStr}</span>` : ''}
             </div>
+            ${catChips ? `<div class="event-cats-row">${catChips}</div>` : ''}
           </div>
           <div class="event-actions">
             <button class="btn-edit-sm"   onclick="loadEditForm('${ev.id}')">編集</button>
@@ -264,6 +353,7 @@
     }).join('');
   }
 
+  // フォームをリセット（新規作成モード）
   function resetForm() {
     editDocId = null;
     document.getElementById('formTitle').textContent      = '新規イベントを追加';
@@ -274,8 +364,10 @@
     document.getElementById('evType').value = '';
     document.getElementById('formError').style.display   = 'none';
     document.getElementById('formSuccess').style.display = 'none';
+    renderCatSelect([]);
   }
 
+  // 編集フォームに値をセット
   function loadEditForm(id) {
     const ev = allEvents.find(e => e.id === id);
     if (!ev) return;
@@ -293,6 +385,7 @@
     document.getElementById('evNote').value      = ev.note      || '';
     document.getElementById('formError').style.display   = 'none';
     document.getElementById('formSuccess').style.display = 'none';
+    renderCatSelect(ev.catIds || []);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
@@ -321,13 +414,16 @@
   import { auth, db } from './firebase.js';
   import { onAuthStateChanged, signOut }
     from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-  import { collection, getDocs, doc, addDoc, updateDoc, deleteDoc, orderBy, query, serverTimestamp }
-    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import {
+    collection, getDocs, doc, addDoc, updateDoc, deleteDoc,
+    orderBy, query, serverTimestamp
+  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
+  // ── ログイン状態チェック ──
   onAuthStateChanged(auth, (user) => {
     if (!user) { location.href = 'login.html'; return; }
     document.getElementById('userLabel').textContent = user.email;
-    loadEvents();
+    loadAll();
   });
 
   window.handleLogout = async function () {
@@ -335,21 +431,27 @@
     location.href = 'login.html';
   };
 
-  async function loadEvents() {
+  // ── 猫・イベントを並行読み込み ──
+  async function loadAll() {
     const skeleton = document.getElementById('skeletonList');
     try {
-      const q = query(collection(db, 'events'), orderBy('date', 'asc'));
-      const snapshot = await getDocs(q);
-      allEvents = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+      const [catSnap, evSnap] = await Promise.all([
+        getDocs(query(collection(db, 'cats'),   orderBy('createdAt', 'desc'))),
+        getDocs(query(collection(db, 'events'), orderBy('date', 'asc'))),
+      ]);
+      allCats   = catSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+      allEvents = evSnap.docs.map(d => ({ id: d.id, ...d.data() }));
       skeleton.style.display = 'none';
+      renderCatSelect([]);
       renderList(allEvents);
     } catch (e) {
       skeleton.style.display = 'none';
       document.getElementById('emptyState').style.display = 'block';
-      console.error('イベント読み込みエラー:', e);
+      console.error('読み込みエラー:', e);
     }
   }
 
+  // ── 追加・更新 ──
   window.submitEvent = async function () {
     const title = document.getElementById('evTitle').value.trim();
     const type  = document.getElementById('evType').value;
@@ -376,6 +478,7 @@
       venue,
       address:   document.getElementById('evAddress').value.trim(),
       note:      document.getElementById('evNote').value.trim(),
+      catIds:    getSelectedCatIds(),  // ← 選択された猫IDを保存
     };
 
     try {
@@ -402,6 +505,7 @@
     }
   };
 
+  // ── 削除 ──
   window.confirmDelete = async function () {
     if (!deleteDocId) return;
     const btn = document.getElementById('confirmDeleteBtn');
