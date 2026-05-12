@@ -275,67 +275,112 @@ function toggleMenu() {
   document.getElementById('mobileMenu').classList.toggle('open');
 }
 </script>
-  <script type="module">
+<script type="module">
   import { db } from './firebase.js';
-  import { collection, getDocs, orderBy, query }
+  import { collection, getDocs, orderBy, query, where, limit }
     from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
   const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun',
                   'Jul','Aug','Sep','Oct','Nov','Dec'];
 
+  // ── イベント読み込み（既存のまま） ──
   async function loadEvents() {
     const listEl = document.getElementById('calendarList');
     try {
       const today = new Date().toISOString().split('T')[0];
       const q = query(collection(db, 'events'), orderBy('date', 'asc'));
       const snapshot = await getDocs(q);
-
-      // 今日以降のイベントのみ・最大5件表示
       const events = snapshot.docs
         .map(d => ({ id: d.id, ...d.data() }))
         .filter(ev => ev.date >= today)
         .slice(0, 5);
-
       if (events.length === 0) {
-        listEl.innerHTML = `
-          <div style="padding:24px;text-align:center;color:var(--text-muted);font-size:14px;">
-            現在予定されているイベントはありません。
-          </div>`;
+        listEl.innerHTML = `<div style="padding:24px;text-align:center;color:var(--text-muted);font-size:14px;">現在予定されているイベントはありません。</div>`;
         return;
       }
-
       listEl.innerHTML = events.map(ev => {
         const d = new Date(ev.date + 'T00:00:00');
         const month = MONTHS[d.getMonth()];
         const day   = d.getDate();
         const timeStr = ev.startTime
-          ? ` ${ev.startTime}${ev.endTime ? ' 〜 ' + ev.endTime : ''}`
-          : '';
-      return `
-  <div class="calendar-item" onclick="location.href='event-detail.html?id=${ev.id}'"
-    style="cursor:pointer;transition:background 0.2s;">
-    <div class="calendar-date">
-      <div class="month">${month}</div>
-      <div class="day">${day}</div>
-    </div>
-    <div class="calendar-info">
-      <div class="calendar-title">${ev.title}${timeStr}</div>
-      <div class="calendar-place">📍 ${ev.venue || ''}${ev.address ? '　' + ev.address : ''}</div>
-      ${ev.note ? `<div class="calendar-note">${ev.note}</div>` : ''}
-    </div>
-    <div style="font-size:12px;color:var(--primary);font-weight:600;flex-shrink:0;align-self:center;">
-      参加猫を見る →
-    </div>
-  </div>`;
+          ? ` ${ev.startTime}${ev.endTime ? ' 〜 ' + ev.endTime : ''}` : '';
+        return `
+          <div class="calendar-item" onclick="location.href='event-detail.html?id=${ev.id}'"
+            style="cursor:pointer;">
+            <div class="calendar-date">
+              <div class="month">${month}</div>
+              <div class="day">${day}</div>
+            </div>
+            <div class="calendar-info">
+              <div class="calendar-title">${ev.title}${timeStr}</div>
+              <div class="calendar-place">📍 ${ev.venue || ''}${ev.address ? '　' + ev.address : ''}</div>
+              ${ev.note ? `<div class="calendar-note">${ev.note}</div>` : ''}
+            </div>
+            <div style="font-size:12px;color:var(--primary);font-weight:600;flex-shrink:0;align-self:center;">
+              参加猫を見る →
+            </div>
+          </div>`;
       }).join('');
-
     } catch (e) {
       listEl.innerHTML = '';
       console.error('イベント読み込みエラー:', e);
     }
   }
 
+  // ── 猫一覧読み込み（追加） ──
+  async function loadTopCats() {
+    const grid    = document.getElementById('topCatGrid');
+    const emptyEl = document.getElementById('topCatEmpty');
+    if (!grid) return;
+    try {
+      const q = query(
+        collection(db, 'cats'),
+        orderBy('createdAt', 'desc'),
+        limit(6)   // トップページは最新6匹まで表示
+      );
+      const snapshot = await getDocs(q);
+      const cats = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+
+      if (cats.length === 0) {
+        grid.style.display    = 'none';
+        emptyEl.style.display = 'block';
+        return;
+      }
+
+      const statusMap = {
+        '募集中':      'badge-open',
+        'トライアル中': 'badge-trial',
+        '譲渡決定':    'badge-done',
+      };
+
+      grid.innerHTML = cats.map(cat => {
+        const firstImg = (cat.imageUrls && cat.imageUrls.length > 0)
+          ? cat.imageUrls[0] : (cat.imageUrl || '');
+        const badgeCls = statusMap[cat.status] || 'badge-open';
+        const thumbHtml = firstImg
+          ? `<img src="${firstImg}" alt="${cat.name}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='🐱'">`
+          : '🐱';
+        const meta = [cat.age, cat.sex, cat.color].filter(Boolean).join('・');
+        return `
+          <div class="cat-card" onclick="location.href='cats.html'" style="cursor:pointer;">
+            <div class="cat-card-img">
+              ${thumbHtml}
+              <span class="cat-badge ${badgeCls}">${cat.status || '募集中'}</span>
+            </div>
+            <div class="cat-card-body">
+              <div class="cat-card-name">${cat.name}</div>
+              <div class="cat-card-meta">${meta}</div>
+            </div>
+          </div>`;
+      }).join('');
+
+    } catch (e) {
+      console.error('猫読み込みエラー:', e);
+    }
+  }
+
   loadEvents();
+  loadTopCats();  // ← 追加
 </script>
 </body>
 </html>
