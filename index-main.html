@@ -53,6 +53,9 @@
     margin-top: 3px;
     line-height: 1.5;
 }
+.calendar-item:hover {
+  background: var(--accent);
+}
   </style>
 </head>
 <body>
@@ -368,8 +371,9 @@ function toggleMenu() {
         const timeStr = ev.startTime
           ? ` ${ev.startTime}${ev.endTime ? ' 〜 ' + ev.endTime : ''}`
           : '';
-       return `
-  <div class="calendar-item">
+      return `
+  <div class="calendar-item" onclick="location.href='event-detail.html?id=${ev.id}'"
+    style="cursor:pointer;transition:background 0.2s;">
     <div class="calendar-date">
       <div class="month">${month}</div>
       <div class="day">${day}</div>
@@ -378,6 +382,9 @@ function toggleMenu() {
       <div class="calendar-title">${ev.title}${timeStr}</div>
       <div class="calendar-place">📍 ${ev.venue || ''}${ev.address ? '　' + ev.address : ''}</div>
       ${ev.note ? `<div class="calendar-note">${ev.note}</div>` : ''}
+    </div>
+    <div style="font-size:12px;color:var(--primary);font-weight:600;flex-shrink:0;align-self:center;">
+      参加猫を見る →
     </div>
   </div>`;
       }).join('');
