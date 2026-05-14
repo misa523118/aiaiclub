@@ -63,7 +63,8 @@
     .status-btn.sel-done  { background: #e0e0e0; color: #555;    border-color: #aaa; }
     .check-grid-sm { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
     .check-label-sm { display: flex; align-items: center; gap: 6px; font-size: 13px; cursor: pointer; }
-    .check-label-sm input { accent-color: var(--primary); width: 14px; height: 14px; }
+    .check-label-sm input[type=checkbox],
+    .edit-form-group input[type=checkbox] { width: 16px !important; height: 16px !important; padding: 0 !important; border: none !important; box-shadow: none !important; border-radius: 3px !important; appearance: auto !important; -webkit-appearance: checkbox !important; accent-color: var(--primary); cursor: pointer; flex-shrink: 0; }
     .loading-btn { opacity: 0.7; cursor: not-allowed; pointer-events: none; }
 
     /* 削除確認モーダル */
