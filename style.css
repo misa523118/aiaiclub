@@ -2,29 +2,30 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --primary: #2a5a72;
-  --primary-light: #D4E1E8;
-  --primary-dark: #1a3a4a;
-  --accent: #e8f0f4;
+  /* ===== 青緑パステルカラー ===== */
+  --primary: #79c4c1;        /* メインカラー：青緑 */
+  --primary-light: #e0f4f3;  /* 薄い青緑（背景・バッジなど） */
+  --primary-dark: #2a7a77;   /* 濃い青緑（見出し・強調） */
+  --accent: #f0fafa;         /* アクセント背景 */
   --white: #ffffff;
-  --gray-50: #f7f9fa;
-  --gray-100: #eef1f3;
-  --gray-200: #dce8ee;
-  --gray-400: #9ab0bc;
-  --gray-600: #5a7a8a;
-  --gray-800: #2a4a5a;
-  --text: #1a3a4a;
-  --text-muted: #5a7a8a;
-  --text-light: #8aacbc;
-  --border: rgba(42,90,114,0.15);
-  --border-md: rgba(42,90,114,0.3);
+  --gray-50: #f5fafa;
+  --gray-100: #e8f5f4;
+  --gray-200: #cceae9;
+  --gray-400: #8ecbc9;
+  --gray-600: #4a9e9b;
+  --gray-800: #2a6e6c;
+  --text: #1a4a48;           /* テキスト：深い青緑 */
+  --text-muted: #4a8a88;     /* サブテキスト */
+  --text-light: #7abcba;     /* 薄いテキスト */
+  --border: rgba(121,196,193,0.2);
+  --border-md: rgba(121,196,193,0.4);
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 16px;
   --radius-xl: 24px;
-  --shadow-sm: 0 1px 4px rgba(26,58,74,0.08);
-  --shadow-md: 0 4px 16px rgba(26,58,74,0.10);
-  --shadow-lg: 0 8px 32px rgba(26,58,74,0.12);
+  --shadow-sm: 0 1px 4px rgba(42,122,119,0.08);
+  --shadow-md: 0 4px 16px rgba(42,122,119,0.12);
+  --shadow-lg: 0 8px 32px rgba(42,122,119,0.14);
   --font-sans: 'Noto Sans JP', sans-serif;
   --transition: 0.2s ease;
 }
@@ -59,7 +60,7 @@ button { cursor: pointer; font-family: var(--font-sans); }
 .breadcrumb .sep { margin: 0 6px; color: var(--text-light); }
 
 /* ===== ヒーロー ===== */
-.hero { background: linear-gradient(135deg, var(--primary-light) 0%, var(--accent) 100%); padding: 72px 24px; text-align: center; border-bottom: 1px solid var(--border); }
+.hero { background: linear-gradient(135deg, #cdeeed 0%, #f0fafa 100%); padding: 72px 24px; text-align: center; border-bottom: 1px solid var(--border); }
 .hero-sm { padding: 40px 24px; }
 .hero h1 { font-size: clamp(22px, 4vw, 38px); font-weight: 800; color: var(--primary-dark); letter-spacing: -0.03em; margin-bottom: 12px; line-height: 1.25; }
 .hero p { font-size: 15px; color: var(--gray-800); max-width: 480px; margin: 0 auto 28px; line-height: 1.7; }
@@ -67,7 +68,7 @@ button { cursor: pointer; font-family: var(--font-sans); }
 
 /* ===== ボタン ===== */
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 12px 28px; border-radius: var(--radius-md); font-size: 14px; font-weight: 600; border: none; transition: all var(--transition); cursor: pointer; font-family: var(--font-sans); white-space: nowrap; }
-.btn-primary { background: var(--primary); color: var(--white); box-shadow: var(--shadow-sm); }
+.btn-primary { background: var(--primary); color: var(--white); box-shadow: var(--shadow-sm); letter-spacing: 0.02em; }
 .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); box-shadow: var(--shadow-md); }
 .btn-secondary { background: var(--white); color: var(--primary); border: 1.5px solid var(--primary); }
 .btn-secondary:hover { background: var(--primary-light); }
