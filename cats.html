@@ -58,6 +58,28 @@
 
     /* 空・エラー状態 */
     .empty-state { text-align: center; padding: 72px 24px; color: var(--text-muted); }
+
+    /* ハートボタン */
+    .heart-btn {
+      position: absolute; top: 8px; right: 8px;
+      width: 32px; height: 32px; border-radius: 50%;
+      background: rgba(255,255,255,0.9);
+      border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; transition: all 0.2s;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+      z-index: 2;
+    }
+    .heart-btn:hover { transform: scale(1.15); background: #fff; }
+    .heart-btn.active { background: #ffe0e0; }
+    .fav-count {
+      position: absolute; bottom: 8px; right: 8px;
+      background: rgba(255,255,255,0.88);
+      border-radius: 99px; padding: 2px 8px;
+      font-size: 11px; font-weight: 700; color: #e05a5a;
+      display: flex; align-items: center; gap: 3px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.10);
+    }
     .empty-icon { font-size: 48px; margin-bottom: 16px; }
     .empty-title { font-size: 18px; font-weight: 700; color: var(--primary-dark); margin-bottom: 8px; }
     .empty-desc { font-size: 14px; line-height: 1.7; }
@@ -79,6 +101,12 @@
       <li><a href="conditions.html">飼い主の条件</a></li>
       <li><a href="column.html">コラム</a></li>
       <li><a href="contact.html">お問い合わせ</a></li>
+      <li>
+        <a href="favorites.html" style="display:flex;align-items:center;gap:4px;">
+          ❤️ お気に入り
+          <span id="favBadge" style="display:none;background:#e05a5a;color:#fff;border-radius:99px;padding:1px 6px;font-size:10px;font-weight:700;min-width:16px;text-align:center;"></span>
+        </a>
+      </li>
     </ul>
     <button class="nav-login-btn" onclick="location.href='login.html'">団体ログイン</button>
     <button class="nav-hamburger" onclick="toggleMenu()"><span></span><span></span><span></span></button>
@@ -276,6 +304,49 @@
     document.getElementById('mobileMenu').classList.toggle('open');
   }
 
+  // ===== お気に入り管理（ローカルストレージ） =====
+  const FAV_KEY = 'aiaiclub_favorites';
+
+  function getFavorites() {
+    try { return JSON.parse(localStorage.getItem(FAV_KEY) || '[]'); }
+    catch(e) { return []; }
+  }
+
+  function isFavorite(id) {
+    return getFavorites().includes(id);
+  }
+
+  function toggleFavorite(id, btn) {
+    let favs = getFavorites();
+    const wasFav = favs.includes(id);
+    if (wasFav) {
+      favs = favs.filter(f => f !== id);
+    } else {
+      favs.push(id);
+    }
+    localStorage.setItem(FAV_KEY, JSON.stringify(favs));
+
+    // ボタンの見た目を即時更新
+    btn.textContent = wasFav ? '🤍' : '❤️';
+    btn.classList.toggle('active', !wasFav);
+    btn.title = wasFav ? 'お気に入りに追加' : 'お気に入り解除';
+
+    // Firestoreのカウントを更新
+    updateFavoriteCount(id, wasFav ? -1 : 1);
+
+    // ナビのバッジを更新
+    updateFavBadge();
+  }
+
+  function updateFavBadge() {
+    const cnt = getFavorites().length;
+    const badge = document.getElementById('favBadge');
+    if (badge) {
+      badge.textContent = cnt > 0 ? cnt : '';
+      badge.style.display = cnt > 0 ? 'inline-flex' : 'none';
+    }
+  }
+
   // バッジHTML生成
   function badgeHtml(status, large) {
     const map = {
@@ -314,15 +385,21 @@
 
   // 猫カードHTML生成
   function catCardHtml(cat) {
-    // imageUrls（新形式）またはimageUrl（旧形式）に対応
     const firstImg = (cat.imageUrls && cat.imageUrls.length > 0)
-      ? cat.imageUrls[0]
-      : (cat.imageUrl || '');
+      ? cat.imageUrls[0] : (cat.imageUrl || '');
+    const isFav   = isFavorite(cat.id);
+    const favCnt  = cat.favoriteCount || 0;
     return `
       <div class="cat-card" onclick="showDetail('${cat.id}')" style="cursor:pointer;">
-        <div class="cat-card-img">
+        <div class="cat-card-img" style="position:relative;">
           ${imgContent(firstImg)}
           ${badgeHtml(cat.status)}
+          <button class="heart-btn ${isFav ? 'active' : ''}"
+            onclick="event.stopPropagation();toggleFavorite('${cat.id}',this)"
+            title="${isFav ? 'お気に入り解除' : 'お気に入りに追加'}">
+            ${isFav ? '❤️' : '🤍'}
+          </button>
+          ${favCnt > 0 ? `<div class="fav-count">❤️ ${favCnt}</div>` : ''}
         </div>
         <div class="cat-card-body">
           <div class="cat-card-name">${cat.name}</div>
@@ -563,9 +640,22 @@
   import {
     collection,
     getDocs,
+    doc,
+    getDoc,
+    updateDoc,
+    increment,
     orderBy,
     query,
   } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  // Firestoreのお気に入りカウントを増減
+  window.updateFavoriteCount = async function(id, delta) {
+    try {
+      await updateDoc(doc(db, 'cats', id), { favoriteCount: increment(delta) });
+    } catch(e) {
+      console.error('お気に入りカウント更新エラー:', e);
+    }
+  };
 
   async function loadCats() {
     const skeletonGrid = document.getElementById('skeletonGrid');
@@ -613,6 +703,8 @@
 
   // ページ読み込み時に実行
   loadCats();
+  // ナビのバッジをページ読み込み時に更新
+  document.addEventListener('DOMContentLoaded', () => updateFavBadge());
 </script>
 
 </body>
