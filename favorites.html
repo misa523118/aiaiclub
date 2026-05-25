@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>お気に入りの猫｜愛アイクラブ 里親募集</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* ハートボタン */
+    .heart-btn {
+      position: absolute; top: 8px; right: 8px;
+      width: 32px; height: 32px; border-radius: 50%;
+      background: rgba(255,255,255,0.9); border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; transition: all 0.2s;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.15); z-index: 2;
+    }
+    .heart-btn:hover { transform: scale(1.15); background: #fff; }
+    .heart-btn.active { background: #ffe0e0; }
+    .fav-count {
+      position: absolute; bottom: 8px; right: 8px;
+      background: rgba(255,255,255,0.88); border-radius: 99px;
+      padding: 2px 8px; font-size: 11px; font-weight: 700; color: #e05a5a;
+      display: flex; align-items: center; gap: 3px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.10);
+    }
+    /* スケルトン */
+    .skeleton { background: var(--gray-200); border-radius: var(--radius-md); animation: skeleton-pulse 1.4s ease-in-out infinite; }
+    @keyframes skeleton-pulse { 0%,100%{opacity:1}50%{opacity:0.4} }
+    /* 空状態 */
+    .empty-state { text-align: center; padding: 80px 24px; }
+    .empty-icon { font-size: 56px; margin-bottom: 16px; }
+    .empty-title { font-size: 20px; font-weight: 800; color: var(--primary-dark); margin-bottom: 8px; }
+    .empty-desc { font-size: 14px; color: var(--text-muted); line-height: 1.7; margin-bottom: 24px; }
+    /* 詳細モーダル */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; align-items: flex-start; justify-content: center; padding: 20px; overflow-y: auto; }
+    .modal-overlay.open { display: flex; }
+    .modal { background: var(--white); border-radius: var(--radius-xl); width: 100%; max-width: 620px; box-shadow: var(--shadow-lg); margin: auto; overflow: hidden; }
+    .modal-img { width: 100%; height: 260px; background: var(--gray-200); display: flex; align-items: center; justify-content: center; font-size: 72px; overflow: hidden; position: relative; }
+    .modal-img img { width: 100%; height: 100%; object-fit: cover; }
+    .modal-close-btn { position: absolute; top: 12px; right: 12px; width: 36px; height: 36px; border-radius: 50%; background: rgba(0,0,0,0.4); color: #fff; border: none; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 10; }
+    .modal-body { padding: 24px 28px; }
+    .modal-cat-name { font-size: 24px; font-weight: 800; color: var(--primary-dark); margin-bottom: 4px; }
+    .modal-cat-kana { font-size: 13px; color: var(--text-muted); margin-bottom: 12px; }
+    .modal-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+    .modal-tag { font-size: 12px; padding: 4px 12px; border-radius: 99px; background: var(--primary-light); color: var(--primary-dark); font-weight: 500; }
+    .modal-desc { font-size: 14px; color: var(--text-muted); line-height: 1.8; margin-bottom: 18px; }
+    .modal-profile { width: 100%; border-collapse: collapse; margin-bottom: 18px; }
+    .modal-profile tr { border-bottom: 1px solid var(--border); }
+    .modal-profile tr:last-child { border-bottom: none; }
+    .modal-profile td { padding: 8px 4px; font-size: 13px; }
+    .modal-profile td:first-child { color: var(--text-muted); width: 100px; }
+    .modal-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    .remove-fav-btn { font-size: 13px; padding: 10px 18px; border-radius: var(--radius-md); border: 1.5px solid #e05a5a; background: transparent; color: #e05a5a; cursor: pointer; font-family: var(--font-sans); font-weight: 600; transition: all 0.2s; }
+    .remove-fav-btn:hover { background: #e05a5a; color: #fff; }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">愛アイ<span>クラブ</span> 里親募集</a>
+    <ul class="nav-links">
+      <li><a href="cats.html">猫を探す</a></li>
+      <li><a href="flow.html">お迎えの流れ</a></li>
+      <li><a href="conditions.html">飼い主の条件</a></li>
+      <li><a href="column.html">コラム</a></li>
+      <li><a href="contact.html">お問い合わせ</a></li>
+      <li>
+        <a href="favorites.html" style="display:flex;align-items:center;gap:4px;">
+          ❤️ お気に入り
+          <span id="favBadge" style="display:none;background:#e05a5a;color:#fff;border-radius:99px;padding:1px 6px;font-size:10px;font-weight:700;min-width:16px;text-align:center;"></span>
+        </a>
+      </li>
+    </ul>
+    <button class="nav-login-btn" onclick="location.href='login.html'">団体ログイン</button>
+    <button class="nav-hamburger" onclick="toggleMenu()"><span></span><span></span><span></span></button>
+  </div>
+  <div class="nav-mobile-menu" id="mobileMenu">
+    <a href="cats.html">猫を探す</a>
+    <a href="flow.html">お迎えの流れ</a>
+    <a href="conditions.html">飼い主の条件</a>
+    <a href="column.html">コラム</a>
+    <a href="contact.html">お問い合わせ</a>
+    <a href="favorites.html">❤️ お気に入り</a>
+    <a href="login.html">団体ログイン</a>
+  </div>
+</nav>
+
+<div class="breadcrumb">
+  <div class="breadcrumb-inner">
+    <a href="index.html">トップ</a><span class="sep">›</span>お気に入りの猫
+  </div>
+</div>
+
+<section class="hero hero-sm">
+  <span class="section-label">お気に入り</span>
+  <h1>お気に入りの猫</h1>
+  <p>気になった猫をまとめて確認できます。</p>
+</section>
+
+<section class="section">
+  <div class="container">
+
+    <!-- スケルトン -->
+    <div id="skeletonGrid" class="cat-grid">
+      <div class="skeleton" style="height:240px;border-radius:var(--radius-lg);"></div>
+      <div class="skeleton" style="height:240px;border-radius:var(--radius-lg);"></div>
+      <div class="skeleton" style="height:240px;border-radius:var(--radius-lg);"></div>
+    </div>
+
+    <!-- 一覧 -->
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;display:none;" id="listHeader">
+      <p id="favCount" style="font-size:14px;color:var(--text-muted);"></p>
+      <button onclick="clearAllFavorites()" style="font-size:12px;color:var(--text-muted);background:none;border:none;cursor:pointer;text-decoration:underline;">
+        すべて削除
+      </button>
+    </div>
+    <div class="cat-grid" id="favGrid" style="display:none;"></div>
+
+    <!-- 空状態 -->
+    <div id="emptyState" class="empty-state" style="display:none;">
+      <div class="empty-icon">🤍</div>
+      <div class="empty-title">お気に入りはまだありません</div>
+      <div class="empty-desc">
+        猫一覧ページで気になった猫の<br>
+        ❤️ ボタンを押すと、ここに表示されます。
+      </div>
+      <a href="cats.html" class="btn btn-primary btn-lg">猫を探す →</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- 猫詳細モーダル -->
+<div class="modal-overlay" id="catModal">
+  <div class="modal">
+    <div class="modal-img" id="modalImg">
+      <button class="modal-close-btn" onclick="closeModal()">✕</button>
+      🐱
+    </div>
+    <div class="modal-body">
+      <div class="modal-cat-name" id="modalName"></div>
+      <div class="modal-cat-kana" id="modalKana"></div>
+      <div class="modal-tags"     id="modalTags"></div>
+      <table class="modal-profile" id="modalProfile"></table>
+      <div class="modal-desc"     id="modalDesc"></div>
+      <div class="modal-actions">
+        <a href="contact.html" class="btn btn-primary" style="flex:1;">お問い合わせする →</a>
+        <button class="remove-fav-btn" id="removeFavBtn" onclick="removeFavFromModal()">
+          ❤️ お気に入り解除
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div><div class="footer-logo">愛アイクラブ 里親募集</div><p class="footer-desc">保護猫たちに温かい家族を。愛アイクラブは三重県を拠点に活動する保護団体です。</p></div>
+      <div class="footer-col"><h4>猫を探す</h4><ul><li><a href="cats.html">猫一覧</a></li><li><a href="flow.html">お迎えの流れ</a></li><li><a href="conditions.html">飼い主の条件</a></li></ul></div>
+      <div class="footer-col"><h4>情報</h4><ul><li><a href="column.html">コラム</a></li><li><a href="contact.html">お問い合わせ</a></li></ul></div>
+      <div class="footer-col"><h4>団体向け</h4><ul><li><a href="login.html">ログイン</a></li></ul></div>
+    </div>
+    <div class="footer-bottom"><span class="footer-copy">© 2026 愛アイクラブ 里親募集サイト（仮）</span></div>
+  </div>
+</footer>
+
+<script>
+  function toggleMenu() { document.getElementById('mobileMenu').classList.toggle('open'); }
+
+  const FAV_KEY = 'aiaiclub_favorites';
+
+  function getFavorites() {
+    try { return JSON.parse(localStorage.getItem(FAV_KEY) || '[]'); }
+    catch(e) { return []; }
+  }
+
+  function saveFavorites(favs) {
+    localStorage.setItem(FAV_KEY, JSON.stringify(favs));
+  }
+
+  function updateFavBadge() {
+    const cnt = getFavorites().length;
+    const badge = document.getElementById('favBadge');
+    if (badge) {
+      badge.textContent  = cnt > 0 ? cnt : '';
+      badge.style.display = cnt > 0 ? 'inline-flex' : 'none';
+    }
+  }
+
+  let currentModalCatId = null;
+  let favCats = [];
+
+  // 詳細モーダルを開く
+  function openModal(id) {
+    const cat = favCats.find(c => c.id === id);
+    if (!cat) return;
+    currentModalCatId = id;
+
+    const firstImg = (cat.imageUrls && cat.imageUrls.length > 0)
+      ? cat.imageUrls[0] : (cat.imageUrl || '');
+    const modalImg = document.getElementById('modalImg');
+    modalImg.innerHTML = `<button class="modal-close-btn" onclick="closeModal()">✕</button>` +
+      (firstImg ? `<img src="${firstImg}" alt="${cat.name}" onerror="this.parentElement.innerHTML='🐱'">` : '🐱');
+
+    const statusMap = { '募集中':'badge-open','トライアル中':'badge-trial','譲渡決定':'badge-done' };
+    const badgeCls  = statusMap[cat.status] || 'badge-open';
+    modalImg.innerHTML += `<span class="cat-badge ${badgeCls}" style="position:absolute;top:12px;left:12px;">${cat.status||'募集中'}</span>`;
+
+    document.getElementById('modalName').textContent = cat.name || '';
+    document.getElementById('modalKana').textContent = cat.kana || '';
+
+    const tags = [cat.age, cat.sex, cat.color, cat.breed].filter(Boolean);
+    document.getElementById('modalTags').innerHTML =
+      tags.map(t => `<span class="modal-tag">${t}</span>`).join('');
+
+    const rows = [
+      ['推定年齢', cat.ageText], ['体重', cat.weight],
+      ['保護場所', cat.place], ['保護日', cat.rescueDate],
+    ].filter(r => r[1]);
+    document.getElementById('modalProfile').innerHTML =
+      rows.map(([l,v]) => `<tr><td>${l}</td><td>${v}</td></tr>`).join('');
+
+    document.getElementById('modalDesc').textContent = cat.desc || '';
+    document.getElementById('catModal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    document.getElementById('catModal').classList.remove('open');
+    document.body.style.overflow = '';
+    currentModalCatId = null;
+  }
+
+  // モーダルからお気に入り解除
+  function removeFavFromModal() {
+    if (!currentModalCatId) return;
+    removeFavorite(currentModalCatId);
+    closeModal();
+  }
+
+  // お気に入り解除
+  function removeFavorite(id) {
+    let favs = getFavorites().filter(f => f !== id);
+    saveFavorites(favs);
+    updateFavBadge();
+    // Firestoreのカウント更新
+    updateFavoriteCount(id, -1);
+    // 再描画
+    favCats = favCats.filter(c => c.id !== id);
+    renderGrid(favCats);
+  }
+
+  // すべて解除
+  function clearAllFavorites() {
+    if (!confirm('お気に入りをすべて解除しますか？')) return;
+    const favs = getFavorites();
+    favs.forEach(id => updateFavoriteCount(id, -1));
+    saveFavorites([]);
+    favCats = [];
+    updateFavBadge();
+    renderGrid([]);
+  }
+
+  // グリッド描画
+  function renderGrid(cats) {
+    const grid    = document.getElementById('favGrid');
+    const empty   = document.getElementById('emptyState');
+    const header  = document.getElementById('listHeader');
+    const countEl = document.getElementById('favCount');
+
+    if (cats.length === 0) {
+      grid.style.display   = 'none';
+      header.style.display = 'none';
+      empty.style.display  = 'block';
+      return;
+    }
+    empty.style.display  = 'none';
+    grid.style.display   = '';
+    header.style.display = 'flex';
+    countEl.textContent  = cats.length + '匹をお気に入り登録中';
+
+    const statusMap = { '募集中':'badge-open','トライアル中':'badge-trial','譲渡決定':'badge-done' };
+    grid.innerHTML = cats.map(cat => {
+      const firstImg = (cat.imageUrls && cat.imageUrls.length > 0)
+        ? cat.imageUrls[0] : (cat.imageUrl || '');
+      const badgeCls = statusMap[cat.status] || 'badge-open';
+      const imgHtml  = firstImg
+        ? `<img src="${firstImg}" alt="${cat.name}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='🐱'">`
+        : '🐱';
+      return `
+        <div class="cat-card" onclick="openModal('${cat.id}')" style="cursor:pointer;">
+          <div class="cat-card-img" style="position:relative;">
+            ${imgHtml}
+            <span class="cat-badge ${badgeCls}">${cat.status||'募集中'}</span>
+            <button class="heart-btn active"
+              onclick="event.stopPropagation();removeFavorite('${cat.id}')"
+              title="お気に入り解除">❤️</button>
+            ${(cat.favoriteCount||0) > 0
+              ? `<div class="fav-count">❤️ ${cat.favoriteCount}</div>` : ''}
+          </div>
+          <div class="cat-card-body">
+            <div class="cat-card-name">${cat.name}</div>
+            <div class="cat-card-meta">${[cat.age, cat.sex, cat.color].filter(Boolean).join('・')}</div>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  document.getElementById('catModal').addEventListener('click', e => {
+    if (e.target === document.getElementById('catModal')) closeModal();
+  });
+
+  updateFavBadge();
+</script>
+
+<script type="module">
+  import { db } from './firebase.js';
+  import { doc, getDoc, updateDoc, increment }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  // Firestoreのお気に入りカウントを増減
+  window.updateFavoriteCount = async function(id, delta) {
+    try {
+      await updateDoc(doc(db, 'cats', id), { favoriteCount: increment(delta) });
+    } catch(e) {
+      console.error('カウント更新エラー:', e);
+    }
+  };
+
+  async function loadFavorites() {
+    const skeleton = document.getElementById('skeletonGrid');
+    const favIds   = getFavorites();
+
+    if (favIds.length === 0) {
+      skeleton.style.display = 'none';
+      renderGrid([]);
+      return;
+    }
+
+    try {
+      // お気に入りの猫をFirestoreから取得
+      const cats = await Promise.all(
+        favIds.map(async id => {
+          const snap = await getDoc(doc(db, 'cats', id));
+          return snap.exists() ? { id: snap.id, ...snap.data() } : null;
+        })
+      );
+      // 存在しない猫（削除済み）は除外
+      favCats = cats.filter(Boolean);
+
+      // 削除済みの猫をローカルストレージからも除去
+      const validIds = favCats.map(c => c.id);
+      if (validIds.length !== favIds.length) {
+        saveFavorites(validIds);
+        updateFavBadge();
+      }
+
+      skeleton.style.display = 'none';
+      renderGrid(favCats);
+
+    } catch(e) {
+      skeleton.style.display = 'none';
+      renderGrid([]);
+      console.error('お気に入り読み込みエラー:', e);
+    }
+  }
+
+  loadFavorites();
+</script>
+
+</body>
+</html>
