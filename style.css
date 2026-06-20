@@ -4,9 +4,9 @@
 :root {
   /* ===== 青緑パステルカラー ===== */
   --primary: #79c4c1;        /* メインカラー：青緑 */
-  --primary-light: #e0f4f3;  /* 薄い青緑（背景・バッジなど） */
-  --primary-dark: #2a7a77;   /* 濃い青緑（見出し・強調） */
-  --accent: #f0fafa;         /* アクセント背景 */
+  --primary-light: #FFF8F1;  /* 薄い青緑（背景・バッジなど） */
+  --primary-dark: #4C4038;   /* 濃い青緑（見出し・強調） */
+  --accent: #EBC9A6;         /* アクセント背景 */
   --white: #ffffff;
   --gray-50: #f5fafa;
   --gray-100: #e8f5f4;
