@@ -456,87 +456,95 @@
       } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
       window.submitForm = async function () {
-        const name = document.getElementById("contactName").value.trim();
-        const kana = document.getElementById("contactKana").value.trim();
-        const email = document.getElementById("contactEmail").value.trim();
-        const tel = document.getElementById("contactTel").value.trim();
-        const catName = document.getElementById("contactCatName").value.trim();
-        const pref = document.getElementById("contactPref").value;
-        const house = document.getElementById("contactHouse").value;
-        const message = document.getElementById("contactMessage").value.trim();
-        const agree = document.getElementById("agreeCheck").checked;
-        const errEl = document.getElementById("formError");
-        const btn = document.getElementById("submitBtn");
+  const name    = document.getElementById('contactName').value.trim();
+  const kana    = document.getElementById('contactKana').value.trim();
+  const email   = document.getElementById('contactEmail').value.trim();
+  const tel     = document.getElementById('contactTel').value.trim();
+  const catName = document.getElementById('contactCatName').value.trim();
+  const pref    = document.getElementById('contactPref').value;
+  const house   = document.getElementById('contactHouse').value;
+  const message = document.getElementById('contactMessage').value.trim();
+  const agree   = document.getElementById('agreeCheck').checked;
+  const errEl   = document.getElementById('formError');
+  const btn     = document.getElementById('submitBtn');
 
-        // ── バリデーション ──
-        const errors = [];
-        if (!name) errors.push("contactName");
-        if (!kana) errors.push("contactKana");
-        if (!email) errors.push("contactEmail");
-        if (!pref) errors.push("contactPref");
-        if (!house) errors.push("contactHouse");
-        if (!message) errors.push("contactMessage");
+  // バリデーション
+  const errors = [];
+  if (!name)    errors.push('contactName');
+  if (!kana)    errors.push('contactKana');
+  if (!email)   errors.push('contactEmail');
+  if (!pref)    errors.push('contactPref');
+  if (!house)   errors.push('contactHouse');
+  if (!message) errors.push('contactMessage');
 
-        if (errors.length > 0) {
-          errEl.style.display = "block";
-          errEl.textContent = "必須項目をすべて入力してください。";
-          errors.forEach((id) =>
-            document.getElementById(id).classList.add("has-error"),
-          );
-          window.scrollTo(0, 0);
-          return;
-        }
+  if (errors.length > 0) {
+    errEl.style.display = 'block';
+    errEl.textContent   = '必須項目をすべて入力してください。';
+    errors.forEach(id => document.getElementById(id).classList.add('has-error'));
+    window.scrollTo(0, 0);
+    return;
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    errEl.style.display = 'block';
+    errEl.textContent   = 'メールアドレスの形式が正しくありません。';
+    document.getElementById('contactEmail').classList.add('has-error');
+    return;
+  }
+  if (!agree) {
+    errEl.style.display = 'block';
+    errEl.textContent   = 'プライバシーポリシーへの同意が必要です。';
+    return;
+  }
 
-        // メール形式チェック
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-          errEl.style.display = "block";
-          errEl.textContent = "メールアドレスの形式が正しくありません。";
-          document.getElementById("contactEmail").classList.add("has-error");
-          return;
-        }
+  btn.textContent = '送信中...';
+  btn.classList.add('loading-btn');
+  errEl.style.display = 'none';
 
-        if (!agree) {
-          errEl.style.display = "block";
-          errEl.textContent = "プライバシーポリシーへの同意が必要です。";
-          return;
-        }
+  try {
+    // ① Firestoreに保存（既存）
+    await addDoc(collection(db, 'contacts'), {
+      type:       currentType,
+      typeLabel:  typeLabels[currentType],
+      name, kana, email, tel, catName, pref, house, message,
+      status:    '未対応',
+      createdAt: serverTimestamp(),
+    });
 
-        // ── ボタンをローディング状態に ──
-        btn.textContent = "送信中...";
-        btn.classList.add("loading-btn");
-        errEl.style.display = "none";
+    // ② EmailJSでGmailに送信（追加）
+    await emailjs.send(
+      'service_2647cag',      // 例：service_xxxxxxx
+      'template_ry0ojek',     // 例：template_xxxxxxx
+      {
+        subject_type: typeLabels[currentType],
+        from_name:    name,
+        from_kana:    kana,
+        from_email:   email,
+        phone:        tel   || '未記入',
+        cat_name:     catName || '未記入',
+        pref,
+        house,
+        message,
+      }
+    );
 
-        try {
-          // ── Firestoreに保存 ──
-          await addDoc(collection(db, "contacts"), {
-            type: currentType, // 種別（cat / general / event / other）
-            typeLabel: typeLabels[currentType], // 種別ラベル（日本語）
-            name,
-            kana,
-            email,
-            tel,
-            catName, // 気になっている猫の名前（任意）
-            pref,
-            house,
-            message,
-            status: "未対応", // 対応状況（管理側で更新する）
-            createdAt: serverTimestamp(),
-          });
+    // 完了画面へ
+    document.getElementById('formView').style.display    = 'none';
+    document.getElementById('successView').style.display = 'block';
+    window.scrollTo(0, 0);
 
-          // ── 送信完了ビューに切り替え ──
-          document.getElementById("formView").style.display = "none";
-          document.getElementById("successView").style.display = "block";
-          window.scrollTo(0, 0);
-        } catch (e) {
-          // ── エラー処理 ──
-          errEl.style.display = "block";
-          errEl.textContent =
-            "送信に失敗しました。通信状況を確認してもう一度お試しください。";
-          btn.textContent = "送信する";
-          btn.classList.remove("loading-btn");
-          console.error("Firestore書き込みエラー:", e);
-        }
-      };
-    </script>
+  } catch (e) {
+    errEl.style.display = 'block';
+    errEl.textContent   = '送信に失敗しました。通信状況を確認してもう一度お試しください。';
+    btn.textContent     = '送信する';
+    btn.classList.remove('loading-btn');
+    console.error(e);
+  }
+};
+</script>
+<!-- EmailJS -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>
+  emailjs.init('jZE2CbAuPuYZL-Ync');
+</script>
   </body>
 </html>
