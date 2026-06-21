@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>団体について｜保護猫活動団体 アイ愛クラブ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* 団体概要 */
+    .org-summary-card {
+      background: var(--white);
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--border);
+      padding: 32px;
+      margin-bottom: 48px;
+      box-shadow: var(--shadow-sm);
+    }
+    .org-summary-row {
+      display: flex;
+      gap: 16px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+      align-items: flex-start;
+    }
+    .org-summary-row:last-child { border-bottom: none; }
+    .org-summary-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--primary);
+      width: 110px;
+      flex-shrink: 0;
+      letter-spacing: 0.04em;
+      padding-top: 2px;
+    }
+    .org-summary-value {
+      font-size: 15px;
+      color: var(--text);
+      line-height: 1.7;
+    }
+
+    /* 活動内容セクション */
+    .activity-list { display: flex; flex-direction: column; gap: 56px; }
+    .activity-item {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: center;
+    }
+    .activity-item.reverse { direction: rtl; }
+    .activity-item.reverse > * { direction: ltr; }
+    .activity-img {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      border-radius: var(--radius-xl);
+      background: var(--gray-200);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 56px;
+      box-shadow: var(--shadow-md);
+    }
+    .activity-img img { width: 100%; height: 100%; object-fit: cover; }
+    .activity-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: var(--white);
+      font-size: 15px;
+      font-weight: 800;
+      margin-bottom: 14px;
+    }
+    .activity-title {
+      font-size: clamp(18px, 2.4vw, 22px);
+      font-weight: 800;
+      color: var(--primary-dark);
+      margin-bottom: 12px;
+      letter-spacing: -0.01em;
+      line-height: 1.4;
+    }
+    .activity-desc {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.9;
+    }
+
+    /* メッセージセクション */
+    .message-section {
+      background: linear-gradient(135deg, var(--primary-light) 0%, var(--accent) 100%);
+      border-radius: var(--radius-xl);
+      padding: 48px 40px;
+      text-align: center;
+      margin: 64px 0;
+    }
+    .message-icon { font-size: 36px; margin-bottom: 16px; }
+    .message-text {
+      font-size: clamp(15px, 2vw, 17px);
+      color: var(--text);
+      line-height: 2.1;
+      max-width: 680px;
+      margin: 0 auto;
+      font-weight: 500;
+    }
+
+    /* 支援リンクセクション */
+    .support-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    .support-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 32px 28px;
+      text-align: center;
+      transition: all var(--transition);
+      text-decoration: none;
+      display: block;
+    }
+    .support-card:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-3px);
+      opacity: 1;
+    }
+    .support-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: var(--primary-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      margin: 0 auto 16px;
+    }
+    .support-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--primary-dark);
+      margin-bottom: 8px;
+    }
+    .support-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.7;
+      margin-bottom: 16px;
+    }
+    .support-link-text {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    @media (max-width: 768px) {
+      .activity-item, .activity-item.reverse {
+        grid-template-columns: 1fr;
+        direction: ltr;
+        gap: 20px;
+      }
+      .org-summary-row { flex-direction: column; gap: 4px; }
+      .org-summary-label { width: auto; }
+      .support-grid { grid-template-columns: 1fr; }
+      .message-section { padding: 32px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">アイ愛クラブ</a>
+    <ul class="nav-links">
+      <li><a href="cats.html">猫を探す</a></li>
+      <li><a href="about.html">団体について</a></li>
+      <li><a href="flow.html">お迎えの流れ</a></li>
+      <li><a href="column.html">コラム</a></li>
+      <li><a href="contact.html">お問い合わせ</a></li>
+    </ul>
+    <button class="nav-login-btn" onclick="location.href='login.html'">団体ログイン</button>
+    <button class="nav-hamburger" onclick="toggleMenu()"><span></span><span></span><span></span></button>
+  </div>
+  <div class="nav-mobile-menu" id="mobileMenu">
+    <a href="cats.html">猫を探す</a>
+    <a href="about.html">団体について</a>
+    <a href="flow.html">お迎えの流れ</a>
+    <a href="column.html">コラム</a>
+    <a href="contact.html">お問い合わせ</a>
+    <a href="login.html">団体ログイン</a>
+  </div>
+</nav>
+
+<div class="breadcrumb">
+  <div class="breadcrumb-inner">
+    <a href="index.html">トップ</a><span class="sep">›</span>団体について
+  </div>
+</div>
+
+<section class="hero hero-sm">
+  <span class="section-label">団体紹介</span>
+  <h1>保護猫活動団体<br>アイ愛クラブ</h1>
+  <p>三重県津市を拠点に、動物も人も幸せに暮らせるまちづくりをめざして活動しています。</p>
+</section>
+
+<section class="section">
+  <div class="container-sm">
+
+    <!-- 団体概要 -->
+    <div class="org-summary-card">
+      <div class="org-summary-row">
+        <div class="org-summary-label">団体名</div>
+        <div class="org-summary-value">保護猫活動団体　アイ愛クラブ</div>
+      </div>
+      <div class="org-summary-row">
+        <div class="org-summary-label">主な活動場所</div>
+        <div class="org-summary-value">三重県津市</div>
+      </div>
+      <div class="org-summary-row">
+        <div class="org-summary-label">活動内容</div>
+        <div class="org-summary-value">
+          動物愛護の啓発活動・里親会の開催・野良猫の保護やTNRサポート・TNR活動・行政機関との連携および提言
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- 活動内容 -->
+<section class="section" style="background:var(--white);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+  <div class="container">
+    <div class="text-center" style="margin-bottom:48px;">
+      <span class="section-label">活動内容</span>
+      <h2 class="section-title">私たちの5つの取り組み</h2>
+      <p class="section-sub">アイ愛クラブでは、以下の5つの柱を軸に活動しています。</p>
+    </div>
+
+    <div class="activity-list">
+
+      <!-- 1. 啓発活動 -->
+      <div class="activity-item">
+        <div>
+          <div class="activity-num">1</div>
+          <div class="activity-title">動物の命の大切さを伝える啓発活動</div>
+          <div class="activity-desc">
+            動物との適切な関わり方や、命の大切さを広く知っていただくための啓発活動を行っています。
+            学校や地域のイベントでの講話、パネル展示などを通じて、子どもから大人まで幅広い世代に
+            動物愛護の意識を育む機会を提供しています。
+          </div>
+        </div>
+        <div class="activity-img" data-activity="1">
+          <img src="" alt="啓発活動の様子" style="display:none;" onerror="this.style.display='none';this.parentElement.textContent='📢';">
+        </div>
+      </div>
+
+      <!-- 2. 里親会の開催 -->
+      <div class="activity-item reverse">
+        <div>
+          <div class="activity-num">2</div>
+          <div class="activity-title">里親会の開催</div>
+          <div class="activity-desc">
+            保護した猫たちと新しい家族との出会いの場として、定期的に里親会を開催しています。
+            実際に猫と触れ合いながら、性格や相性をじっくり確認していただけます。
+            スタッフが飼育環境やお迎えの流れについても丁寧にご説明します。
+          </div>
+        </div>
+        <div class="activity-img" data-activity="2">
+          <img src="" alt="里親会の様子" style="display:none;" onerror="this.style.display='none';this.parentElement.textContent='🏠';">
+        </div>
+      </div>
+
+      <!-- 3. 保護・TNRサポート -->
+      <div class="activity-item">
+        <div>
+          <div class="activity-num">3</div>
+          <div class="activity-title">野良猫の保護やTNRを希望する方へのサポート</div>
+          <div class="activity-desc">
+            野良猫の保護やTNR（不妊去勢手術をして元の場所に戻す活動）を行いたいという
+            地域の方々へ、知識や経験に基づいたサポートを提供しています。
+            捕獲器の貸し出しや病院の紹介、手順のご相談などにも対応しています。
+          </div>
+        </div>
+        <div class="activity-img" data-activity="3">
+          <img src="" alt="保護活動の様子" style="display:none;" onerror="this.style.display='none';this.parentElement.textContent='🤝';">
+        </div>
+      </div>
+
+      <!-- 4. TNR活動 -->
+      <div class="activity-item reverse">
+        <div>
+          <div class="activity-num">4</div>
+          <div class="activity-title">TNR活動</div>
+          <div class="activity-desc">
+            地域で暮らす野良猫を増やさないために、自ら捕獲・不妊去勢手術・地域へ戻す
+            TNR活動を継続的に行っています。これにより、不幸な命が生まれることを防ぎ、
+            人と猫がともに暮らしやすい地域環境づくりに取り組んでいます。
+          </div>
+        </div>
+        <div class="activity-img" data-activity="4">
+          <img src="" alt="TNR活動の様子" style="display:none;" onerror="this.style.display='none';this.parentElement.textContent='🐾';">
+        </div>
+      </div>
+
+      <!-- 5. 行政機関との連携 -->
+      <div class="activity-item">
+        <div>
+          <div class="activity-num">5</div>
+          <div class="activity-title">行政機関との連携および提言</div>
+          <div class="activity-desc">
+            三重県や津市の行政機関と連携を図りながら、地域の動物愛護に関する課題について
+            情報共有や提言を行っています。行政・団体・住民が一体となって取り組むことで、
+            より良い仕組みづくりを目指しています。
+          </div>
+        </div>
+        <div class="activity-img" data-activity="5">
+          <img src="" alt="行政連携の様子" style="display:none;" onerror="this.style.display='none';this.parentElement.textContent='🏛️';">
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- メッセージ -->
+<section class="section">
+  <div class="container-sm">
+    <div class="message-section">
+      <div class="message-icon">🐾</div>
+      <p class="message-text">
+        命の大切さや動物との適切なかかわり方を伝えることで、動物も人も幸せに暮らせるまちづくりをめざしています。<br><br>
+        行政や保護団体の取組みだけでなく、住民一人ひとりが動物愛護の意識を高め、主体的に行動することを願い、これからも活動を続けます。
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- 支援リンク -->
+<section class="section" style="padding-top:0;">
+  <div class="container-sm">
+    <div class="text-center" style="margin-bottom:32px;">
+      <span class="section-label">応援・ご支援のお願い</span>
+      <h2 class="section-title">アイ愛クラブを応援する</h2>
+      <p class="section-sub">活動の様子はInstagramでも発信しています。物資のご支援もお待ちしています。</p>
+    </div>
+
+    <div class="support-grid">
+      <a href="https://www.instagram.com/aiaiclub_tsu/" target="_blank" rel="noopener" class="support-card">
+        <div class="support-icon">📷</div>
+        <div class="support-title">Instagram</div>
+        <div class="support-desc">保護猫たちの日常や活動の様子を発信しています。ぜひフォローしてください。</div>
+        <div class="support-link-text">@aiaiclub_tsu を見る →</div>
+      </a>
+
+      <!-- ★ Amazon欲しいものリストのURLが決まり次第、下のhref内のURLを差し替えてください -->
+      <a href="#" target="_blank" rel="noopener" class="support-card">
+        <div class="support-icon">🎁</div>
+        <div class="support-title">Amazon 欲しいものリスト</div>
+        <div class="support-desc">フード・猫砂・医療用品など、活動に必要な物資のご支援をお願いしています。</div>
+        <div class="support-link-text">欲しいものリストを見る →</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<hr class="divider" style="margin:0 24px;">
+
+<section class="section">
+  <div class="container-sm">
+    <div class="cta-box">
+      <h3>保護猫たちに出会ってみませんか？</h3>
+      <p>募集中の猫たちのプロフィールをご覧いただけます。</p>
+      <a href="cats.html" class="btn btn-primary btn-lg">猫を探す →</a>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-logo">アイ愛クラブ</div>
+        <p class="footer-desc">保護猫たちに温かい家族を。三重県津市を拠点に活動する保護猫活動団体です。</p>
+      </div>
+      <div class="footer-col"><h4>猫を探す</h4><ul><li><a href="cats.html">猫一覧</a></li><li><a href="flow.html">お迎えの流れ</a></li><li><a href="conditions.html">飼い主の条件</a></li></ul></div>
+      <div class="footer-col"><h4>情報</h4><ul><li><a href="about.html">団体について</a></li><li><a href="column.html">コラム</a></li><li><a href="contact.html">お問い合わせ</a></li></ul></div>
+      <div class="footer-col"><h4>団体向け</h4><ul><li><a href="login.html">ログイン</a></li></ul></div>
+    </div>
+    <div class="footer-bottom">
+      <span class="footer-copy">© 2026 保護猫活動団体 アイ愛クラブ</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  function toggleMenu() { document.getElementById('mobileMenu').classList.toggle('open'); }
+</script>
+
+</body>
+</html>
