@@ -221,3 +221,9 @@ button { cursor: pointer; font-family: var(--font-sans); }
   .hero-btns { flex-direction: column; align-items: center; }
   .footer-grid { grid-template-columns: 1fr; }
 }
+/* ===== 背景画像 ===== */
+--slide1: url('https://i.ibb.co/XfL0D5JK/1.png');
+--slide2: url('https://i.ibb.co/nMmrFVDW/2.png');
+--slide3: url('https://i.ibb.co/W46qMq3V/3.png');
+--slide4: url('https://i.ibb.co/nMmrFVDW/2.png');
+--slide5: url('https://i.ibb.co/XfL0D5JK/1.png');
