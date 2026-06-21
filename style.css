@@ -37,6 +37,10 @@ a { color: var(--primary); text-decoration: none; transition: opacity var(--tran
 a:hover { opacity: 0.75; }
 button { cursor: pointer; font-family: var(--font-sans); }
 
+/* ===== 動画を伸ばすため ===== */
+html, body {
+  height: 100%;
+}
 /* ===== ナビゲーション ===== */
 .nav { background: var(--primary-light); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
 .nav-inner { max-width: 1100px; margin: 0 auto; padding: 0 24px; height: 60px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
