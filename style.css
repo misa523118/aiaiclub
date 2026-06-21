@@ -61,6 +61,53 @@ button { cursor: pointer; font-family: var(--font-sans); }
 
 /* ===== ヒーロー ===== */
 .hero { background: linear-gradient(135deg, #cdeeed 0%, #f0fafa 100%); padding: 72px 24px; text-align: center; border-bottom: 1px solid var(--border); }
+/* ===== ヒーロー：背景画像スライドショー ===== */
+.hero-slideshow {
+  position: relative;
+  padding: 96px 24px;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+  overflow: hidden;
+  isolation: isolate; /* 子要素のz-indexをこの要素内に閉じ込める */
+}
+.hero-slide {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  z-index: -2;
+  animation: heroSlideFade 25s infinite;
+}
+.hero-slide:nth-child(1) { background-image: var(--slide1); animation-delay: 0s; }
+.hero-slide:nth-child(2) { background-image: var(--slide2); animation-delay: 5s; }
+.hero-slide:nth-child(3) { background-image: var(--slide3); animation-delay: 10s; }
+.hero-slide:nth-child(4) { background-image: var(--slide4); animation-delay: 15s; }
+.hero-slide:nth-child(5) { background-image: var(--slide5); animation-delay: 20s; }
+@keyframes heroSlideFade {
+  0%   { opacity: 0; }
+  2%   { opacity: 1; }
+  18%  { opacity: 1; }
+  20%  { opacity: 0; }
+  100% { opacity: 0; }
+}
+/* 半透明の白ボックス：タイトルの視認性を確保 */
+.hero-text-box {
+  position: relative;
+  z-index: 1;
+  background: rgba(255,255,255,0.72);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  border-radius: var(--radius-xl);
+  padding: 40px 36px;
+  max-width: 600px;
+  margin: 0 auto;
+  box-shadow: var(--shadow-md);
+}
+@media (max-width: 768px) {
+  .hero-slideshow { padding: 56px 16px; }
+  .hero-text-box { padding: 28px 20px; }
+}
 .hero-sm { padding: 40px 24px; }
 .hero h1 { font-size: clamp(22px, 4vw, 38px); font-weight: 800; color: var(--primary-dark); letter-spacing: -0.03em; margin-bottom: 12px; line-height: 1.25; }
 .hero p { font-size: 15px; color: var(--gray-800); max-width: 480px; margin: 0 auto 28px; line-height: 1.7; }
@@ -221,9 +268,3 @@ button { cursor: pointer; font-family: var(--font-sans); }
   .hero-btns { flex-direction: column; align-items: center; }
   .footer-grid { grid-template-columns: 1fr; }
 }
-/* ===== 背景画像 ===== */
---slide1: url('https://i.ibb.co/XfL0D5JK/1.png');
---slide2: url('https://i.ibb.co/nMmrFVDW/2.png');
---slide3: url('https://i.ibb.co/W46qMq3V/3.png');
---slide4: url('https://i.ibb.co/nMmrFVDW/2.png');
---slide5: url('https://i.ibb.co/XfL0D5JK/1.png');
