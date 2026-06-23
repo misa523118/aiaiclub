@@ -4,16 +4,16 @@
 :root {
   /* ===== 青緑パステルカラー ===== */
   --primary: #C5DFD7;        /* メインカラー：青緑 */
-  --primary-light: #B69D7B;  /* 薄い青緑（背景・バッジなど） */
+  --primary-light: ##FCEED4;  /* 薄い青緑（背景・バッジなど） */
   --primary-dark: #B69D7B;   /* 濃い青緑（見出し・強調） */
   --accent: #EBC9A6;         /* アクセント背景 */
   --white: #ffffff;
-  --gray-50: #f5fafa;
-  --gray-100: #e8f5f4;
-  --gray-200: #cceae9;
-  --gray-400: #8ecbc9;
-  --gray-600: #4a9e9b;
-  --gray-800: #2a6e6c;
+  --gray-50: #FAF8F5;
+  --gray-100: #F5F1E9;
+  --gray-200: #EBE0CC;
+  --gray-400: #CCB78F;
+  --gray-600: #9E814A;
+  --gray-800: #6E562A;
   --text: #1a4a48;           /* テキスト：深い青緑 */
   --text-muted: #4a8a88;     /* サブテキスト */
   --text-light: #7abcba;     /* 薄いテキスト */
