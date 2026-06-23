@@ -3,8 +3,8 @@
 
 :root {
   /* ===== 青緑パステルカラー ===== */
-  --primary: #79c4c1;        /* メインカラー：青緑 */
-  --primary-light: #FFF8F1;  /* 薄い青緑（背景・バッジなど） */
+  --primary: #C5DFD7;        /* メインカラー：青緑 */
+  --primary-light: #C5DFD7;  /* 薄い青緑（背景・バッジなど） */
   --primary-dark: #4C4038;   /* 濃い青緑（見出し・強調） */
   --accent: #EBC9A6;         /* アクセント背景 */
   --white: #ffffff;
