@@ -52,7 +52,7 @@
     .detail-kana { font-size: 14px; color: var(--text-muted); margin-bottom: 16px; }
     .detail-section-title { font-size: 13px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--primary); border-bottom: 2px solid var(--primary-light); padding-bottom: 6px; margin-bottom: 14px; margin-top: 24px; }
     .detail-desc { font-size: 14px; color: var(--text-muted); line-height: 1.8; }
-    .video-wrap { position: relative; width: 100%; padding-top: 56.25%; border-radius: var(--radius-lg); overflow: hidden; background: var(--gray-200); margin-top: 12px; }
+    .video-wrap { position: relative; width: 100%; height: 360px; border-radius: var(--radius-xl); overflow: hidden; background: var(--gray-200); }
     .video-wrap iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
     .related-section { padding: 48px 24px; background: var(--white); border-top: 1px solid var(--border); }
 
@@ -87,6 +87,7 @@
     @media (max-width: 768px) {
       .detail-layout { grid-template-columns: 1fr; gap: 28px; }
       .detail-main-img { height: 260px; }
+      .video-wrap { height: 260px; }
     }
   </style>
 </head>
@@ -94,30 +95,34 @@
 
 <nav class="nav">
   <div class="nav-inner">
-    <a href="index.html" class="nav-logo">愛アイ<span>クラブ</span> 里親募集</a>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <img src="https://i.ibb.co/JL10XYL/3.png" alt="アイ愛クラブロゴ" width="36" height="36"
+        style="border-radius:50%;object-fit:cover;">
+      <a href="index.html" class="nav-logo">アイ愛クラブ 里親募集</a>
+    </div>
     <ul class="nav-links">
       <li><a href="cats.html">猫を探す</a></li>
       <li><a href="flow.html">お迎えの流れ</a></li>
-      <li><a href="conditions.html">飼い主の条件</a></li>
-      <li><a href="column.html">コラム</a></li>
+      <li><a href="about.html">団体について</a></li>
       <li><a href="contact.html">お問い合わせ</a></li>
-      <li>
-        <a href="favorites.html" style="display:flex;align-items:center;gap:4px;">
-          ❤️ お気に入り
-          <span id="favBadge" style="display:none;background:#e05a5a;color:#fff;border-radius:99px;padding:1px 6px;font-size:10px;font-weight:700;min-width:16px;text-align:center;"></span>
-        </a>
+      <li><a href="favorites.html" style="display:flex;align-items:center;gap:4px;">❤️ お気に入り
+            <span id="favBadge" style="display:none;background:#e05a5a;color:#fff;border-radius:99px;padding:1px 6px;font-size:10px;font-weight:700;min-width:16px;text-align:center;">
+            </span>
+          </a>
       </li>
     </ul>
     <button class="nav-login-btn" onclick="location.href='login.html'">団体ログイン</button>
     <button class="nav-hamburger" onclick="toggleMenu()"><span></span><span></span><span></span></button>
   </div>
   <div class="nav-mobile-menu" id="mobileMenu">
-   <li><a href="cats.html">猫を探す</a></li>
-      <li><a href="flow.html">お迎えの流れ</a></li>
-      <li><a href="conditions.html">飼い主の条件</a></li>
-      <li><a href="about.html">団体について</a></li>
-      <li><a href="column.html">コラム</a></li>
-      <li><a href="contact.html">お問い合わせ</a></li>
+    <a href="cats.html">猫を探す</a>
+    <a href="flow.html">お迎えの流れ</a>
+    <a href="about.html">団体について</a></li>
+    <a href="contact.html">お問い合わせ</a>
+    <a href="favorites.html" style="display:flex;align-items:center;gap:4px;">❤️ お気に入り
+            <span id="favBadge" style="display:none;background:#e05a5a;color:#fff;border-radius:99px;padding:1px 6px;font-size:10px;font-weight:700;min-width:16px;text-align:center;">
+            </span>
+          </a>
     <a href="login.html">団体ログイン</a>
   </div>
 </nav>
