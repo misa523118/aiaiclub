@@ -135,15 +135,15 @@
     </div>
   </div>
 
-  <section class="hero hero-sm">
+ <section class="hero hero-sm">
     <span class="section-label">猫を探す</span>
     <h1>募集中の猫たち</h1>
     <p>条件を絞り込んで、あなたにぴったりの猫を見つけましょう。</p>
   </section>
-
+ 
   <section class="cats-page">
     <div class="container">
-
+ 
       <!-- 絞り込みフォーム -->
       <div class="filter-bar">
         <div class="filter-search">
@@ -175,14 +175,14 @@
           </select>
         </div>
       </div>
-
+ 
       <div class="cats-header">
         <div>
           <span class="section-label">検索結果</span>
           <p class="cats-count" id="catsCount">読み込み中...</p>
         </div>
       </div>
-
+ 
       <!-- スケルトンローディング（読み込み中に表示） -->
       <div class="cat-grid" id="skeletonGrid">
         <div class="skeleton-card"><div class="skeleton skeleton-img"></div><div class="skeleton-body"><div class="skeleton skeleton-line-lg"></div><div class="skeleton skeleton-line-sm"></div></div></div>
@@ -190,21 +190,21 @@
         <div class="skeleton-card"><div class="skeleton skeleton-img"></div><div class="skeleton-body"><div class="skeleton skeleton-line-lg"></div><div class="skeleton skeleton-line-sm"></div></div></div>
         <div class="skeleton-card"><div class="skeleton skeleton-img"></div><div class="skeleton-body"><div class="skeleton skeleton-line-lg"></div><div class="skeleton skeleton-line-sm"></div></div></div>
       </div>
-
+ 
       <!-- 実データ表示エリア -->
       <div class="cat-grid" id="catGrid" style="display:none;"></div>
-
+ 
       <!-- 0件・エラー時 -->
       <div id="emptyState" style="display:none;" class="empty-state">
         <div class="empty-icon">🐱</div>
         <div class="empty-title">猫が見つかりませんでした</div>
         <div class="empty-desc">絞り込み条件を変えてみてください。</div>
       </div>
-
+ 
     </div>
   </section>
 </div>
-
+ 
 <!-- ========== 猫詳細ビュー ========== -->
 <div id="detailView" style="display:none;">
   <div class="breadcrumb">
@@ -214,59 +214,59 @@
       <span id="detailBreadcrumb">詳細</span>
     </div>
   </div>
-
+ 
   <section class="section">
     <div class="container">
       <div class="detail-layout">
-
+ 
         <!-- 左：画像 -->
         <div>
           <!-- メイン画像 -->
           <div class="detail-main-img" id="detailImg">🐱</div>
-
+ 
           <!-- サムネイル一覧（2枚以上ある場合のみ表示） -->
           <div id="detailThumbs" style="display:none;margin-top:12px;">
             <div style="display:flex;gap:10px;flex-wrap:wrap;" id="detailThumbsRow"></div>
           </div>
-
+ 
           <!-- YouTube動画（URLがあれば表示） -->
-          <div id="detailVideoWrap" style="display:none;margin-top:12px;">
+          <div id="detailVideoWrap" style="display:none;">
             <div class="video-wrap">
               <iframe id="detailVideo" allowfullscreen></iframe>
             </div>
           </div>
         </div>
-
+ 
         <!-- 右：情報 -->
         <div>
           <div id="detailBadge"></div>
           <div class="detail-name" id="detailName">-</div>
           <div class="detail-kana" id="detailKana"></div>
-
+ 
           <div class="tags" id="detailTags" style="margin-bottom:20px;"></div>
-
+ 
           <a id="detailContactBtn" href="contact.html" class="btn btn-primary btn-full btn-lg" style="margin-bottom:20px;">
             この猫にお問い合わせする →
           </a>
-
+ 
           <!-- プロフィール表 -->
           <div class="detail-section-title">プロフィール</div>
           <table class="profile-table" id="detailProfile"></table>
-
+ 
           <!-- 性格 -->
           <div class="detail-section-title">性格・特徴</div>
           <div class="detail-desc" id="detailDesc">-</div>
-
+ 
           <!-- 健康状態 -->
           <div class="detail-section-title">健康状態</div>
           <div class="checklist" id="detailHealth"></div>
-
+ 
           <!-- 飼い主条件 -->
           <div class="detail-section-title">お迎え条件</div>
           <div class="card" style="padding:0 20px;" id="detailConditions"></div>
         </div>
       </div>
-
+ 
       <!-- CTA -->
       <hr class="divider">
       <div class="cta-box">
@@ -276,7 +276,7 @@
       </div>
     </div>
   </section>
-
+ 
   <!-- 関連する猫 -->
   <section class="related-section">
     <div class="container">
@@ -286,7 +286,7 @@
     </div>
   </section>
 </div>
-
+ 
 <footer class="footer">
   <div class="footer-inner">
     <div class="footer-grid">
@@ -303,25 +303,25 @@
     </div>
   </div>
 </footer>
-
+ 
 <!-- 通常スクリプト -->
 <script>
   function toggleMenu() {
     document.getElementById('mobileMenu').classList.toggle('open');
   }
-
+ 
   // ===== お気に入り管理（ローカルストレージ） =====
   const FAV_KEY = 'aiaiclub_favorites';
-
+ 
   function getFavorites() {
     try { return JSON.parse(localStorage.getItem(FAV_KEY) || '[]'); }
     catch(e) { return []; }
   }
-
+ 
   function isFavorite(id) {
     return getFavorites().includes(id);
   }
-
+ 
   function toggleFavorite(id, btn) {
     let favs = getFavorites();
     const wasFav = favs.includes(id);
@@ -331,19 +331,19 @@
       favs.push(id);
     }
     localStorage.setItem(FAV_KEY, JSON.stringify(favs));
-
+ 
     // ボタンの見た目を即時更新
     btn.textContent = wasFav ? '🤍' : '❤️';
     btn.classList.toggle('active', !wasFav);
     btn.title = wasFav ? 'お気に入りに追加' : 'お気に入り解除';
-
+ 
     // Firestoreのカウントを更新
     updateFavoriteCount(id, wasFav ? -1 : 1);
-
+ 
     // ナビのバッジを更新
     updateFavBadge();
   }
-
+ 
   function updateFavBadge() {
     const cnt = getFavorites().length;
     const badge = document.getElementById('favBadge');
@@ -352,7 +352,7 @@
       badge.style.display = cnt > 0 ? 'inline-flex' : 'none';
     }
   }
-
+ 
   // バッジHTML生成
   function badgeHtml(status, large) {
     const map = {
@@ -366,7 +366,7 @@
     }
     return `<span class="cat-badge ${cls}">${status}</span>`;
   }
-
+ 
   // YouTube URLを埋め込みURLに変換
   function toEmbedUrl(url) {
     if (!url) return '';
@@ -381,14 +381,14 @@
     if (short) return 'https://www.youtube.com/embed/' + short[1];
     return '';
   }
-
+ 
   // 画像URLがあれば<img>、なければ絵文字
   function imgContent(url) {
     return url
       ? `<img src="${url}" alt="猫の写真" onerror="this.parentElement.innerHTML='🐱'">`
       : '🐱';
   }
-
+ 
   // 猫カードHTML生成
   function catCardHtml(cat) {
     const firstImg = (cat.imageUrls && cat.imageUrls.length > 0)
@@ -413,10 +413,10 @@
         </div>
       </div>`;
   }
-
+ 
   // 全データをメモリに保持してフィルタリング
   let allCats = [];
-
+ 
   function applyFilter() {
     const name   = document.getElementById('nameSearch').value.trim().toLowerCase();
     const age    = document.getElementById('ageFilter').value;
@@ -424,7 +424,7 @@
     const color  = document.getElementById('colorFilter').value;
     const breed  = document.getElementById('breedFilter').value;
     const status = document.getElementById('statusFilter').value;
-
+ 
     const filtered = allCats.filter(cat =>
       (!name   || cat.name.toLowerCase().includes(name)) &&
       (!age    || cat.age   === age)   &&
@@ -433,15 +433,15 @@
       (!breed  || cat.breed === breed) &&
       (!status || cat.status === status)
     );
-
+ 
     renderCatGrid(filtered);
   }
-
+ 
   function renderCatGrid(cats) {
     const grid     = document.getElementById('catGrid');
     const empty    = document.getElementById('emptyState');
     const countEl  = document.getElementById('catsCount');
-
+ 
     if (cats.length === 0) {
       grid.style.display  = 'none';
       empty.style.display = 'block';
@@ -453,23 +453,23 @@
       countEl.textContent = cats.length + '匹の猫が見つかりました';
     }
   }
-
+ 
   // 詳細表示
   function showDetail(id) {
     const cat = allCats.find(c => c.id === id);
     if (!cat) return;
-
+ 
     // パンくず・タイトル
     document.getElementById('detailBreadcrumb').textContent = cat.name + 'の詳細';
     document.title = cat.name + '｜愛アイクラブ 里親募集';
-
+ 
     // 画像
     const imgEl = document.getElementById('detailImg');
     // imageUrls（新形式）またはimageUrl（旧形式）に対応
     const imageUrls = cat.imageUrls && cat.imageUrls.length > 0
       ? cat.imageUrls
       : (cat.imageUrl ? [cat.imageUrl] : []);
-
+ 
     // メイン画像を表示する関数
     function setMainImage(url, thumbEls) {
       imgEl.innerHTML = url
@@ -481,37 +481,41 @@
         thumbEls.forEach(t => t.classList.remove('active'));
       }
     }
-
+ 
     // メイン画像セット（最初は1枚目）
     imgEl.innerHTML = (imageUrls[0]
       ? `<img src="${imageUrls[0]}" alt="${cat.name}" onerror="this.parentElement.innerHTML='🐱'">`
       : '🐱') + badgeHtml(cat.status, true);
-
+ 
     // サムネイル・動画の表示制御
     const thumbsWrap = document.getElementById('detailThumbs');
     const thumbsRow  = document.getElementById('detailThumbsRow');
     const videoWrap  = document.getElementById('detailVideoWrap');
     const embedUrl   = toEmbedUrl(cat.videoUrl);
-
+ 
     // ── パターン①：画像が2枚以上 または 動画あり → サムネイル表示 ──
     if (imageUrls.length > 1 || embedUrl) {
       thumbsWrap.style.display = 'block';
       videoWrap.style.display  = 'none'; // サムネイルがある場合は下の動画エリア不要
       thumbsRow.innerHTML = '';
-
+ 
       // 画像サムネイル
       imageUrls.forEach((url, i) => {
         const thumb = document.createElement('div');
         thumb.className = 'detail-thumb' + (i === 0 ? ' active' : '');
         thumb.innerHTML = `<img src="${url}" alt="写真${i+1}">`;
         thumb.addEventListener('click', () => {
+          // 動画が表示中なら隠してメイン画像エリアを再表示
+          imgEl.style.display = '';
+          document.getElementById('detailVideoWrap').style.display = 'none';
+          document.getElementById('detailVideo').src = '';
           imgEl.innerHTML = `<img src="${url}" alt="${cat.name}" onerror="this.parentElement.innerHTML='🐱'">` + badgeHtml(cat.status, true);
           thumbsRow.querySelectorAll('.detail-thumb').forEach(t => t.classList.remove('active'));
           thumb.classList.add('active');
         });
         thumbsRow.appendChild(thumb);
       });
-
+ 
       // 動画サムネイル（▶ボタン）
       if (embedUrl) {
         const videoThumb = document.createElement('div');
@@ -519,39 +523,42 @@
         videoThumb.innerHTML = '▶';
         videoThumb.title = '動画を見る';
         videoThumb.addEventListener('click', () => {
-          // メイン枠をiframeで上書き
-          imgEl.innerHTML = `<iframe src="${embedUrl}" style="width:100%;height:100%;border:none;" allowfullscreen></iframe>`;
+          // メイン画像を隠して下のvideo-wrapに動画を表示（CSSのサイズが正しく適用される）
+          imgEl.style.display = 'none';
+          const vw = document.getElementById('detailVideoWrap');
+          document.getElementById('detailVideo').src = embedUrl;
+          vw.style.display = 'block';
           thumbsRow.querySelectorAll('.detail-thumb').forEach(t => t.classList.remove('active'));
           videoThumb.classList.add('active');
         });
         thumbsRow.appendChild(videoThumb);
       }
-
+ 
     // ── パターン②：画像が1枚だけで動画あり → サムネイルなし・下に動画を表示 ──
     } else if (embedUrl) {
       thumbsWrap.style.display = 'none';
       document.getElementById('detailVideo').src = embedUrl;
       videoWrap.style.display = 'block';
-
+ 
     // ── パターン③：画像も動画もなし ──
     } else {
       thumbsWrap.style.display = 'none';
       videoWrap.style.display  = 'none';
     }
-
+ 
     // 名前・かな
     document.getElementById('detailName').textContent = cat.name;
     document.getElementById('detailKana').textContent = cat.kana || '';
-
+ 
     // タグ
     const tags = [cat.age, cat.sex, cat.color, cat.breed, cat.ageText ? cat.ageText : ''].filter(Boolean);
     document.getElementById('detailTags').innerHTML =
       tags.map(t => `<span class="tag">${t}</span>`).join('');
-
+ 
     // お問い合わせボタン
     document.getElementById('detailContactBtn').textContent = cat.name + 'にお問い合わせする →';
     document.getElementById('detailCtaTitle').textContent   = cat.name + 'のことが気になったら';
-
+ 
     // プロフィール表
     const profileRows = [
       ['年齢',     cat.ageText  || '-'],
@@ -566,10 +573,10 @@
       profileRows.map(([label, val]) =>
         `<tr><td>${label}</td><td>${val}</td></tr>`
       ).join('');
-
+ 
     // 性格
     document.getElementById('detailDesc').textContent = cat.desc || '-';
-
+ 
     // 健康状態
     const h = cat.health || {};
     const healthItems = [
@@ -591,7 +598,7 @@
       (cat.healthNote
         ? `<p style="font-size:13px;color:var(--text-muted);margin-top:10px;line-height:1.7;">※ ${cat.healthNote}</p>`
         : '');
-
+ 
     // 飼い主条件
     const c = cat.conditions || {};
     const condItems = [
@@ -615,31 +622,31 @@
           <span class="pill ${pillClass(i.val)}">${i.val}</span>
         </div>`
       ).join('');
-
+ 
     // 関連猫（現在の猫以外から最大3匹）
     const related = allCats.filter(c => c.id !== id).slice(0, 3);
     document.getElementById('relatedGrid').innerHTML =
       related.map(catCardHtml).join('');
-
+ 
     // 表示切り替え
     document.getElementById('listView').style.display   = 'none';
     document.getElementById('detailView').style.display = 'block';
     window.scrollTo(0, 0);
   }
-
+ 
   function showList() {
     document.getElementById('detailView').style.display = 'none';
     document.getElementById('listView').style.display   = 'block';
     document.title = '猫を探す｜愛アイクラブ 里親募集';
     window.scrollTo(0, 0);
   }
-
+ 
   // Enterキーで検索
   document.getElementById('nameSearch').addEventListener('keydown', e => {
     if (e.key === 'Enter') applyFilter();
   });
 </script>
-
+ 
 <!-- Firebase読み込み（type="module"） -->
 <script type="module">
   import { db } from './firebase.js';
@@ -653,7 +660,7 @@
     orderBy,
     query,
   } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
+ 
   // Firestoreのお気に入りカウントを増減
   window.updateFavoriteCount = async function(id, delta) {
     try {
@@ -662,27 +669,27 @@
       console.error('お気に入りカウント更新エラー:', e);
     }
   };
-
+ 
   async function loadCats() {
     const skeletonGrid = document.getElementById('skeletonGrid');
     const catGrid      = document.getElementById('catGrid');
     const countEl      = document.getElementById('catsCount');
-
+ 
     try {
       // Firestoreから取得（登録日時の新しい順）
       const q        = query(collection(db, 'cats'), orderBy('createdAt', 'desc'));
       const snapshot = await getDocs(q);
-
+ 
       // グローバル変数に保持（フィルタリングで使う）
       allCats = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data(),
       }));
-
+ 
       // スケルトンを非表示・実データを表示
       skeletonGrid.style.display = 'none';
       catGrid.style.display = '';
-
+ 
       if (allCats.length === 0) {
         document.getElementById('emptyState').style.display = 'block';
         countEl.textContent = '現在募集中の猫はいません';
@@ -690,7 +697,7 @@
         catGrid.innerHTML = allCats.map(catCardHtml).join('');
         countEl.textContent = allCats.length + '匹の猫が見つかりました';
       }
-
+ 
     } catch (e) {
       // エラー時
       skeletonGrid.style.display = 'none';
@@ -706,12 +713,12 @@
       console.error('Firestore読み込みエラー:', e);
     }
   }
-
+ 
   // ページ読み込み時に実行
   loadCats();
   // ナビのバッジをページ読み込み時に更新
   document.addEventListener('DOMContentLoaded', () => updateFavBadge());
 </script>
-
+ 
 </body>
 </html>
